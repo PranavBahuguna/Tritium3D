@@ -9,11 +9,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Build options
 option(GIT_SUBMODULE "Check submodules during build" ON)
 option(TRITIUM3D_BUILD_APPS "Build example applications" ON)
+option(TRITIUM3D_BUILD_DOCS "Generate documentation" ON)
 
 # Directories
 set(TRITIUM3D_INC_DIR ${PROJECT_SOURCE_DIR}/inc)
 set(TRITIUM3D_SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 set(APPS_DIR ${PROJECT_SOURCE_DIR}/apps)
+set(DOCS_DIR ${PROJECT_SOURCE_DIR}/docs)
 set(THIRDPARTY_DIR ${PROJECT_SOURCE_DIR}/thirdparty)
 
 # Automatically updates submodules during a build
@@ -46,6 +48,13 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(${THIRDPARTY_DIR}/glew)
 add_subdirectory(${THIRDPARTY_DIR}/glfw)
 add_subdirectory(${THIRDPARTY_DIR}/glm)
+
+# Add generation of documentation
+if (TRITIUM3D_BUILD_DOCS)
+    find_package(Doxygen)
+    add_subdirectory(${DOCS_DIR})
+endif()
+
 
 # Setup Tritium3D project library
 file(GLOB_RECURSE TRITIUM3D_INC_FILES "${TRITIUM3D_INC_DIR}/*.hpp")
