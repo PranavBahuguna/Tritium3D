@@ -1,0 +1,63 @@
+# Project settings
+cmake_minimum_required(VERSION 3.8)
+project(Tritium3D LANGUAGES CXX)
+
+# C++ settings
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Build options
+option(GIT_SUBMODULE "Check submodules during build" ON)
+option(TRITIUM3D_BUILD_APPS "Build example applications" ON)
+
+# Directories
+set(TRITIUM3D_INC_DIR ${PROJECT_SOURCE_DIR}/inc)
+set(TRITIUM3D_SRC_DIR ${PROJECT_SOURCE_DIR}/src)
+set(APPS_DIR ${PROJECT_SOURCE_DIR}/apps)
+set(THIRDPARTY_DIR ${PROJECT_SOURCE_DIR}/thirdparty)
+
+# Automatically updates submodules during a build
+find_package(Git QUIET)
+if (GIT_FOUND AND EXISTS ${PROJECT_SOURCE_DIR}/.git)
+    if (GIT_SUBMODULE)
+        message(STATUS "Submodule update")
+        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                        RESULT_VARIABLE GIT_SUBMOD_RESULT)
+        if (NOT GIT_SUBMOD_RESULT EQUAL 0)
+            message(FATAL_ERROR "git submodule update --init --recursive failed with ${GIT_SUBMOD_RESULT}, please checkout submodules.")
+        endif()
+    endif()
+endif()
+
+# Check if submodules were downloaded
+file(GLOB THIRDPARTY_FILES ${THIRDPARTY_DIR})
+list(LENGTH THIRDPARTY_FILES DIR_SIZE)
+if (DIR_SIZE EQUAL 0)
+    message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
+endif()
+
+# Add 3rd party modules
+add_definitions(-DGLEW_STATIC)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+add_subdirectory(${THIRDPARTY_DIR}/glew)
+add_subdirectory(${THIRDPARTY_DIR}/glfw)
+add_subdirectory(${THIRDPARTY_DIR}/glm)
+
+# Setup Tritium3D project library
+file(GLOB_RECURSE TRITIUM3D_INC_FILES "${TRITIUM3D_INC_DIR}/*.hpp")
+file(GLOB_RECURSE TRITIUM3D_SRC_FILES "${TRITIUM3D_SRC_DIR}/*.cpp")
+
+add_library(tritium3d ${TRITIUM3D_SRC_FILES} ${TRITIUM3D_INC_FILES})
+
+target_include_directories(tritium3d PUBLIC ${TRITIUM3D_INC_DIR})
+
+target_link_libraries(tritium3d PRIVATE glm glfw libglew_static)
+
+# Add example apps
+if (TRITIUM3D_BUILD_APPS)
+    add_subdirectory(${APPS_DIR})
+endif()
