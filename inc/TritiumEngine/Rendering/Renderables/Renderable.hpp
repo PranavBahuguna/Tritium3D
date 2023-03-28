@@ -9,6 +9,9 @@ namespace TritiumEngine::Rendering
   public:
     virtual ~Renderable() {}
 
+    /**
+     * Implements process of drawing the renderable to the screen.
+     */
     virtual void Draw() const = 0;
   };
 

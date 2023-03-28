@@ -22,10 +22,17 @@ namespace TritiumEngine::Rendering
 
   Shader::~Shader() { glDeleteProgram(m_id); }
 
-  // Activate this shader program
+  /**
+   * Activates this shader program.
+   */
   void Shader::Use() const { glUseProgram(m_id); }
 
-  // Sets matrix4 in shader program
+  /**
+   * Setter for Matrix4 variables.
+   *
+   * @param name Name of the Matrix4 variable.
+   * @param matrix4 Matrix4 value to set.
+   */
   void Shader::SetMatrix4(const std::string &name, const glm::mat4 &matrix4) const {
     int count;
     glGetProgramiv(m_id, GL_ACTIVE_UNIFORMS, &count);
@@ -33,7 +40,11 @@ namespace TritiumEngine::Rendering
     glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(matrix4));
   }
 
-  // Obtains ID of this shader program
+  /**
+   * Obtains ID for this shader program.
+   *
+   * @return Shader program ID.
+   */
   ShaderId Shader::GetID() const { return m_id; }
 
   // Extracts file contents to string

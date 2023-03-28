@@ -5,14 +5,21 @@ namespace TritiumEngine::Rendering
 {
   Renderer::Renderer() : m_prevShader(0) {}
 
-  // Draws all supplied renderables with a given shader
+  /**
+   * Draws all the supplied renderables with a given shader.
+   *
+   * @param renderList The list of renderables to draw.
+   * @param shader The shader to be set active while renderables are being drawn.
+   */
   void Renderer::Render(const RenderList &renderList, const Shader &shader) {
     UseShader(shader);
     for (const auto &renderable : renderList)
       renderable->Draw();
   }
 
-  // Clears screen
+  /**
+   * Clears screen, including color and depth buffers.
+   */
   void Renderer::Clear() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

@@ -45,18 +45,44 @@ namespace TritiumEngine::UI
     glfwDestroyWindow(m_window);
   }
 
+  /**
+   * Checks if the window has been successfully initialised.
+   *
+   * @return True if window has been initialised.
+   */
   bool Window::IsInitialised() const { return m_window != nullptr; }
 
+  /**
+   * Updates the windows status and input events, should be called every frame.
+   */
   void Window::Update() const {
     glfwSwapBuffers(m_window);
     glfwPollEvents();
   }
 
+  /**
+   * Obtain the width of the window in screen units.
+   *
+   * @return Window width.
+   */
   int Window::GetWidth() const { return m_width; }
 
+  /**
+   * Obtain the height of the window in screen units.
+   *
+   * @return Window width.
+   */
   int Window::GetHeight() const { return m_height; }
 
+  /**
+   * Checks if the window has been flagged to close.
+   *
+   * @return True if window is flagged for closing.
+   */
   bool Window::GetShouldClose() const { return glfwWindowShouldClose(m_window); }
 
+  /**
+   * Sets the window flagged for closing.
+   */
   void Window::Close() const { glfwSetWindowShouldClose(m_window, GLFW_TRUE); }
 } // namespace TritiumEngine::UI

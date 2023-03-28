@@ -1,7 +1,5 @@
 #pragma once
 
-#include <TritiumEngine/Input/KeyState.hpp>
-
 #include <GLFW/glfw3.h>
 
 namespace TritiumEngine::Input
@@ -14,6 +12,16 @@ namespace TritiumEngine::Input
     static bool GetKeyToggled(int key);
 
   private:
+    struct KeyState {
+    public:
+      void Update(int action);
+      bool IsToggled();
+
+    private:
+      int m_oldState;
+      int m_newState;
+    };
+
     Keyboard() {} // prevent construction of this class
 
     static bool ValidateKey(int key);
