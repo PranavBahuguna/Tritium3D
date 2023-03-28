@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Tritium3D/Rendering/Renderables/Renderable.hpp>
-#include <Tritium3D/Rendering/Shader.hpp>
+#include <TritiumEngine/Rendering/Renderables/Renderable.hpp>
+#include <TritiumEngine/Rendering/Shader.hpp>
 
-namespace Tritium3D::Rendering
+namespace TritiumEngine::Rendering
 {
   class Renderer {
   public:
@@ -19,4 +19,4 @@ namespace Tritium3D::Rendering
     // it can optimise the code by avoid reassigning the same shader program repeatedly.
     ShaderId m_prevShader;
   };
-} // namespace Tritium3D::Rendering
+} // namespace TritiumEngine::Rendering

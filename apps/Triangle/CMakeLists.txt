@@ -1,6 +1,6 @@
 add_executable(triangle Triangle.cpp)
 
-target_link_libraries(triangle PRIVATE tritium3d glm glfw libglew_static)
+target_link_libraries(triangle PRIVATE TritiumEngine glm glfw libglew_static)
 
 # Copy over resouces folder to target
 add_custom_target(copy_resouces_triangle ALL

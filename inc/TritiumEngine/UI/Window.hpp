@@ -4,7 +4,7 @@
 
 #include <string>
 
-namespace Tritium3D::UI
+namespace TritiumEngine::UI
 {
   enum class WindowMode { WINDOWED, FULLSCREEN_WINDOWED, FULLSCREEN };
 
@@ -27,4 +27,4 @@ namespace Tritium3D::UI
     int m_width;
     int m_height;
   };
-} // namespace Tritium3D::UI
+} // namespace TritiumEngine::UI

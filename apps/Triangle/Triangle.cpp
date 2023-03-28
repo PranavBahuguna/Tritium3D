@@ -8,16 +8,16 @@
 
 #include <GL/glew.h>
 
-#include <Tritium3D/Input/Keyboard.hpp>
-#include <Tritium3D/Rendering/Renderables/Mesh.hpp>
-#include <Tritium3D/Rendering/Renderer.hpp>
-#include <Tritium3D/UI/Window.hpp>
+#include <TritiumEngine/Input/Keyboard.hpp>
+#include <TritiumEngine/Rendering/Renderables/Mesh.hpp>
+#include <TritiumEngine/Rendering/Renderer.hpp>
+#include <TritiumEngine/UI/Window.hpp>
 
 #include <glm/gtc/matrix_transform.hpp>
 
-using namespace Tritium3D::Input;
-using namespace Tritium3D::Rendering;
-using namespace Tritium3D::UI;
+using namespace TritiumEngine::Input;
+using namespace TritiumEngine::Rendering;
+using namespace TritiumEngine::UI;
 
 int main() {
   // Setup GFLW properties

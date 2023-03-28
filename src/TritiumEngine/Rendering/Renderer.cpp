@@ -1,7 +1,7 @@
-#include <Tritium3D/Rendering/Renderables/Renderable.hpp>
-#include <Tritium3D/Rendering/Renderer.hpp>
+#include <TritiumEngine/Rendering/Renderables/Renderable.hpp>
+#include <TritiumEngine/Rendering/Renderer.hpp>
 
-namespace Tritium3D::Rendering
+namespace TritiumEngine::Rendering
 {
   Renderer::Renderer() : m_prevShader(0) {}
 
@@ -27,4 +27,4 @@ namespace Tritium3D::Rendering
       shader.Use();
     }
   }
-} // namespace Tritium3D::Rendering
+} // namespace TritiumEngine::Rendering

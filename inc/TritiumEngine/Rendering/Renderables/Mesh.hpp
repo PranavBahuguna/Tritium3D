@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Tritium3D/Rendering/Renderables/Renderable.hpp>
+#include <TritiumEngine/Rendering/Renderables/Renderable.hpp>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-namespace Tritium3D::Rendering
+namespace TritiumEngine::Rendering
 {
   class Mesh : public Renderable {
   public:
@@ -20,4 +20,4 @@ namespace Tritium3D::Rendering
     GLuint m_VBO;
     GLsizei m_nIndices;
   };
-} // namespace Tritium3D::Rendering
+} // namespace TritiumEngine::Rendering

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Tritium3D::Input
+namespace TritiumEngine::Input
 {
   struct KeyState {
   public:
@@ -11,4 +11,4 @@ namespace Tritium3D::Input
     int m_oldState;
     int m_newState;
   };
-} // namespace Tritium3D::Input
+} // namespace TritiumEngine::Input

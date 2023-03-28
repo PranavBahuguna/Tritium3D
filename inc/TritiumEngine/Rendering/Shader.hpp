@@ -5,7 +5,7 @@
 
 #include <string>
 
-namespace Tritium3D::Rendering
+namespace TritiumEngine::Rendering
 {
   typedef unsigned int ShaderId;
 
@@ -25,4 +25,4 @@ namespace Tritium3D::Rendering
 
     ShaderId m_id;
   };
-} // namespace Tritium3D::Rendering
+} // namespace TritiumEngine::Rendering

@@ -1,8 +1,8 @@
-#include <Tritium3D/Input/KeyState.hpp>
+#include <TritiumEngine/Input/KeyState.hpp>
 
 #include <GLFW/glfw3.h>
 
-namespace Tritium3D::Input
+namespace TritiumEngine::Input
 {
   void KeyState::Update(int action) {
     m_oldState = m_newState;
@@ -16,4 +16,4 @@ namespace Tritium3D::Input
 
     return isToggled;
   }
-} // namespace Tritium3D::Input
+} // namespace TritiumEngine::Input

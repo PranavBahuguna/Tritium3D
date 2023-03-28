@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Tritium3D/Rendering/Renderables/Renderable.hpp>
+#include <TritiumEngine/Rendering/Renderables/Renderable.hpp>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-namespace Tritium3D::Rendering
+namespace TritiumEngine::Rendering
 {
   class Line : public Renderable {
   public:
@@ -18,4 +18,4 @@ namespace Tritium3D::Rendering
     GLuint m_VAO;
     GLuint m_VBO;
   };
-} // namespace Tritium3D::Rendering
+} // namespace TritiumEngine::Rendering

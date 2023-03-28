@@ -1,11 +1,11 @@
-#include <Tritium3D/Rendering/Shader.hpp>
+#include <TritiumEngine/Rendering/Shader.hpp>
 
 #include <glm/gtc/type_ptr.hpp>
 
 #include <fstream>
 #include <sstream>
 
-namespace Tritium3D::Rendering
+namespace TritiumEngine::Rendering
 {
   Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
     // Load vertex and fragment shader program data from files
@@ -99,4 +99,4 @@ namespace Tritium3D::Rendering
 
     return program;
   }
-} // namespace Tritium3D::Rendering
+} // namespace TritiumEngine::Rendering

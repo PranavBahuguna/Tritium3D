@@ -1,6 +1,6 @@
 add_executable(square Square.cpp)
 
-target_link_libraries(square PRIVATE tritium3d glm glfw libglew_static)
+target_link_libraries(square PRIVATE TritiumEngine glm glfw libglew_static)
 
 # Copy over resouces folder to target
 add_custom_target(copy_resouces_square ALL

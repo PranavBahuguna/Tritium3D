@@ -1,6 +1,6 @@
-#include <Tritium3D/Rendering/Renderables/Line.hpp>
+#include <TritiumEngine/Rendering/Renderables/Line.hpp>
 
-namespace Tritium3D::Rendering
+namespace TritiumEngine::Rendering
 {
   Line::Line(const glm::vec2 &start, const glm::vec2 &end) : Renderable() {
     std::vector<float> vertices = {start.x, start.y, end.x, end.y};
@@ -27,4 +27,4 @@ namespace Tritium3D::Rendering
     glBindVertexArray(m_VAO);
     glDrawArrays(GL_LINES, 0, 2);
   }
-} // namespace Tritium3D::Rendering
+} // namespace TritiumEngine::Rendering

@@ -1,11 +1,11 @@
-#include <Tritium3D/Input/Keyboard.hpp>
-#include <Tritium3D/UI/Window.hpp>
+#include <TritiumEngine/Input/Keyboard.hpp>
+#include <TritiumEngine/UI/Window.hpp>
 
 #include <stdexcept>
 
-using namespace Tritium3D::Input;
+using namespace TritiumEngine::Input;
 
-namespace Tritium3D::UI
+namespace TritiumEngine::UI
 {
   Window::Window(const std::string &name, WindowMode wMode, int width, int height)
       : m_name(name), m_wMode(wMode), m_width(width), m_height(height), m_window(nullptr) {
@@ -59,4 +59,4 @@ namespace Tritium3D::UI
   bool Window::GetShouldClose() const { return glfwWindowShouldClose(m_window); }
 
   void Window::Close() const { glfwSetWindowShouldClose(m_window, GLFW_TRUE); }
-} // namespace Tritium3D::UI
+} // namespace TritiumEngine::UI

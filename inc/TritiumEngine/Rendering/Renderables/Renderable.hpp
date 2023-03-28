@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-namespace Tritium3D::Rendering
+namespace TritiumEngine::Rendering
 {
   class Renderable {
   public:
@@ -13,4 +13,4 @@ namespace Tritium3D::Rendering
   };
 
   typedef std::vector<std::shared_ptr<Renderable>> RenderList;
-} // namespace Tritium3D::Rendering
+} // namespace TritiumEngine::Rendering

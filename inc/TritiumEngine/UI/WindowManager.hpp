@@ -2,7 +2,7 @@
 
 #include <GLFW/glfw3.h>
 
-namespace Tritium3D::UI
+namespace TritiumEngine::UI
 {
   class WindowManager {
   public:
@@ -11,4 +11,4 @@ namespace Tritium3D::UI
   private:
     GLFWwindow *_window;
   };
-} // namespace Tritium3D::UI
+} // namespace TritiumEngine::UI

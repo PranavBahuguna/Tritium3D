@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Tritium3D/Input/KeyState.hpp>
+#include <TritiumEngine/Input/KeyState.hpp>
 
 #include <GLFW/glfw3.h>
 
-namespace Tritium3D::Input
+namespace TritiumEngine::Input
 {
   static constexpr int NUM_KEYS = 512;
 
@@ -19,4 +19,4 @@ namespace Tritium3D::Input
     static bool ValidateKey(int key);
     static KeyState _keys[NUM_KEYS];
   };
-} // namespace Tritium3D::Input
+} // namespace TritiumEngine::Input

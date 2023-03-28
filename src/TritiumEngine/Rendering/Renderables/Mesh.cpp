@@ -1,6 +1,6 @@
-#include <Tritium3D/Rendering/Renderables/Mesh.hpp>
+#include <TritiumEngine/Rendering/Renderables/Mesh.hpp>
 
-namespace Tritium3D::Rendering
+namespace TritiumEngine::Rendering
 {
   Mesh::Mesh(const std::vector<glm::vec2> &vertices, const std::vector<GLuint> &indices)
       : Renderable(), m_nIndices((GLsizei)indices.size()) {
@@ -33,4 +33,4 @@ namespace Tritium3D::Rendering
     glBindVertexArray(m_VAO);
     glDrawElements(GL_TRIANGLES, m_nIndices, GL_UNSIGNED_INT, 0);
   }
-} // namespace Tritium3D::Rendering
+} // namespace TritiumEngine::Rendering

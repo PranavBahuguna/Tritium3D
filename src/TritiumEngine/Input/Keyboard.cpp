@@ -1,8 +1,8 @@
-#include <Tritium3D/Input/Keyboard.hpp>
+#include <TritiumEngine/Input/Keyboard.hpp>
 
 #include <string>
 
-namespace Tritium3D::Input
+namespace TritiumEngine::Input
 {
   KeyState Keyboard::_keys[NUM_KEYS] = {};
 
@@ -25,4 +25,4 @@ namespace Tritium3D::Input
 
     return isKeyValid;
   }
-} // namespace Tritium3D::Input
+} // namespace TritiumEngine::Input
