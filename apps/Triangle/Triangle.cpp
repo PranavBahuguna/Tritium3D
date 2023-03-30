@@ -97,7 +97,7 @@ int main() {
       renderer.Render(renderList, shader);
     }
   } catch (std::exception &e) {
-    printf(e.what());
+    printf("%s", e.what());
     return EXIT_FAILURE;
   }
 
