@@ -7,14 +7,12 @@
 
 namespace TritiumEngine::Rendering
 {
-  Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
-    // Load vertex and fragment shader program data from files
-    std::string vertexData = ReadFile(vertexPath);
-    std::string fragmentData = ReadFile(fragmentPath);
+  Shader::Shader(ShaderId id) : m_id(id) {}
 
+  Shader::Shader(const std::string &vertexShaderCode, const std::string &fragmentShaderCode) {
     // Compile vertex and fragment shaders
-    ShaderId vertexId = Compile(vertexData.c_str(), GL_VERTEX_SHADER);
-    ShaderId fragmentId = Compile(fragmentData.c_str(), GL_FRAGMENT_SHADER);
+    ShaderId vertexId = Compile(vertexShaderCode.c_str(), GL_VERTEX_SHADER);
+    ShaderId fragmentId = Compile(fragmentShaderCode.c_str(), GL_FRAGMENT_SHADER);
 
     // Link the shaders
     m_id = Link(vertexId, fragmentId);
@@ -22,49 +20,75 @@ namespace TritiumEngine::Rendering
 
   Shader::~Shader() { glDeleteProgram(m_id); }
 
-  /**
-   * Activates this shader program.
-   */
+  /** Activates this shader program */
   void Shader::Use() const { glUseProgram(m_id); }
 
-  /**
-   * Setter for Matrix4 variables.
-   *
-   * @param name Name of the Matrix4 variable.
-   * @param matrix4 Matrix4 value to set.
-   */
-  void Shader::SetMatrix4(const std::string &name, const glm::mat4 &matrix4) const {
-    int count;
-    glGetProgramiv(m_id, GL_ACTIVE_UNIFORMS, &count);
-    int uniformLocation = glGetUniformLocation(m_id, name.c_str());
-    glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(matrix4));
-  }
-
-  /**
-   * Obtains ID for this shader program.
-   *
-   * @return Shader program ID.
-   */
   ShaderId Shader::GetID() const { return m_id; }
 
-  // Extracts file contents to string
-  std::string Shader::ReadFile(const std::string &filePath) const {
-    std::string fileData;
-    std::ifstream fileStream;
-    // Allow ifstream to throw exceptions
-    fileStream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+  void Shader::SetBool(const std::string &name, bool value) const {
+    int uniformLocation = glGetUniformLocation(m_id, name.c_str());
+    glUniform1i(uniformLocation, value);
+  }
 
-    try {
-      std::stringstream ss;
-      fileStream.open(filePath);
-      ss << fileStream.rdbuf();
-      fileStream.close();
-      fileData = ss.str();
-    } catch (std::ifstream::failure e) {
-      printf("Error, could not read from %s!\n", filePath.c_str());
-    }
+  void Shader::SetInt(const std::string &name, int value) const {
+    int uniformLocation = glGetUniformLocation(m_id, name.c_str());
+    glUniform1i(uniformLocation, value);
+  }
 
-    return fileData;
+  void Shader::SetUint(const std::string &name, unsigned int value) const {
+    int uniformLocation = glGetUniformLocation(m_id, name.c_str());
+    glUniform1ui(uniformLocation, value);
+  }
+
+  void Shader::SetFloat(const std::string &name, float value) const {
+    int uniformLocation = glGetUniformLocation(m_id, name.c_str());
+    glUniform1f(uniformLocation, value);
+  }
+
+  void Shader::SetVector2(const std::string &name, const glm::vec2 &value) const {
+    int uniformLocation = glGetUniformLocation(m_id, name.c_str());
+    glUniform2fv(uniformLocation, 1, glm::value_ptr(value));
+  }
+
+  void Shader::SetVector2(const std::string &name, GLfloat x, GLfloat y) const {
+    int uniformLocation = glGetUniformLocation(m_id, name.c_str());
+    glUniform2f(uniformLocation, x, y);
+  }
+
+  void Shader::SetVector3(const std::string &name, const glm::vec3 &value) const {
+    int uniformLocation = glGetUniformLocation(m_id, name.c_str());
+    glUniform3fv(uniformLocation, 1, glm::value_ptr(value));
+  }
+
+  void Shader::SetVector3(const std::string &name, GLfloat x, GLfloat y, GLfloat z) const {
+    int uniformLocation = glGetUniformLocation(m_id, name.c_str());
+    glUniform3f(uniformLocation, x, y, z);
+  }
+
+  void Shader::SetVector4(const std::string &name, const glm::vec4 &value) const {
+    int uniformLocation = glGetUniformLocation(m_id, name.c_str());
+    glUniform4fv(uniformLocation, 1, glm::value_ptr(value));
+  }
+
+  void Shader::SetVector4(const std::string &name, GLfloat x, GLfloat y, GLfloat z,
+                          GLfloat w) const {
+    int uniformLocation = glGetUniformLocation(m_id, name.c_str());
+    glUniform4f(uniformLocation, x, y, z, w);
+  }
+
+  void Shader::SetMatrix2(const std::string &name, const glm::mat2 &value) const {
+    int uniformLocation = glGetUniformLocation(m_id, name.c_str());
+    glUniformMatrix2fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(value));
+  }
+
+  void Shader::SetMatrix3(const std::string &name, const glm::mat3 &value) const {
+    int uniformLocation = glGetUniformLocation(m_id, name.c_str());
+    glUniformMatrix3fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(value));
+  }
+
+  void Shader::SetMatrix4(const std::string &name, const glm::mat4 &value) const {
+    int uniformLocation = glGetUniformLocation(m_id, name.c_str());
+    glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(value));
   }
 
   // Compiles shader from code, returning its program ID

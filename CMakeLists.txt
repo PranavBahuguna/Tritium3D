@@ -55,7 +55,6 @@ if (TRITIUM_BUILD_DOCS)
     add_subdirectory(${DOCS_DIR})
 endif()
 
-
 # Setup TritiumEngine project library
 file(GLOB_RECURSE TRITIUM_INC_FILES "${TRITIUM_INC_DIR}/*.hpp")
 file(GLOB_RECURSE TRITIUM_SRC_FILES "${TRITIUM_SRC_DIR}/*.cpp")
