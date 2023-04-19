@@ -26,7 +26,8 @@ namespace TritiumEngine::Entities
       this->materials = materials;
     }
 
-    virtual void Update(float deltaTime) {}
+    virtual void Init() {}
+    virtual void Update() {}
 
     Transform transform;
     std::vector<std::shared_ptr<Renderable>> renderables;

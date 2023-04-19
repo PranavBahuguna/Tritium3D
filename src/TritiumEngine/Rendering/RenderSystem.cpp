@@ -5,11 +5,13 @@
 namespace TritiumEngine::Rendering
 {
   void RenderSystem::Draw(const Camera &camera, const World &world) const {
-    for (const Entity *entity : world.GetEntities()) {
+    for (size_t i = 0; i < world.GetNumEntities(); ++i) {
+      const Entity *entity = world.GetEntities()[i];
+
       for (size_t i = 0; i < entity->renderables.size(); ++i) {
         const auto &material = entity->materials[i];
-        const auto &shader = material->shader;
         const auto &renderable = entity->renderables[i];
+        const auto &shader = material->shader;
 
         // Apply properties to shader
         glUseProgram(shader->GetID());

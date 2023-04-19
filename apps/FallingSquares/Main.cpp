@@ -19,14 +19,10 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <chrono>
-
 using namespace TritiumEngine::Core;
 using namespace TritiumEngine::Input;
 using namespace TritiumEngine::Rendering;
 using namespace TritiumEngine::UI;
-
-typedef std::chrono::high_resolution_clock Clock;
 
 int main() {
   // Setup GFLW properties
@@ -98,20 +94,12 @@ int main() {
     transform.SetPosition({pos.x + 10, pos.y, pos.z});
   }
 
-  // Setup timer
-  auto prevTime = Clock::now();
-  auto currentTime = Clock::now();
-  float deltaTime;
+  world.Init();
 
   // Run application game loop
   int exitCode = EXIT_SUCCESS;
   try {
     while (!window.GetShouldClose()) {
-      // Update clock
-      prevTime = currentTime;
-      currentTime = Clock::now();
-      deltaTime = (currentTime - prevTime).count() / 1000000000.0f;
-
       window.Update();
 
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -122,14 +110,13 @@ int main() {
         window.Close();
 
       // Update world and render
-      world.Update(deltaTime);
+      world.Update();
       renderSystem.Draw(camera, world);
     }
   } catch (std::exception &e) {
     printf("%s", e.what());
     exitCode = EXIT_FAILURE;
   }
-
   world.ClearEntities();
 
   return exitCode;

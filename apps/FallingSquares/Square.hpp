@@ -16,7 +16,7 @@ public:
          const std::shared_ptr<Renderable> &renderable,
          const std::shared_ptr<Material> &material);
 
-  virtual void Update(float deltaTime) override;
+  virtual void Update() override;
 
 private:
   glm::vec3 m_velocity;
