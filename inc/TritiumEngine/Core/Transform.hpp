@@ -9,7 +9,7 @@ namespace TritiumEngine::Core
   public:
     Transform(const glm::vec3 &position = glm::vec3(0.0f),
               const glm::quat &rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f),
-              const glm::vec3 &scale = glm::vec3(1.0f));
+              const glm::vec3 &scale    = glm::vec3(1.0f));
 
     /** Getter methods for transform properties */
     const glm::vec3 &GetPosition() const;

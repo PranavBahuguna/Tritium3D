@@ -39,12 +39,17 @@ if (DIR_SIZE EQUAL 0)
     message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
 
-# Add 3rd party modules
+# Init settings for thirdparty modules
 add_definitions(-DGLEW_STATIC)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
+# Add header-only libraries
+add_library(thirdparty_headers_lib INTERFACE)
+target_include_directories(thirdparty_headers_lib INTERFACE ${THIRDPARTY_DIR}/headers)
+
+# Add all 3rd party modules
 add_subdirectory(${THIRDPARTY_DIR}/glew)
 add_subdirectory(${THIRDPARTY_DIR}/glfw)
 add_subdirectory(${THIRDPARTY_DIR}/glm)
@@ -63,7 +68,9 @@ add_library(TritiumEngine ${TRITIUM_SRC_FILES} ${TRITIUM_INC_FILES})
 
 target_include_directories(TritiumEngine PUBLIC ${TRITIUM_INC_DIR})
 
-target_link_libraries(TritiumEngine PRIVATE glm glfw libglew_static)
+target_link_libraries(TritiumEngine
+    PUBLIC thirdparty_headers_lib
+    PRIVATE glm glfw libglew_static)
 
 # Add example apps
 if (TRITIUM_BUILD_APPS)

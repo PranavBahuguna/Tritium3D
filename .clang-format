@@ -3,3 +3,6 @@ NamespaceIndentation: All
 BreakBeforeBraces: Custom
 BraceWrapping:
     AfterNamespace: true
+AlignOperands: true
+AlignConsecutiveAssignments: AcrossEmptyLines
+AlignConsecutiveMacros: AcrossEmptyLines

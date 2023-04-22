@@ -1,9 +1,11 @@
 #include <TritiumEngine/Input/Keyboard.hpp>
 #include <TritiumEngine/UI/Window.hpp>
+#include <TritiumEngine/Utilities/Logger.hpp>
 
 #include <stdexcept>
 
 using namespace TritiumEngine::Input;
+using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::UI
 {
@@ -24,8 +26,10 @@ namespace TritiumEngine::UI
 
     // Try initialise window with given dimensions
     m_window = glfwCreateWindow(m_width, m_height, m_name.c_str(), monitor, NULL);
-    if (m_window == nullptr)
-      return;
+    if (m_window == nullptr) {
+      Logger::Log(ERROR, "Window '{}' could not be intialised!", m_name);
+      throw std::runtime_error("An error occurred while constructing Window");
+    }
 
     // Set context for GLEW to use
     glfwMakeContextCurrent(m_window);
@@ -46,13 +50,6 @@ namespace TritiumEngine::UI
   }
 
   /**
-   * Checks if the window has been successfully initialised.
-   *
-   * @return True if window has been initialised.
-   */
-  bool Window::IsInitialised() const { return m_window != nullptr; }
-
-  /**
    * Updates the windows status and input events, should be called every frame.
    */
   void Window::Update() const {
@@ -60,18 +57,8 @@ namespace TritiumEngine::UI
     glfwPollEvents();
   }
 
-  /**
-   * Obtain the width of the window in screen units.
-   *
-   * @return Window width.
-   */
   int Window::GetWidth() const { return m_width; }
 
-  /**
-   * Obtain the height of the window in screen units.
-   *
-   * @return Window width.
-   */
   int Window::GetHeight() const { return m_height; }
 
   /**

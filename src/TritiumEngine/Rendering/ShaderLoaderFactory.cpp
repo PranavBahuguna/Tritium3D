@@ -1,7 +1,10 @@
 #include <TritiumEngine/Rendering/ShaderLoaderFactory.hpp>
+#include <TritiumEngine/Utilities/Logger.hpp>
 
 #include <fstream>
 #include <sstream>
+
+using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Rendering
 {
@@ -27,7 +30,7 @@ namespace TritiumEngine::Rendering
       fileStream.close();
       fileData = ss.str();
     } catch (std::ifstream::failure e) {
-      printf("Error, could not read from %s!\n", filePath.c_str());
+      Logger::Log(ERROR, "Could not read from file {}", filePath);
     }
 
     return fileData;

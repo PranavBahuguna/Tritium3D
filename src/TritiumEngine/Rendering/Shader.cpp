@@ -1,9 +1,12 @@
 #include <TritiumEngine/Rendering/Shader.hpp>
+#include <TritiumEngine/Utilities/Logger.hpp>
 
 #include <glm/gtc/type_ptr.hpp>
 
 #include <fstream>
 #include <sstream>
+
+using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Rendering
 {
@@ -11,7 +14,7 @@ namespace TritiumEngine::Rendering
 
   Shader::Shader(const std::string &vertexShaderCode, const std::string &fragmentShaderCode) {
     // Compile vertex and fragment shaders
-    ShaderId vertexId = Compile(vertexShaderCode.c_str(), GL_VERTEX_SHADER);
+    ShaderId vertexId   = Compile(vertexShaderCode.c_str(), GL_VERTEX_SHADER);
     ShaderId fragmentId = Compile(fragmentShaderCode.c_str(), GL_FRAGMENT_SHADER);
 
     // Link the shaders
@@ -106,7 +109,7 @@ namespace TritiumEngine::Rendering
       glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
       char *errorLog = new char[infoLogLength];
       glGetShaderInfoLog(shaderId, infoLogLength, &infoLogLength, &errorLog[0]);
-      printf("An error occurred while compiling shader\n%s\n", errorLog);
+      Logger::Log(ERROR, "An error occurred while compiling shader:\n{}", errorLog);
     }
 
     return shaderId;
@@ -129,7 +132,7 @@ namespace TritiumEngine::Rendering
       glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
       char *errorLog = new char[infoLogLength];
       glGetProgramInfoLog(program, infoLogLength, &infoLogLength, &errorLog[0]);
-      printf("An error occurred while linking shader:\n%s\n", errorLog);
+      Logger::Log(ERROR, "An error occurred while linking shader:\n{}", errorLog);
     }
 
     return program;

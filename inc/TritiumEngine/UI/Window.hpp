@@ -13,7 +13,6 @@ namespace TritiumEngine::UI
     Window(const std::string &name, WindowMode wMode, int width = 800, int height = 600);
     ~Window();
 
-    bool IsInitialised() const;
     void Update() const;
     int GetWidth() const;
     int GetHeight() const;

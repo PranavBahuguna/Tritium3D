@@ -1,6 +1,9 @@
 #include <TritiumEngine/Input/Keyboard.hpp>
+#include <TritiumEngine/Utilities/Logger.hpp>
 
 #include <string>
+
+using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Input
 {
@@ -37,7 +40,7 @@ namespace TritiumEngine::Input
   bool Keyboard::ValidateKey(int key) {
     bool isKeyValid = key >= 0 || key <= NUM_KEYS;
     if (!isKeyValid)
-      printf("Key with code %d is outside of valid range!\n", key);
+      Logger::Log(WARNING, "Key with code {} is outside of valid range!", key);
 
     return isKeyValid;
   }

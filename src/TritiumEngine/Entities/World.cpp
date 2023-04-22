@@ -7,6 +7,10 @@ using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Entities
 {
+  World::World() : m_entities(), m_nEntities(0), m_isInitialised(false) {}
+
+  World::~World() { ClearEntities(); }
+
   /**
    * Getter method for all stored entities.
    *
@@ -45,7 +49,7 @@ namespace TritiumEngine::Entities
    */
   void World::Update() {
     if (!m_isInitialised)
-      throw std::runtime_error("Error, world must be initialised first before update!");
+      throw std::runtime_error("World must be initialised first before update!");
 
     Timer::Update();
     for (size_t i = 0; i < m_nEntities; ++i)

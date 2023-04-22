@@ -13,7 +13,8 @@ namespace TritiumEngine::Rendering
   class Camera {
   public:
     Camera(ProjectionType projection, float frameWidth, float frameHeight, float nearPlane,
-           float farPlane, float fov = glm::radians(60.0f), const Transform &transform = Transform());
+           float farPlane, float fov = glm::radians(60.0f),
+           const Transform &transform = Transform());
 
     /** Getter methods for camera properties */
     ProjectionType GetProjectionType() const;

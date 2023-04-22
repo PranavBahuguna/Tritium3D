@@ -12,6 +12,9 @@ namespace TritiumEngine::Entities
 
   class World {
   public:
+    World();
+    ~World();
+
     const EntityList GetEntities() const;
     size_t GetNumEntities() const;
 
@@ -22,7 +25,7 @@ namespace TritiumEngine::Entities
 
   private:
     EntityList m_entities;
-    size_t m_nEntities = 0;
-    bool m_isInitialised = false;
+    size_t m_nEntities;
+    bool m_isInitialised;
   };
 } // namespace TritiumEngine::Entities
