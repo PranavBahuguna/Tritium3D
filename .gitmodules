@@ -7,3 +7,6 @@
 [submodule "thirdparty/glm"]
 	path = thirdparty/glm
 	url = https://github.com/g-truc/glm.git
+[submodule "thirdparty/headers"]
+	path = thirdparty/headers
+	url = git@github.com:PranavBahuguna/TritiumEngine-ThirdPartyHeaders.git
