@@ -22,7 +22,8 @@ namespace TritiumEngine::Core
     static void Register(std::unique_ptr<ResourceLoaderFactory<T>> loaderFactory,
                          const std::string &rootDir) {
       if (m_isRegistered) {
-        Logger::Log(WARNING, "Factory of type {} already registered for this resource manager.", typeid(T).name());
+        Logger::Log(WARNING, "Factory of type {} already registered for this resource manager.",
+                    typeid(T).name());
         return;
       }
 
@@ -38,45 +39,22 @@ namespace TritiumEngine::Core
      * @param filePath The file path of the resource to load.
      * @param forceReload If true, will forcibly load the resource again and overwrite an existing
      * resource.
-     * @return Shared pointer to resource of given type, nullptr if resource isn't found.
+     * @return Shared pointer to resource of given type, nullptr if resource file path isn't found.
      */
-    static std::shared_ptr<T> Create(const std::string &filePath, bool forceReload = false) {
+    static std::shared_ptr<T> Get(const std::string &filePath, bool forceReload = false) {
       if (!CheckIfRegistered() || filePath.empty())
         return nullptr;
 
       std::string totalFilePath     = m_rootDir + filePath;
       auto &foundItem               = m_resourceMap[totalFilePath];
-
       std::shared_ptr<T> returnItem = nullptr;
+
       if (foundItem.expired() || forceReload) {
         returnItem = std::shared_ptr<T>(m_loaderFactory->Load(totalFilePath));
         foundItem  = returnItem;
       } else {
         returnItem = foundItem.lock();
       }
-
-      return returnItem;
-    }
-
-    /**
-     * Obtains an existing resource of type T using the given file path.
-     *
-     * @param filePath File path of the resource to get.
-     * @return Shared pointer to resource of type T, nullptr if resource isn't found.
-     */
-    static std::shared_ptr<T> Get(const std::string &filePath) {
-      if (!CheckIfRegistered() || filePath.empty())
-        return nullptr;
-
-      std::string totalFilePath = m_rootDir + filePath;
-      auto it                   = m_resourceMap.find(totalFilePath);
-      if (it == m_resourceMap.end())
-        return nullptr;
-
-      std::shared_ptr<T> returnItem = nullptr;
-      auto foundItem                = it->second;
-      if (!foundItem.expired())
-        returnItem = foundItem.lock();
 
       return returnItem;
     }

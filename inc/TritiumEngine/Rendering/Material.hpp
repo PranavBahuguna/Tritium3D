@@ -1,15 +1,16 @@
 #pragma once
 
-#include <TritiumEngine/Rendering/Shader.hpp>
+#include <TritiumEngine/Rendering/ShaderManager.hpp>
 
 #include <glm/glm.hpp>
 
 #include <memory>
+#include <string>
 
 namespace TritiumEngine::Rendering
 {
   struct Material {
     glm::vec4 color;
-    std::shared_ptr<Shader> shader;
+    ShaderId shaderId;
   };
 } // namespace TritiumEngine::Rendering

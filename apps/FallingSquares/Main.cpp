@@ -7,8 +7,6 @@
 #define SCREEN_UNITS 100.0f
 #define NUM_SQUARES  1000
 
-#include <GL/glew.h>
-
 #include "Square.hpp"
 
 #include <TritiumEngine/Core/ResourceManager.hpp>
@@ -16,7 +14,8 @@
 #include <TritiumEngine/Rendering/RenderSystem.hpp>
 #include <TritiumEngine/Rendering/ShaderLoaderFactory.hpp>
 #include <TritiumEngine/UI/Window.hpp>
-#include <TritiumEngine/Utilities/Logger.hpp>
+
+#include <GL/glew.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -55,7 +54,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Setup resource paths
-    ResourceManager<Shader>::Register(
+    ResourceManager<ShaderCode>::Register(
         std::unique_ptr<ShaderLoaderFactory>(new ShaderLoaderFactory()), "Resources/Shaders/");
 
     // Setup camera
@@ -66,7 +65,8 @@ int main(int argc, char *argv[]) {
     Camera camera(ProjectionType::ORTHOGRAPHIC, SCREEN_UNITS * aspect, SCREEN_UNITS, 0.1f, 100.0f);
 
     // Setup Renderer
-    RenderSystem renderSystem;
+    std::shared_ptr<ShaderManager> shaderManager(new ShaderManager());
+    RenderSystem renderSystem(shaderManager);
 
     // Create squares
     Transform transform;
@@ -87,8 +87,9 @@ int main(int argc, char *argv[]) {
 
     RenderData renderData{2, vertices, indices};
 
-    const auto &shader     = ResourceManager<Shader>::Create("default");
-    const auto &material   = std::make_shared<Material>(glm::vec4(1.0f, 0.5f, 0.2f, 1.0f), shader);
+    ShaderId defaultShader = shaderManager->Get("default");
+    const glm::vec4 color(1.0f, 0.5f, 0.2f, 1.0f);
+    const auto &material   = std::make_shared<Material>(color, defaultShader);
     const auto &renderable = std::make_shared<Renderable>(GL_TRIANGLES, renderData);
 
     World world;

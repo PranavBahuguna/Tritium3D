@@ -1,17 +1,18 @@
 #pragma once
 
 #include <TritiumEngine/Core/ResourceLoaderFactory.hpp>
-#include <TritiumEngine/Rendering/Shader.hpp>
 
 using namespace TritiumEngine::Core;
 
 namespace TritiumEngine::Rendering
 {
-  class ShaderLoaderFactory : public ResourceLoaderFactory<Shader> {
-  public:
-    Shader *Load(const std::string &filePath) override;
+  // Struct wrapper for shader code data
+  struct ShaderCode {
+    std::string data;
+  };
 
-  private:
-    std::string ReadFile(const std::string &filePath) const;
+  class ShaderLoaderFactory : public ResourceLoaderFactory<ShaderCode> {
+  public:
+    ShaderCode *Load(const std::string &filePath) override;
   };
 } // namespace TritiumEngine::Rendering

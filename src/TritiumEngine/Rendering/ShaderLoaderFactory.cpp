@@ -8,16 +8,7 @@ using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Rendering
 {
-  Shader *ShaderLoaderFactory::Load(const std::string &filePath) {
-    // Load vertex and fragment shader code from files
-    std::string vertexShaderCode = ReadFile(filePath + ".vert");
-    std::string fragmentShaderCode = ReadFile(filePath + ".frag");
-
-    return new Shader(vertexShaderCode, fragmentShaderCode);
-  }
-
-  // Extracts file contents to string
-  std::string ShaderLoaderFactory::ReadFile(const std::string &filePath) const {
+  ShaderCode *ShaderLoaderFactory::Load(const std::string &filePath) {
     std::string fileData;
     std::ifstream fileStream;
     // Allow ifstream to throw exceptions
@@ -31,8 +22,9 @@ namespace TritiumEngine::Rendering
       fileData = ss.str();
     } catch (std::ifstream::failure e) {
       Logger::Log(ERROR, "Could not read from file {}", filePath);
+      return nullptr;
     }
 
-    return fileData;
+    return new ShaderCode{fileData};
   }
 } // namespace TritiumEngine::Rendering
