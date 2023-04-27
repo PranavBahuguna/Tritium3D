@@ -1,7 +1,7 @@
 #ifdef _DEBUG
-#define WINDOW_MODE WindowMode::WINDOWED
+#define WINDOW_SETTINGS WindowMode::WINDOWED
 #else
-#define WINDOW_MODE WindowMode::FULLSCREEN
+#define WINDOW_SETTINGS WindowMode::FULLSCREEN
 #endif // DEBUG
 
 #define SCREEN_UNITS 100.0f
@@ -13,38 +13,29 @@
 #include <TritiumEngine/Input/Keyboard.hpp>
 #include <TritiumEngine/Rendering/RenderSystem.hpp>
 #include <TritiumEngine/Rendering/ShaderLoaderFactory.hpp>
-#include <TritiumEngine/UI/Window.hpp>
+#include <TritiumEngine/Rendering/Window.hpp>
 
 #include <GL/glew.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 
 using namespace TritiumEngine::Core;
-using namespace TritiumEngine::Input;
+using namespace TritiumEngine::Input::Keyboard;
 using namespace TritiumEngine::Rendering;
-using namespace TritiumEngine::UI;
 using namespace TritiumEngine::Utilities;
 
 int main(int argc, char *argv[]) {
   try {
     // Setup Logger
-#ifdef NDEBUG
-    Logger::Settings::levelMask = NODEBUG;
-#endif // NDEBUG
+#ifdef _DEBUG
+    Window window("main");
+#else
+    Logger::Settings::levelMask = LogType::NODEBUG;
+    Window window("main", WindowSettings::FULLSCREEN | WindowSettings::AUTO_MINIMIZE);
+#endif // _DEBUG
 
-    // Setup GFLW properties
-    if (glfwInit() == GLFW_FALSE) {
-      Logger::Log(LogType::ERROR, "GLFW could not be initialised!");
-      return EXIT_FAILURE;
-    }
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-    // Create a window to use
-    Window window("main", WINDOW_MODE);
+    // Add keyboard controls
+    window.AddKeyCallback(Key::ESCAPE, KeyState::PRESSED, [&window]() { window.SetShouldClose(); });
 
     // Setup GLEW
     glewExperimental = GL_TRUE;
@@ -107,10 +98,6 @@ int main(int argc, char *argv[]) {
 
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-      // Keyboard controls
-      if (Keyboard::GetKeyToggled(GLFW_KEY_ESCAPE))
-        window.Close();
 
       // Update world and render
       world.Update();

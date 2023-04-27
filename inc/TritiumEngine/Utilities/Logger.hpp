@@ -1,5 +1,7 @@
 #pragma once
 
+#include <TritiumEngine/Utilities/EnumUtils.hpp>
+
 #include <chrono>
 #include <ctime>
 #include <date.h>
@@ -9,22 +11,22 @@
 
 namespace TritiumEngine::Utilities
 {
-  enum LogType : uint32_t {
-    // Severity levels
-    DEBUG   = 1u << 0,
-    INFO    = 1u << 1,
-    WARNING = 1u << 2,
-    ERROR   = 1u << 3,
-    // Enabled levels bitmasks
-    NONE    = 0,
-    ALL     = DEBUG | INFO | WARNING | ERROR,
-    NODEBUG = INFO | WARNING | ERROR
+  enum class LogType : uint32_t {
+    DEBUG   = 1u << 0, // Messages for development use
+    INFO    = 1u << 1, // General-purpose information messages
+    WARNING = 1u << 2, // Alerts user that something has gone wrong
+    ERROR   = 1u << 3, // Alerts user that something has gone really wrong
+
+    NONE    = 0,                              // Don't show any log messages
+    ALL     = DEBUG | INFO | WARNING | ERROR, // Show all log messages
+    NODEBUG = INFO | WARNING | ERROR          // Show all log messages except debug
   };
+  ENABLE_ENUM_FLAGS(LogType)
 
   class Logger {
   public:
     struct Settings {
-      static inline uint32_t levelMask     = ALL;
+      static inline LogType levelMask      = LogType::ALL;
       static inline bool showTimestamp     = true;
       static inline const char *timeFormat = "%d-%m-%Y %T";
     };
@@ -40,7 +42,7 @@ namespace TritiumEngine::Utilities
     template <class... Args>
     static void Log(LogType level, const std::string &msg, Args &&...args) {
       // Check if this message should be logged given its level
-      if (!(Settings::levelMask & level))
+      if (!any(Settings::levelMask & level))
         return;
 
       // Add timestamp
@@ -66,16 +68,16 @@ namespace TritiumEngine::Utilities
       std::string levelLabel = "";
 
       switch (level) {
-      case DEBUG:
+      case LogType::DEBUG:
         levelLabel = "[DEBUG]   ";
         break;
-      case INFO:
+      case LogType::INFO:
         levelLabel = "[INFO]    ";
         break;
-      case WARNING:
+      case LogType::WARNING:
         levelLabel = "[WARNING] ";
         break;
-      case ERROR:
+      case LogType::ERROR:
         levelLabel = "[ERROR]   ";
         break;
       }

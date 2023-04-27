@@ -22,7 +22,8 @@ namespace TritiumEngine::Core
     static void Register(std::unique_ptr<ResourceLoaderFactory<T>> loaderFactory,
                          const std::string &rootDir) {
       if (m_isRegistered) {
-        Logger::Log(WARNING, "Factory of type {} already registered for this resource manager.",
+        Logger::Log(LogType::WARNING,
+                    "Factory of type {} already registered for this resource manager.",
                     typeid(T).name());
         return;
       }
@@ -79,7 +80,8 @@ namespace TritiumEngine::Core
   private:
     static bool CheckIfRegistered() {
       if (!m_isRegistered)
-        Logger::Log(WARNING, "Resource manager for type {} is not registered!", typeid(T).name());
+        Logger::Log(LogType::WARNING, "Resource manager for type {} is not registered!",
+                    typeid(T).name());
 
       return m_isRegistered;
     }
