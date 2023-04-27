@@ -1,4 +1,5 @@
-#pragma once
+#ifndef RENDERABLE_HPP
+#define RENDERABLE_HPP
 
 #include <TritiumEngine/Rendering/RenderData.hpp>
 
@@ -26,3 +27,5 @@ namespace TritiumEngine::Rendering
     GLenum m_renderMode;
   };
 } // namespace TritiumEngine::Rendering
+
+#endif // RENDERABLE_HPP

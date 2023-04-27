@@ -1,16 +1,14 @@
-#pragma once
-
-#include <TritiumEngine/Rendering/ShaderManager.hpp>
+#ifndef MATERIAL_HPP
+#define MATERIAL_HPP
 
 #include <glm/glm.hpp>
-
-#include <memory>
-#include <string>
 
 namespace TritiumEngine::Rendering
 {
   struct Material {
     glm::vec4 color;
-    ShaderId shaderId;
+    unsigned int shaderId;
   };
 } // namespace TritiumEngine::Rendering
+
+#endif // MATERIAL_HPP

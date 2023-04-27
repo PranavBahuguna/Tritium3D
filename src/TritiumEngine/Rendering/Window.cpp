@@ -17,7 +17,7 @@ namespace TritiumEngine::Rendering
         throw std::runtime_error("Error: GLFW could not be initialised.");
 
       glfwSetErrorCallback([](int errorCode, const char *description) {
-        Logger::Log(LogType::ERROR, "[GLFW] {} (error code: {}).", description, errorCode);
+        Logger::Error("[GLFW] {} (error code: {}).", description, errorCode);
       });
     }
 
@@ -49,7 +49,7 @@ namespace TritiumEngine::Rendering
           glfwCreateWindow(m_width, m_height, name.c_str(), nullptr, glfwGetCurrentContext());
 
       if (m_windowHandle != nullptr) {
-        Logger::Log(LogType::INFO, "[Window] OpenGL {}.{} found.", major, minor);
+        Logger::Info("[Window] OpenGL {}.{} found.", major, minor);
         break;
       }
     }
@@ -65,7 +65,7 @@ namespace TritiumEngine::Rendering
     glViewport(0, 0, m_width, m_height);
 
     ++s_nWindows;
-    Logger::Log(LogType::INFO, "[Window] Opened window '{}'.", m_name);
+    Logger::Info("[Window] Opened window '{}'.", m_name);
   }
 
   Window::~Window() {
@@ -78,7 +78,7 @@ namespace TritiumEngine::Rendering
     if (--s_nWindows == 0)
       glfwTerminate();
 
-    Logger::Log(LogType::INFO, "[Window] Closed window '{}'", m_name);
+    Logger::Info("[Window] Closed window '{}'", m_name);
   }
 
   /**

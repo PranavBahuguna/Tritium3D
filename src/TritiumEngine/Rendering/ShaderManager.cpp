@@ -157,7 +157,7 @@ namespace TritiumEngine::Rendering
       glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
       char *errorLog = new char[infoLogLength];
       glGetShaderInfoLog(shaderId, infoLogLength, &infoLogLength, &errorLog[0]);
-      Logger::Log(LogType::ERROR, "An error occurred while compiling shader:\n{}", errorLog);
+      Logger::Error("An error occurred while compiling shader:\n{}", errorLog);
     }
 
     return shaderId;
@@ -180,7 +180,7 @@ namespace TritiumEngine::Rendering
       glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
       char *errorLog = new char[infoLogLength];
       glGetProgramInfoLog(program, infoLogLength, &infoLogLength, &errorLog[0]);
-      Logger::Log(LogType::ERROR, "An error occurred while linking shader:\n{}", errorLog);
+      Logger::Error("An error occurred while linking shader:\n{}", errorLog);
     }
 
     return program;

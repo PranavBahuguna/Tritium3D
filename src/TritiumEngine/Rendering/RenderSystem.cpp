@@ -1,5 +1,7 @@
 #include <TritiumEngine/Core/ResourceManager.hpp>
+#include <TritiumEngine/Entities/Entity.hpp>
 #include <TritiumEngine/Rendering/RenderSystem.hpp>
+#include <TritiumEngine/Rendering/ShaderManager.hpp>
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -7,7 +9,7 @@ using namespace TritiumEngine::Core;
 
 namespace TritiumEngine::Rendering
 {
-  RenderSystem::RenderSystem(const std::shared_ptr<ShaderManager> shaderManager)
+  RenderSystem::RenderSystem(const std::shared_ptr<ShaderManager> &shaderManager)
       : m_shaderManager(shaderManager) {}
 
   void RenderSystem::Draw(const Camera &camera, const World &world) const {

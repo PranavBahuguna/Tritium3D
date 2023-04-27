@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CAMERA_HPP
+#define CAMERA_HPP
 
 #include <TritiumEngine/Core/Transform.hpp>
 
@@ -16,7 +17,7 @@ namespace TritiumEngine::Rendering
            float farPlane, float fov = glm::radians(60.0f),
            const Transform &transform = Transform());
 
-    /** Getter methods for camera properties */
+    // Getter methods for camera properties
     ProjectionType GetProjectionType() const;
     float GetFrameWidth() const;
     float GetFrameHeight() const;
@@ -26,7 +27,7 @@ namespace TritiumEngine::Rendering
     float GetFOV() const;
     glm::mat4 GetProjectionViewMatrix() const;
 
-    /** Setter methods for camera properties */
+    // Setter methods for camera properties
     void SetProjectionType(ProjectionType projection);
     void SetFrameWidth(float frameWidth);
     void SetFrameHeight(float frameHeight);
@@ -44,3 +45,5 @@ namespace TritiumEngine::Rendering
     float m_fov;
   };
 } // namespace TritiumEngine::Rendering
+
+#endif // CAMERA_HPP

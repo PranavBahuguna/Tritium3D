@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LOGGER_HPP
+#define LOGGER_HPP
 
 #include <TritiumEngine/Utilities/EnumUtils.hpp>
 
@@ -54,6 +55,26 @@ namespace TritiumEngine::Utilities
                 << std::endl;
     }
 
+    // Logs a message with DEBUG severity level
+    template <class... Args> static void Debug(const std::string &msg, Args &&...args) {
+      Log(LogType::DEBUG, msg, args...);
+    }
+
+    // Logs a message with INFO severity level
+    template <class... Args> static void Info(const std::string &msg, Args &&...args) {
+      Log(LogType::INFO, msg, args...);
+    }
+
+    // Logs a message with WARNING severity level
+    template <class... Args> static void Warn(const std::string &msg, Args &&...args) {
+      Log(LogType::WARNING, msg, args...);
+    }
+
+    // Logs a message with ERROR severity level
+    template <class... Args> static void Error(const std::string &msg, Args &&...args) {
+      Log(LogType::ERROR, msg, args...);
+    }
+
   private:
     Logger() {} // prevent construction of this class
 
@@ -86,3 +107,5 @@ namespace TritiumEngine::Utilities
     }
   };
 } // namespace TritiumEngine::Utilities
+
+#endif // LOGGER_HPP

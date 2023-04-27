@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ENUM_UTILS_HPP
+#define ENUM_UTILS_HPP
 
 #include <type_traits>
 
@@ -68,3 +69,5 @@ template <typename T>
 constexpr inline decltype(auto) innerType(T x) {
   return static_cast<std::underlying_type_t<T>>(x);
 }
+
+#endif // ENUM_UTILS_HPP

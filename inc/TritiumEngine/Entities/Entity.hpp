@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ENTITY_HPP
+#define ENTITY_HPP
 
 #include <TritiumEngine/Core/Transform.hpp>
 #include <TritiumEngine/Rendering/Material.hpp>
@@ -33,3 +34,5 @@ namespace TritiumEngine::Entities
     Materials materials;
   };
 } // namespace TritiumEngine::Entities
+
+#endif // ENTITY_HPP

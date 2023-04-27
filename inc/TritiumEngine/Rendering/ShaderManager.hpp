@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SHADER_MANAGER_HPP
+#define SHADER_MANAGER_HPP
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -42,3 +43,5 @@ namespace TritiumEngine::Rendering
     ShaderId m_currentShaderId = 0;
   };
 } // namespace TritiumEngine::Rendering
+
+#endif // SHADER_MANAGER_HPP

@@ -10,9 +10,9 @@
 #include "Square.hpp"
 
 #include <TritiumEngine/Core/ResourceManager.hpp>
-#include <TritiumEngine/Input/Keyboard.hpp>
 #include <TritiumEngine/Rendering/RenderSystem.hpp>
 #include <TritiumEngine/Rendering/ShaderLoaderFactory.hpp>
+#include <TritiumEngine/Rendering/ShaderManager.hpp>
 #include <TritiumEngine/Rendering/Window.hpp>
 
 #include <GL/glew.h>
@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
     // Setup GLEW
     glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK) {
-      Logger::Log(LogType::ERROR, "GLEW could not be initialised!");
+      Logger::Error("GLEW could not be initialised!");
       return EXIT_FAILURE;
     }
 
@@ -108,6 +108,6 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
-  Logger::Log(LogType::INFO, "Thank you for playing {}!", "Falling Squares");
+  Logger::Info("Thank you for playing {}!", "Falling Squares");
   return EXIT_SUCCESS;
 }

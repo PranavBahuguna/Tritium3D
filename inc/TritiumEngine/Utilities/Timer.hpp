@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TIMER_HPP
+#define TIMER_HPP
 
 namespace TritiumEngine::Utilities
 {
@@ -12,3 +13,5 @@ namespace TritiumEngine::Utilities
     Timer() {} // prevent construction of this class
   };
 } // namespace TritiumEngine::Utilities
+
+#endif TIMER_HPP

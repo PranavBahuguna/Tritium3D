@@ -1,4 +1,5 @@
-#pragma once
+#ifndef WINDOW_HPP
+#define WINDOW_HPP
 
 #include <TritiumEngine/Input/Keyboard.hpp>
 #include <TritiumEngine/Utilities/EnumUtils.hpp>
@@ -73,3 +74,5 @@ namespace TritiumEngine::Rendering
     std::array<KeyCallbacks, NUM_KEYS> m_keyCallbacks;
   };
 } // namespace TritiumEngine::Rendering
+
+#endif // WINDOW_HPP

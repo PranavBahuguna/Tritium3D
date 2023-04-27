@@ -21,7 +21,7 @@ namespace TritiumEngine::Rendering
       fileStream.close();
       fileData = ss.str();
     } catch (std::ifstream::failure e) {
-      Logger::Log(LogType::ERROR, "Could not read from file {}", filePath);
+      Logger::Error("Could not read from file {}", filePath);
       return nullptr;
     }
 

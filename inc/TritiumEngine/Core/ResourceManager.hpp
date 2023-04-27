@@ -1,4 +1,5 @@
-#pragma once
+#ifndef RESOURCE_MANAGER_HPP
+#define RESOURCE_MANAGER_HPP
 
 #include <TritiumEngine/Core/ResourceLoaderFactory.hpp>
 #include <TritiumEngine/Utilities/Logger.hpp>
@@ -22,9 +23,8 @@ namespace TritiumEngine::Core
     static void Register(std::unique_ptr<ResourceLoaderFactory<T>> loaderFactory,
                          const std::string &rootDir) {
       if (m_isRegistered) {
-        Logger::Log(LogType::WARNING,
-                    "Factory of type {} already registered for this resource manager.",
-                    typeid(T).name());
+        Logger::Warn("Factory of type {} already registered for this resource manager.",
+                     typeid(T).name());
         return;
       }
 
@@ -80,8 +80,7 @@ namespace TritiumEngine::Core
   private:
     static bool CheckIfRegistered() {
       if (!m_isRegistered)
-        Logger::Log(LogType::WARNING, "Resource manager for type {} is not registered!",
-                    typeid(T).name());
+        Logger::Warn("Resource manager for type {} is not registered!", typeid(T).name());
 
       return m_isRegistered;
     }
@@ -92,3 +91,5 @@ namespace TritiumEngine::Core
     static inline std::unique_ptr<ResourceLoaderFactory<T>> m_loaderFactory;
   };
 } // namespace TritiumEngine::Core
+
+#endif // RESOURCE_MANAGER_HPP

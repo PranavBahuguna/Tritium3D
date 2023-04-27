@@ -1,13 +1,14 @@
-#pragma once
+#ifndef WORLD_HPP
+#define WORLD_HPP
 
 #define MAX_ENTITIES 5000
-
-#include <TritiumEngine/Entities/Entity.hpp>
 
 #include <array>
 
 namespace TritiumEngine::Entities
 {
+  struct Entity;
+
   typedef std::array<Entity *, MAX_ENTITIES> EntityList;
 
   class World {
@@ -29,3 +30,5 @@ namespace TritiumEngine::Entities
     bool m_isInitialised;
   };
 } // namespace TritiumEngine::Entities
+
+#endif // WORLD_HPP

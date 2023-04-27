@@ -1,3 +1,4 @@
+#include <TritiumEngine/Entities/Entity.hpp>
 #include <TritiumEngine/Entities/World.hpp>
 #include <TritiumEngine/Utilities/Timer.hpp>
 
