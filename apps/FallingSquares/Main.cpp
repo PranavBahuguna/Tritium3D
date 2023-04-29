@@ -37,6 +37,19 @@ int main(int argc, char *argv[]) {
     // Add keyboard controls
     window.AddKeyCallback(Key::ESCAPE, KeyState::PRESSED, [&window]() { window.SetShouldClose(); });
 
+    // Some debugging code to test mouse callbacks
+    window.AddKeyCallback(Key::A, KeyState::PRESSED, []() { Logger::Debug("A key pressed!"); });
+    window.AddKeyCallback(Key::A, KeyState::RELEASED, []() { Logger::Debug("A key released!"); });
+    window.AddMouseButtonCallback(MouseButton::MOUSE_1, MouseButtonState::PRESSED,
+                                  []() { Logger::Debug("Mouse button pressed!"); });
+    window.AddMouseButtonCallback(MouseButton::MOUSE_1, MouseButtonState::RELEASED,
+                                  []() { Logger::Debug("Mouse button released!"); });
+    window.AddMouseMoveCallback(
+        [](double xPos, double yPos) { Logger::Debug("Mouse at x:{}, y:{}", xPos, yPos); });
+    window.AddMouseScrollCallback([](double xOffSet, double yOffSet) {
+      Logger::Debug("Mouse scroll offset x:{}, y:{}", xOffSet, yOffSet);
+    });
+
     // Setup GLEW
     glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK) {

@@ -104,25 +104,93 @@ namespace TritiumEngine::Rendering
   void Window::SetShouldClose() const { glfwSetWindowShouldClose(m_windowHandle, GLFW_TRUE); }
 
   /**
+   * Adds a callback action for keyboard input.
    *
+   * @param key The keyboard key to add a callback for.
+   * @param state The state of the key to trigger the callback on.
+   * @param callback Callback action to run.
    */
-  void Window::AddKeyCallback(Key key, KeyState keyState, std::function<void()> action) {
+  void Window::AddKeyCallback(Key key, KeyState state, KeyCallback callback) {
     // Add action to callbacks
-    m_keyCallbacks[innerType(key)].emplace_back(keyState, std::move(action));
+    m_keyCallbacks[innerType(key)].emplace_back(state, std::move(callback));
 
     glfwSetKeyCallback(m_windowHandle,
                        [](GLFWwindow *windowHandle, int key, int scancode, int action, int mods) {
                          const auto &window = GetUserPointer(windowHandle);
 
-                         // Run all callbacks where the key state matches the current action
-                         for (const auto &callback : window->m_keyCallbacks[key]) {
-                           KeyState keyState     = std::get<0>(callback);
-                           const auto &keyAction = std::get<1>(callback);
+                         // Run all callbacks for the given key
+                         for (const auto &callbackItem : window->m_keyCallbacks[key]) {
+                           KeyState state              = std::get<0>(callbackItem);
+                           const KeyCallback &callback = std::get<1>(callbackItem);
 
-                           if (innerType(keyState) == action)
-                             keyAction();
+                           if (action == innerType(state))
+                             callback();
                          }
                        });
+  }
+
+  /**
+   * Adds a callback action for mouse button input.
+   *
+   * @param button The mouse button to add a callback for.
+   * @param state The state of the button to trigger the callback on.
+   * @param callback Callback action to run.
+   */
+  void Window::AddMouseButtonCallback(MouseButton button, MouseButtonState state,
+                                      MouseButtonCallback callback) {
+    // Add action to callbacks
+    m_mouseButtonCallbacks[innerType(button)].emplace_back(state, std::move(callback));
+
+    glfwSetMouseButtonCallback(
+        m_windowHandle, [](GLFWwindow *windowHandle, int button, int action, int mods) {
+          const auto &window = GetUserPointer(windowHandle);
+
+          // Run all callbacks for the given mouse button
+          for (const auto &callbackItem : window->m_mouseButtonCallbacks[button]) {
+            MouseButtonState state              = std::get<0>(callbackItem);
+            const MouseButtonCallback &callback = std::get<1>(callbackItem);
+
+            if (action == innerType(state))
+              callback();
+          }
+        });
+  }
+
+  /**
+   * Adds a callback action for mouse movement input.
+   *
+   * @param callback Callback action to run.
+   */
+  void Window::AddMouseMoveCallback(MouseMoveCallback callback) {
+    // Add action to callbacks
+    m_mouseMoveCallbacks.emplace_back(std::move(callback));
+
+    glfwSetCursorPosCallback(
+        m_windowHandle, [](GLFWwindow *windowHandle, double xpos, double ypos) {
+          const auto &window = GetUserPointer(windowHandle);
+
+          // Run all mouse movement callbacks
+          for (const MouseMoveCallback &callback : window->m_mouseMoveCallbacks)
+            callback(xpos, ypos);
+        });
+  }
+
+  /**
+   * Adds a callback action for mouse scroll input.
+   *
+   * @param callback Callback action to run.
+   */
+  void Window::AddMouseScrollCallback(MouseScrollCallback callback) {
+    // Add action to callbacks
+    m_mouseScrollCallbacks.emplace_back(std::move(callback));
+
+    glfwSetScrollCallback(m_windowHandle, [](GLFWwindow *windowHandle, double xPos, double yPos) {
+      const auto &window = GetUserPointer(windowHandle);
+
+      // Run all mouse scroll callbacks
+      for (const MouseScrollCallback &callback : window->m_mouseScrollCallbacks)
+        callback(xPos, yPos);
+    });
   }
 
   int Window::GetWidth() const { return m_width; }

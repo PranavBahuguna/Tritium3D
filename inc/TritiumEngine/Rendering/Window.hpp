@@ -1,7 +1,9 @@
 #ifndef WINDOW_HPP
 #define WINDOW_HPP
 
+#include <TritiumEngine/Input/Cursor.hpp>
 #include <TritiumEngine/Input/Keyboard.hpp>
+#include <TritiumEngine/Input/Mouse.hpp>
 #include <TritiumEngine/Utilities/EnumUtils.hpp>
 
 #include <GLFW/glfw3.h>
@@ -11,10 +13,22 @@
 #include <functional>
 #include <string>
 
+using namespace TritiumEngine::Input::Cursor;
 using namespace TritiumEngine::Input::Keyboard;
+using namespace TritiumEngine::Input::Mouse;
 
 namespace TritiumEngine::Rendering
 {
+  using KeyCallback         = std::function<void()>;
+  using MouseButtonCallback = std::function<void()>;
+  using MouseMoveCallback   = std::function<void(double, double)>; // xPos, yPos
+  using MouseScrollCallback = std::function<void(double, double)>; // xOffset, yOffset
+
+  using KeyCallbackList         = std::vector<std::tuple<KeyState, KeyCallback>>;
+  using MouseButtonCallbackList = std::vector<std::tuple<MouseButtonState, MouseButtonCallback>>;
+  using MouseMoveCallbackList   = std::vector<MouseMoveCallback>;
+  using MouseScrollCallbackList = std::vector<MouseScrollCallback>;
+
   enum class WindowSettings : uint32_t {
     FOCUSED        = 1u << 0, // Window automatically takes focus
     RESIZABLE      = 1u << 1, // Allows window to be manually resized by user input
@@ -34,15 +48,6 @@ namespace TritiumEngine::Rendering
   };
   ENABLE_ENUM_FLAGS(WindowSettings)
 
-  enum class CursorState : GLuint {
-    NORMAL   = GLFW_CURSOR_NORMAL,   // Show cursor
-    HIDDEN   = GLFW_CURSOR_HIDDEN,   // Hide cursor if hovering over the window
-    DISABLED = GLFW_CURSOR_DISABLED, // Disables and hides cursor entirely
-    CAPTURED = GLFW_CURSOR_CAPTURED, // Restrict cursor to the window area only
-  };
-
-  using KeyCallbacks = std::vector<std::tuple<KeyState, std::function<void()>>>;
-
   class Window {
   public:
     Window(const std::string &name, WindowSettings settings = WindowSettings::DEFAULT,
@@ -55,7 +60,11 @@ namespace TritiumEngine::Rendering
     void SetCursorState(CursorState state) const;
     void SetShouldClose() const;
 
-    void AddKeyCallback(Key key, KeyState keyState, std::function<void()> action);
+    void AddKeyCallback(Key key, KeyState state, KeyCallback callback);
+    void AddMouseButtonCallback(MouseButton button, MouseButtonState state,
+                                MouseButtonCallback callback);
+    void AddMouseMoveCallback(MouseMoveCallback callback);
+    void AddMouseScrollCallback(MouseMoveCallback callback);
 
     int GetWidth() const;
     int GetHeight() const;
@@ -71,7 +80,10 @@ namespace TritiumEngine::Rendering
     int m_width;
     int m_height;
 
-    std::array<KeyCallbacks, NUM_KEYS> m_keyCallbacks;
+    std::array<KeyCallbackList, NUM_KEYS> m_keyCallbacks;
+    std::array<MouseButtonCallbackList, NUM_MOUSE_BUTTONS> m_mouseButtonCallbacks;
+    MouseMoveCallbackList m_mouseMoveCallbacks;
+    MouseScrollCallbackList m_mouseScrollCallbacks;
   };
 } // namespace TritiumEngine::Rendering
 
