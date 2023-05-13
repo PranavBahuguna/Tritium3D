@@ -9,7 +9,7 @@ using namespace TritiumEngine::Core;
 
 namespace TritiumEngine::Rendering
 {
-  RenderSystem::RenderSystem(const std::shared_ptr<ShaderManager> &shaderManager)
+  RenderSystem::RenderSystem(ShaderManager *shaderManager)
       : m_shaderManager(shaderManager) {}
 
   void RenderSystem::Draw(const Camera &camera, const World &world) const {

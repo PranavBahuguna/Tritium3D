@@ -22,7 +22,7 @@ namespace TritiumEngine::Entities
     void AddEntity(Entity *entity);
     void ClearEntities();
     void Init();
-    void Update();
+    void Update(float deltaTime);
 
   private:
     EntityList m_entities;

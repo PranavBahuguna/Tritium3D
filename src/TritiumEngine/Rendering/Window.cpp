@@ -81,12 +81,16 @@ namespace TritiumEngine::Rendering
     Logger::Info("[Window] Closed window '{}'", m_name);
   }
 
-  /**
-   * Updates the windows status and input events, should be called every frame.
-   */
+  /** Updates the windows status and input events, should be called every frame. */
   void Window::Update() const {
     glfwSwapBuffers(m_windowHandle);
     glfwPollEvents();
+  }
+
+  /** Clears the window and any buffer bits */
+  void Window::Refresh() const {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   }
 
   /**
@@ -98,10 +102,9 @@ namespace TritiumEngine::Rendering
     glfwSetInputMode(m_windowHandle, GLFW_CURSOR, innerType(state));
   }
 
-  /**
-   * Set Window flagged for closing
-   */
-  void Window::SetShouldClose() const { glfwSetWindowShouldClose(m_windowHandle, GLFW_TRUE); }
+  int Window::GetWidth() const { return m_width; }
+
+  int Window::GetHeight() const { return m_height; }
 
   /**
    * Adds a callback action for keyboard input.
@@ -193,11 +196,21 @@ namespace TritiumEngine::Rendering
     });
   }
 
-  int Window::GetWidth() const { return m_width; }
+  /**
+   * Adds a callback acion to trigger on window close.
+   *
+   * @param callback Callback action to run.
+   */
+  void Window::SetCloseCallback(CloseCallback callback) {
+    // Set the close callback
+    m_closeCallback = std::move(callback);
 
-  int Window::GetHeight() const { return m_height; }
-
-  int Window::GetShouldClose() const { return glfwWindowShouldClose(m_windowHandle); }
+    glfwSetWindowCloseCallback(m_windowHandle, [](GLFWwindow *windowHandle) {
+      // Run the close callback
+      const auto &window = GetUserPointer(windowHandle);
+      window->m_closeCallback();
+    });
+  }
 
   /**
    * Obtains a pointer to a window given its handle.

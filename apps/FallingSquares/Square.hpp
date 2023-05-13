@@ -1,7 +1,7 @@
 #pragma once
 
-#include <TritiumEngine/Rendering/Renderable.hpp>
 #include <TritiumEngine/Entities/Entity.hpp>
+#include <TritiumEngine/Rendering/Renderable.hpp>
 
 #include <glm/glm.hpp>
 
@@ -12,11 +12,10 @@ using namespace TritiumEngine::Rendering;
 
 class Square : public Entity {
 public:
-  Square(const Transform &startTransform,
-         const std::shared_ptr<Renderable> &renderable,
+  Square(const Transform &startTransform, const std::shared_ptr<Renderable> &renderable,
          const std::shared_ptr<Material> &material);
 
-  virtual void Update() override;
+  virtual void Update(float deltaTime) override;
 
 private:
   glm::vec3 m_velocity;

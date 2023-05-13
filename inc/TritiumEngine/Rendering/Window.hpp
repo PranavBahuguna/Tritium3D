@@ -23,6 +23,7 @@ namespace TritiumEngine::Rendering
   using MouseButtonCallback = std::function<void()>;
   using MouseMoveCallback   = std::function<void(double, double)>; // xPos, yPos
   using MouseScrollCallback = std::function<void(double, double)>; // xOffset, yOffset
+  using CloseCallback       = std::function<void()>;
 
   using KeyCallbackList         = std::vector<std::tuple<KeyState, KeyCallback>>;
   using MouseButtonCallbackList = std::vector<std::tuple<MouseButtonState, MouseButtonCallback>>;
@@ -57,18 +58,17 @@ namespace TritiumEngine::Rendering
     ~Window();
 
     void Update() const;
+    void Refresh() const;
     void SetCursorState(CursorState state) const;
-    void SetShouldClose() const;
+    int GetWidth() const;
+    int GetHeight() const;
 
     void AddKeyCallback(Key key, KeyState state, KeyCallback callback);
     void AddMouseButtonCallback(MouseButton button, MouseButtonState state,
                                 MouseButtonCallback callback);
     void AddMouseMoveCallback(MouseMoveCallback callback);
-    void AddMouseScrollCallback(MouseMoveCallback callback);
-
-    int GetWidth() const;
-    int GetHeight() const;
-    int GetShouldClose() const;
+    void AddMouseScrollCallback(MouseScrollCallback callback);
+    void SetCloseCallback(CloseCallback callback);
 
   private:
     static inline int s_nWindows = 0;
@@ -84,6 +84,7 @@ namespace TritiumEngine::Rendering
     std::array<MouseButtonCallbackList, NUM_MOUSE_BUTTONS> m_mouseButtonCallbacks;
     MouseMoveCallbackList m_mouseMoveCallbacks;
     MouseScrollCallbackList m_mouseScrollCallbacks;
+    CloseCallback m_closeCallback;
   };
 } // namespace TritiumEngine::Rendering
 

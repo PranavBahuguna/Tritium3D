@@ -27,7 +27,7 @@ namespace TritiumEngine::Entities
         : Entity(transform, Renderables{renderable}, Materials{material}) {}
 
     virtual void Init() {}
-    virtual void Update() {}
+    virtual void Update(float deltaTime) {}
 
     Transform transform;
     Renderables renderables;

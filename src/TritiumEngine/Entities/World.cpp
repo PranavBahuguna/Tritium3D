@@ -1,10 +1,7 @@
 #include <TritiumEngine/Entities/Entity.hpp>
 #include <TritiumEngine/Entities/World.hpp>
-#include <TritiumEngine/Utilities/Timer.hpp>
 
 #include <stdexcept>
-
-using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Entities
 {
@@ -36,7 +33,6 @@ namespace TritiumEngine::Entities
 
   /** Initialises the world and all entities. */
   void World::Init() {
-    Timer::Start();
     for (size_t i = 0; i < m_nEntities; ++i)
       m_entities[i]->Init();
 
@@ -44,17 +40,16 @@ namespace TritiumEngine::Entities
   }
 
   /**
-   * Updates all managed entities
+   * Updates all managed entities.
    *
    * @param deltaTime Elapsed time since last update
    */
-  void World::Update() {
+  void World::Update(float deltaTime) {
     if (!m_isInitialised)
       throw std::runtime_error("World must be initialised first before update!");
 
-    Timer::Update();
     for (size_t i = 0; i < m_nEntities; ++i)
-      m_entities[i]->Update();
+      m_entities[i]->Update(deltaTime);
   }
 
   /**
