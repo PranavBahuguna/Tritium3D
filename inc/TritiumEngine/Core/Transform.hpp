@@ -13,24 +13,24 @@ namespace TritiumEngine::Core
               const glm::vec3 &scale    = glm::vec3(1.0f));
 
     // Getter methods for transform properties
-    const glm::vec3 &GetPosition() const;
-    const glm::quat &GetRotation() const;
-    const glm::vec3 &GetScale() const;
+    const glm::vec3 &getPosition() const;
+    const glm::quat &getRotation() const;
+    const glm::vec3 &getScale() const;
 
     // Getter methods for calculated transform vectors and matrices
-    glm::vec3 GetRight() const;
-    glm::vec3 GetUp() const;
-    glm::vec3 GetFront() const;
-    glm::mat4 GetViewMatrix() const;
-    glm::mat4 GetModelMatrix() const;
+    glm::vec3 getRight() const;
+    glm::vec3 getUp() const;
+    glm::vec3 getFront() const;
+    glm::mat4 getViewMatrix() const;
+    glm::mat4 getModelMatrix() const;
 
     // Setter methods for transform properties
-    void SetPosition(const glm::vec3 &position);
-    void Translate(const glm::vec3 &translation);
-    void SetRotation(const glm::quat &rotation);
-    void Rotate(const glm::quat &rotation);
-    void SetScale(const glm::vec3 &scale);
-    void Scale(const glm::vec3 &scale);
+    void setPosition(const glm::vec3 &position);
+    void translate(const glm::vec3 &translation);
+    void setRotation(const glm::quat &rotation);
+    void rotate(const glm::quat &rotation);
+    void setScale(const glm::vec3 &scale);
+    void scale(const glm::vec3 &scale);
 
   private:
     glm::vec3 m_position;

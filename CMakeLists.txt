@@ -53,6 +53,7 @@ target_include_directories(thirdparty_headers_lib INTERFACE ${THIRDPARTY_DIR}/he
 add_subdirectory(${THIRDPARTY_DIR}/glew)
 add_subdirectory(${THIRDPARTY_DIR}/glfw)
 add_subdirectory(${THIRDPARTY_DIR}/glm)
+add_subdirectory(${THIRDPARTY_DIR}/entt)
 
 # Add generation of documentation
 if (TRITIUM_BUILD_DOCS)
@@ -70,7 +71,7 @@ target_include_directories(TritiumEngine PUBLIC ${TRITIUM_INC_DIR})
 
 target_link_libraries(TritiumEngine
     PUBLIC thirdparty_headers_lib
-    PRIVATE glm glfw libglew_static)
+    PRIVATE glm glfw libglew_static EnTT)
 
 # Add example apps
 if (TRITIUM_BUILD_APPS)

@@ -13,10 +13,10 @@ namespace TritiumEngine::Rendering
     Renderable(GLenum renderMode, const RenderData &renderData);
     virtual ~Renderable();
 
-    GLuint GetVAO() const;
-    GLsizei GetNumVertices() const;
-    GLsizei GetNumIndices() const;
-    GLenum GetRenderMode() const;
+    GLuint getVAO() const;
+    GLsizei getNumVertices() const;
+    GLsizei getNumIndices() const;
+    GLenum getRenderMode() const;
 
   private:
     GLuint m_VAO;

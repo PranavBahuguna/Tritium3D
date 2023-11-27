@@ -6,7 +6,6 @@
 #include <TritiumEngine/Input/Mouse.hpp>
 #include <TritiumEngine/Utilities/EnumUtils.hpp>
 
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
 #include <array>
@@ -16,6 +15,8 @@
 using namespace TritiumEngine::Input::Cursor;
 using namespace TritiumEngine::Input::Keyboard;
 using namespace TritiumEngine::Input::Mouse;
+
+struct GLFWwindow;
 
 namespace TritiumEngine::Rendering
 {
@@ -57,23 +58,23 @@ namespace TritiumEngine::Rendering
     Window(Window &&) noexcept   = default;
     ~Window();
 
-    void Update() const;
-    void Refresh() const;
-    void SetCursorState(CursorState state) const;
-    int GetWidth() const;
-    int GetHeight() const;
+    void update() const;
+    void refresh() const;
+    void setCursorState(CursorState state) const;
+    int getWidth() const;
+    int getHeight() const;
 
-    void AddKeyCallback(Key key, KeyState state, KeyCallback callback);
-    void AddMouseButtonCallback(MouseButton button, MouseButtonState state,
+    void addKeyCallback(Key key, KeyState state, KeyCallback callback);
+    void addMouseButtonCallback(MouseButton button, MouseButtonState state,
                                 MouseButtonCallback callback);
-    void AddMouseMoveCallback(MouseMoveCallback callback);
-    void AddMouseScrollCallback(MouseScrollCallback callback);
-    void SetCloseCallback(CloseCallback callback);
+    void addMouseMoveCallback(MouseMoveCallback callback);
+    void addMouseScrollCallback(MouseScrollCallback callback);
+    void setCloseCallback(CloseCallback callback);
 
   private:
-    static inline int s_nWindows = 0;
+    static Window *getUserPointer(GLFWwindow *windowHandle);
 
-    static Window *GetUserPointer(GLFWwindow *windowHandle);
+    static inline int s_nWindows = 0;
 
     GLFWwindow *m_windowHandle = nullptr;
     std::string m_name;

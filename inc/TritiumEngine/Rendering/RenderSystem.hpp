@@ -1,24 +1,29 @@
 #ifndef RENDER_SYSTEM_HPP
 #define RENDER_SYSTEM_HPP
 
-#include <TritiumEngine/Entities/World.hpp>
-#include <TritiumEngine/Rendering/Camera.hpp>
+#include <TritiumEngine/Core/System.hpp>
 
-using namespace TritiumEngine::Entities;
+using namespace TritiumEngine::Core;
 
 namespace TritiumEngine::Rendering
 {
   class ShaderManager;
+  class Camera;
 
-  class RenderSystem {
+  class RenderSystem : public System {
   public:
-    RenderSystem(ShaderManager *shaderManager);
+    enum class DrawMode { STANDARD, INSTANCED };
 
-    void Draw(const Camera &camera, const World &world) const;
-    void DrawInstanced(const Camera &camera, const World &world) const;
+    void draw(const Camera &camera) const;
+
+    void update(float dt) override;
+    void setDrawMode(DrawMode drawMode);
 
   private:
-    ShaderManager *m_shaderManager;
+    void drawStandard(const Camera &camera) const;
+    void drawInstanced(const Camera &camera) const;
+
+    DrawMode m_drawMode = DrawMode::STANDARD;
   };
 } // namespace TritiumEngine::Rendering
 

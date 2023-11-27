@@ -14,7 +14,7 @@ namespace TritiumEngine::Rendering
 
   class ShaderLoaderFactory : public ResourceLoaderFactory<ShaderCode> {
   public:
-    ShaderCode *Load(const std::string &filePath) override;
+    ShaderCode *load(const std::string &filePath) override;
   };
 } // namespace TritiumEngine::Rendering
 

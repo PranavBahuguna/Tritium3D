@@ -10,3 +10,6 @@
 [submodule "thirdparty/headers"]
 	path = thirdparty/headers
 	url = git@github.com:PranavBahuguna/TritiumEngine-ThirdPartyHeaders.git
+[submodule "thirdparty/entt"]
+	path = thirdparty/entt
+	url = https://github.com/skypjack/entt

@@ -1,6 +1,8 @@
 #include <TritiumEngine/Rendering/Window.hpp>
 #include <TritiumEngine/Utilities/Logger.hpp>
 
+#include <GLFW/glfw3.h>
+
 #include <array>
 #include <stdexcept>
 
@@ -17,7 +19,7 @@ namespace TritiumEngine::Rendering
         throw std::runtime_error("Error: GLFW could not be initialised.");
 
       glfwSetErrorCallback([](int errorCode, const char *description) {
-        Logger::Error("[GLFW] {} (error code: {}).", description, errorCode);
+        Logger::error("[GLFW] {} (error code: {}).", description, errorCode);
       });
     }
 
@@ -49,7 +51,7 @@ namespace TritiumEngine::Rendering
           glfwCreateWindow(m_width, m_height, name.c_str(), nullptr, glfwGetCurrentContext());
 
       if (m_windowHandle != nullptr) {
-        Logger::Info("[Window] OpenGL {}.{} found.", major, minor);
+        Logger::info("[Window] OpenGL version {}.{} found.", major, minor);
         break;
       }
     }
@@ -65,7 +67,7 @@ namespace TritiumEngine::Rendering
     glViewport(0, 0, m_width, m_height);
 
     ++s_nWindows;
-    Logger::Info("[Window] Opened window '{}'.", m_name);
+    Logger::info("[Window] Opened window '{}'.", m_name);
   }
 
   Window::~Window() {
@@ -78,48 +80,48 @@ namespace TritiumEngine::Rendering
     if (--s_nWindows == 0)
       glfwTerminate();
 
-    Logger::Info("[Window] Closed window '{}'", m_name);
+    Logger::info("[Window] Closed window '{}'", m_name);
   }
 
-  /** Updates the windows status and input events, should be called every frame. */
-  void Window::Update() const {
+  /** @brief Updates the windows status and input events, should be called every frame */
+  void Window::update() const {
     glfwSwapBuffers(m_windowHandle);
     glfwPollEvents();
   }
 
-  /** Clears the window and any buffer bits */
-  void Window::Refresh() const {
+  /** @brief Clears the window and any buffer bits */
+  void Window::refresh() const {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   }
 
   /**
-   * Sets the current state of the cursor.
-   *
+   * @brief Sets the current state of the cursor
    * @param state The new cursor state
    */
-  void Window::SetCursorState(CursorState state) const {
+  void Window::setCursorState(CursorState state) const {
     glfwSetInputMode(m_windowHandle, GLFW_CURSOR, innerType(state));
   }
 
-  int Window::GetWidth() const { return m_width; }
+  /** @brief Obtains window width in pixels */
+  int Window::getWidth() const { return m_width; }
 
-  int Window::GetHeight() const { return m_height; }
+  /** @brief Obtains window height in pixels */
+  int Window::getHeight() const { return m_height; }
 
   /**
-   * Adds a callback action for keyboard input.
-   *
-   * @param key The keyboard key to add a callback for.
-   * @param state The state of the key to trigger the callback on.
-   * @param callback Callback action to run.
+   * @brief Adds a callback action for keyboard input
+   * @param key The keyboard key to add a callback for
+   * @param state The state of the key to trigger the callback on
+   * @param callback Callback action to run
    */
-  void Window::AddKeyCallback(Key key, KeyState state, KeyCallback callback) {
+  void Window::addKeyCallback(Key key, KeyState state, KeyCallback callback) {
     // Add action to callbacks
     m_keyCallbacks[innerType(key)].emplace_back(state, std::move(callback));
 
     glfwSetKeyCallback(m_windowHandle,
                        [](GLFWwindow *windowHandle, int key, int scancode, int action, int mods) {
-                         const auto &window = GetUserPointer(windowHandle);
+                         const auto &window = getUserPointer(windowHandle);
 
                          // Run all callbacks for the given key
                          for (const auto &callbackItem : window->m_keyCallbacks[key]) {
@@ -133,20 +135,19 @@ namespace TritiumEngine::Rendering
   }
 
   /**
-   * Adds a callback action for mouse button input.
-   *
-   * @param button The mouse button to add a callback for.
-   * @param state The state of the button to trigger the callback on.
-   * @param callback Callback action to run.
+   * @brief Adds a callback action for mouse button input
+   * @param button The mouse button to add a callback for
+   * @param state The state of the button to trigger the callback on
+   * @param callback Callback action to run
    */
-  void Window::AddMouseButtonCallback(MouseButton button, MouseButtonState state,
+  void Window::addMouseButtonCallback(MouseButton button, MouseButtonState state,
                                       MouseButtonCallback callback) {
     // Add action to callbacks
     m_mouseButtonCallbacks[innerType(button)].emplace_back(state, std::move(callback));
 
     glfwSetMouseButtonCallback(
         m_windowHandle, [](GLFWwindow *windowHandle, int button, int action, int mods) {
-          const auto &window = GetUserPointer(windowHandle);
+          const auto &window = getUserPointer(windowHandle);
 
           // Run all callbacks for the given mouse button
           for (const auto &callbackItem : window->m_mouseButtonCallbacks[button]) {
@@ -160,17 +161,16 @@ namespace TritiumEngine::Rendering
   }
 
   /**
-   * Adds a callback action for mouse movement input.
-   *
-   * @param callback Callback action to run.
+   * @brief Adds a callback action for mouse movement input
+   * @param callback Callback action to run
    */
-  void Window::AddMouseMoveCallback(MouseMoveCallback callback) {
+  void Window::addMouseMoveCallback(MouseMoveCallback callback) {
     // Add action to callbacks
     m_mouseMoveCallbacks.emplace_back(std::move(callback));
 
     glfwSetCursorPosCallback(
         m_windowHandle, [](GLFWwindow *windowHandle, double xpos, double ypos) {
-          const auto &window = GetUserPointer(windowHandle);
+          const auto &window = getUserPointer(windowHandle);
 
           // Run all mouse movement callbacks
           for (const MouseMoveCallback &callback : window->m_mouseMoveCallbacks)
@@ -179,16 +179,15 @@ namespace TritiumEngine::Rendering
   }
 
   /**
-   * Adds a callback action for mouse scroll input.
-   *
-   * @param callback Callback action to run.
+   * @brief Adds a callback action for mouse scroll input
+   * @param callback Callback action to run
    */
-  void Window::AddMouseScrollCallback(MouseScrollCallback callback) {
+  void Window::addMouseScrollCallback(MouseScrollCallback callback) {
     // Add action to callbacks
     m_mouseScrollCallbacks.emplace_back(std::move(callback));
 
     glfwSetScrollCallback(m_windowHandle, [](GLFWwindow *windowHandle, double xPos, double yPos) {
-      const auto &window = GetUserPointer(windowHandle);
+      const auto &window = getUserPointer(windowHandle);
 
       // Run all mouse scroll callbacks
       for (const MouseScrollCallback &callback : window->m_mouseScrollCallbacks)
@@ -197,27 +196,25 @@ namespace TritiumEngine::Rendering
   }
 
   /**
-   * Adds a callback acion to trigger on window close.
-   *
-   * @param callback Callback action to run.
+   * @brief Adds a callback acion to trigger on window close
+   * @param callback Callback action to run
    */
-  void Window::SetCloseCallback(CloseCallback callback) {
+  void Window::setCloseCallback(CloseCallback callback) {
     // Set the close callback
     m_closeCallback = std::move(callback);
 
     glfwSetWindowCloseCallback(m_windowHandle, [](GLFWwindow *windowHandle) {
       // Run the close callback
-      const auto &window = GetUserPointer(windowHandle);
+      const auto &window = getUserPointer(windowHandle);
       window->m_closeCallback();
     });
   }
 
   /**
-   * Obtains a pointer to a window given its handle.
-   *
-   * @param windowHandle The handle to the required window.
+   * @brief Obtains a pointer to a window given its handle
+   * @param windowHandle The handle to the required window
    */
-  Window *Window::GetUserPointer(GLFWwindow *windowHandle) {
+  Window *Window::getUserPointer(GLFWwindow *windowHandle) {
     return static_cast<Window *>(glfwGetWindowUserPointer(windowHandle));
   }
 } // namespace TritiumEngine::Rendering

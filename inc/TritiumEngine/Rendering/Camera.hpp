@@ -18,22 +18,22 @@ namespace TritiumEngine::Rendering
            const Transform &transform = Transform());
 
     // Getter methods for camera properties
-    ProjectionType GetProjectionType() const;
-    float GetFrameWidth() const;
-    float GetFrameHeight() const;
-    float GetAspectRatio() const;
-    float GetNearPlane() const;
-    float GetFarPlane() const;
-    float GetFOV() const;
-    glm::mat4 GetProjectionViewMatrix() const;
+    ProjectionType getProjectionType() const;
+    float getFrameWidth() const;
+    float getFrameHeight() const;
+    float getAspectRatio() const;
+    float getNearPlane() const;
+    float getFarPlane() const;
+    float getFOV() const;
+    glm::mat4 getProjectionViewMatrix() const;
 
     // Setter methods for camera properties
-    void SetProjectionType(ProjectionType projection);
-    void SetFrameWidth(float frameWidth);
-    void SetFrameHeight(float frameHeight);
-    void SetNearPlane(float nearPlane);
-    void SetFarPlane(float farPlane);
-    void SetFOV(float fov);
+    void setProjectionType(ProjectionType projection);
+    void setFrameWidth(float frameWidth);
+    void setFrameHeight(float frameHeight);
+    void setNearPlane(float nearPlane);
+    void setFarPlane(float farPlane);
+    void setFOV(float fov);
 
   private:
     Transform m_transform;
