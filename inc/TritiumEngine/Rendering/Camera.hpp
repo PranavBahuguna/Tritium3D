@@ -4,45 +4,40 @@
 #include <TritiumEngine/Core/Transform.hpp>
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 using namespace TritiumEngine::Core;
 
 namespace TritiumEngine::Rendering
 {
-  enum class ProjectionType { ORTHOGRAPHIC, PERSPECTIVE };
+  struct Camera {
+    enum class ProjectionType { ORTHOGRAPHIC, PERSPECTIVE };
 
-  class Camera {
-  public:
     Camera(ProjectionType projection, float frameWidth, float frameHeight, float nearPlane,
            float farPlane, float fov = glm::radians(60.0f),
-           const Transform &transform = Transform());
+           const Transform &transform = Transform())
+        : projection(projection), width(frameWidth), height(frameHeight), nearPlane(nearPlane),
+          farPlane(farPlane), fov(fov), transform(transform) {}
 
-    // Getter methods for camera properties
-    ProjectionType getProjectionType() const;
-    float getFrameWidth() const;
-    float getFrameHeight() const;
-    float getAspectRatio() const;
-    float getNearPlane() const;
-    float getFarPlane() const;
-    float getFOV() const;
-    glm::mat4 getProjectionViewMatrix() const;
+    float getAspectRatio() const { return width / height; }
 
-    // Setter methods for camera properties
-    void setProjectionType(ProjectionType projection);
-    void setFrameWidth(float frameWidth);
-    void setFrameHeight(float frameHeight);
-    void setNearPlane(float nearPlane);
-    void setFarPlane(float farPlane);
-    void setFOV(float fov);
+    glm::mat4 calcProjectionMatrix() const {
+      return projection == ProjectionType::ORTHOGRAPHIC
+                 ? glm::ortho(-width * 0.5f, width * 0.5f, -height * 0.5f, height * 0.5f)
+                 : glm::perspective(fov, getAspectRatio(), nearPlane, farPlane);
+    }
 
-  private:
-    Transform m_transform;
-    ProjectionType m_projection;
-    float m_width;
-    float m_height;
-    float m_nearPlane;
-    float m_farPlane;
-    float m_fov;
+    glm::mat4 calcProjectionViewMatrix() const {
+      return calcProjectionMatrix() * transform.getViewMatrix();
+    }
+
+    ProjectionType projection;
+    float width;
+    float height;
+    float nearPlane;
+    float farPlane;
+    float fov;
+    Transform transform;
   };
 } // namespace TritiumEngine::Rendering
 

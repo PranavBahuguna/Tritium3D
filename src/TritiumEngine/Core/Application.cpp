@@ -9,22 +9,27 @@ using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Core
 {
-  Application::Application(const std::string &name, Window *window, std::unique_ptr<Scene> scene)
-      : m_name(name), m_window(window), m_scene(std::move(scene)) {
-    m_scene->registerWithApplication(*this);
+  Application::Application(const std::string &name, const WindowSettings &settings)
+      : name(name), window(settings), sceneManager(this) {
     initGLEW();
   }
 
   /** @brief Starts running the application */
   void Application::run() {
+    if (!sceneManager.hasScenes()) {
+      Logger::error("[Application] App '{}' has no registered scenes!", name);
+      throw std::runtime_error("An error ocurred while running the application.");
+    }
+
     if (m_isRunning) {
-      Logger::warn("[Application] App '{}' is already running!", m_name);
+      Logger::warn("[Application] App '{}' is already running!", name);
       return;
     }
 
     m_isRunning = true;
-    Logger::info("[Application] App '{}' running...", m_name);
-    m_scene->init();
+    Logger::info("[Application] App '{}' running...", name);
+    sceneManager.loadScene(0);
+    m_prevFrameTime = Clock::now();
 
     // Run main application loop
     while (m_isRunning) {
@@ -34,23 +39,26 @@ namespace TritiumEngine::Core
       m_prevFrameTime = m_currentTime;
 
       // Update window
-      m_window->update();
-      m_window->refresh();
+      window.update();
+      window.refresh();
 
       // Update scene
-      m_scene->update(deltaTime);
+      sceneManager.update(deltaTime);
     }
 
-    Logger::info("[Application] App '{}' stopped.", m_name);
+    Logger::info("[Application] App '{}' stopped.", name);
   }
 
   /** @brief Sets application flagged to stop */
-  void Application::stop() { m_isRunning = false; }
+  void Application::stop() {
+    m_isRunning = false;
+    Logger::info("[Application] Stopping app '{}'...", name);
+  }
 
-  /** @brief Obtains the current scene's entity */
-  entt::entity Application::getCurrentSceneEntity() const { return m_scene->getEntity(); }
+  /** @brief Check if the application is currently running */
+  bool Application::isRunning() const { return m_isRunning; }
 
-  void Application::initGLEW() {
+  void Application::initGLEW() const {
     glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK)
       throw std::runtime_error("GLEW could not be initialised!");

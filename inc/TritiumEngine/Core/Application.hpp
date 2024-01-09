@@ -1,7 +1,9 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
 
+#include <TritiumEngine/Core/SceneManager.hpp>
 #include <TritiumEngine/Rendering/ShaderManager.hpp>
+#include <TritiumEngine/Rendering/Window.hpp>
 
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
@@ -11,43 +13,39 @@
 
 using namespace TritiumEngine::Rendering;
 
-namespace TritiumEngine::Rendering
-{
-  class Window;
-}
-
 namespace TritiumEngine::Core
 {
   class Scene;
 
-  typedef std::chrono::high_resolution_clock Clock;
-  typedef std::chrono::steady_clock::time_point TimePoint;
+  using Clock     = std::chrono::high_resolution_clock;
+  using TimePoint = std::chrono::steady_clock::time_point;
 
   class Application {
   public:
-    Application(const std::string &name, Window *window, std::unique_ptr<Scene> scene);
+    Application(const std::string &name, const WindowSettings &windowSettings = WindowSettings{});
+    Application(const Application &)           = delete;
+    Application operator=(const Application &) = delete;
+    virtual ~Application()                     = default;
 
     void run();
     void stop();
+    bool isRunning() const;
 
-    entt::entity getCurrentSceneEntity() const;
-
+    Window window;
     entt::registry registry;
     entt::dispatcher dispatcher;
     ShaderManager shaderManager;
+    SceneManager sceneManager;
+
+    const std::string name;
 
   private:
-    void initGLEW();
-
-    std::string m_name;
-    Window *m_window;
-    std::unique_ptr<Scene> m_scene;
+    void initGLEW() const;
 
     bool m_isRunning = false;
-
     TimePoint m_currentTime;
-    TimePoint m_prevFrameTime = Clock::now();
+    TimePoint m_prevFrameTime;
   };
-}
+} // namespace TritiumEngine::Core
 
 #endif // APPLICATION_HPP

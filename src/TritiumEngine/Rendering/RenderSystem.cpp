@@ -18,8 +18,8 @@ namespace TritiumEngine::Rendering
       drawInstanced(camera);
   }
 
-  void RenderSystem::update(const float dt) {
-    const Camera &camera = m_app->registry.get<Camera>(m_app->getCurrentSceneEntity());
+  void RenderSystem::update(float dt) {
+    const Camera &camera = m_app->registry.get<Camera>(m_app->sceneManager.getCurrentSceneEntity());
     draw(camera);
   }
 
@@ -33,7 +33,7 @@ namespace TritiumEngine::Rendering
           // Apply properties to shader
           shaderManager.Use(material.shaderId);
           shaderManager.setMatrix4("model", transform.getModelMatrix());
-          shaderManager.setMatrix4("projectionView", camera.getProjectionViewMatrix());
+          shaderManager.setMatrix4("projectionView", camera.calcProjectionViewMatrix());
           shaderManager.setVector4("color", material.color);
 
           // Bind VAO and draw the entity to screen

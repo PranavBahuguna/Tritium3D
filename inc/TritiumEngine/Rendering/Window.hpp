@@ -31,7 +31,7 @@ namespace TritiumEngine::Rendering
   using MouseMoveCallbackList   = std::vector<MouseMoveCallback>;
   using MouseScrollCallbackList = std::vector<MouseScrollCallback>;
 
-  enum class WindowSettings : uint32_t {
+  enum class WindowHints : uint32_t {
     FOCUSED        = 1u << 0, // Window automatically takes focus
     RESIZABLE      = 1u << 1, // Allows window to be manually resized by user input
     VISIBLE        = 1u << 2, // Makes the window visible
@@ -48,12 +48,18 @@ namespace TritiumEngine::Rendering
     FULLSCREEN          = FOCUSED | RESIZABLE | VISIBLE | MAXIMIZED, // Borderless fullscreen
     FULLSCREEN_WINDOWED = DEFAULT | MAXIMIZED                        // Windowed fullscreen
   };
-  ENABLE_ENUM_FLAGS(WindowSettings)
+  ENABLE_ENUM_FLAGS(WindowHints)
+
+  struct WindowSettings {
+    std::string name;
+    WindowHints hints = WindowHints::DEFAULT;
+    int width         = 800;
+    int height        = 600;
+  };
 
   class Window {
   public:
-    Window(const std::string &name, WindowSettings settings = WindowSettings::DEFAULT,
-           unsigned int width = 800, unsigned int height = 600);
+    Window(WindowSettings settings);
     Window(const Window &window) = delete;
     Window(Window &&) noexcept   = default;
     ~Window();

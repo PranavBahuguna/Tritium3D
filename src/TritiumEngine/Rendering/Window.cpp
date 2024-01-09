@@ -10,9 +10,8 @@ using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Rendering
 {
-  Window::Window(const std::string &name, WindowSettings settings, unsigned int width,
-                 unsigned int height)
-      : m_name(name), m_width(static_cast<int>(width)), m_height(static_cast<int>(height)) {
+  Window::Window(WindowSettings settings)
+      : m_name(settings.name), m_width(settings.width), m_height(settings.height) {
     // Init GLFW library if not already done so
     if (s_nWindows == 0) {
       if (glfwInit() == GLFW_FALSE)
@@ -27,17 +26,17 @@ namespace TritiumEngine::Rendering
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    glfwWindowHint(GLFW_FOCUSED, innerType(settings & WindowSettings::FOCUSED));
-    glfwWindowHint(GLFW_RESIZABLE, innerType(settings & WindowSettings::RESIZABLE));
-    glfwWindowHint(GLFW_VISIBLE, innerType(settings & WindowSettings::VISIBLE));
-    glfwWindowHint(GLFW_DECORATED, innerType(settings & WindowSettings::DECORATED));
-    glfwWindowHint(GLFW_AUTO_ICONIFY, innerType(settings & WindowSettings::AUTO_MINIMIZE));
-    glfwWindowHint(GLFW_FLOATING, innerType(settings & WindowSettings::ALWAYS_ON_TOP));
-    glfwWindowHint(GLFW_MAXIMIZED, innerType(settings & WindowSettings::MAXIMIZED));
-    glfwWindowHint(GLFW_CENTER_CURSOR, innerType(settings & WindowSettings::CENTER_CURSOR));
+    glfwWindowHint(GLFW_FOCUSED, innerType(settings.hints & WindowHints::FOCUSED));
+    glfwWindowHint(GLFW_RESIZABLE, innerType(settings.hints & WindowHints::RESIZABLE));
+    glfwWindowHint(GLFW_VISIBLE, innerType(settings.hints & WindowHints::VISIBLE));
+    glfwWindowHint(GLFW_DECORATED, innerType(settings.hints & WindowHints::DECORATED));
+    glfwWindowHint(GLFW_AUTO_ICONIFY, innerType(settings.hints & WindowHints::AUTO_MINIMIZE));
+    glfwWindowHint(GLFW_FLOATING, innerType(settings.hints & WindowHints::ALWAYS_ON_TOP));
+    glfwWindowHint(GLFW_MAXIMIZED, innerType(settings.hints & WindowHints::MAXIMIZED));
+    glfwWindowHint(GLFW_CENTER_CURSOR, innerType(settings.hints & WindowHints::CENTER_CURSOR));
     glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER,
-                   innerType(settings & WindowSettings::TRANSPARENT_FB));
-    glfwWindowHint(GLFW_FOCUS_ON_SHOW, innerType(settings & WindowSettings::AUTOFOCUS));
+                   innerType(settings.hints & WindowHints::TRANSPARENT_FB));
+    glfwWindowHint(GLFW_FOCUS_ON_SHOW, innerType(settings.hints & WindowHints::AUTOFOCUS));
 
     // Obtain the latest compatible OpenGL version available
     static constexpr std::array<std::pair<int, int>, 8> glVersions = {
@@ -48,7 +47,7 @@ namespace TritiumEngine::Rendering
       glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
 
       m_windowHandle =
-          glfwCreateWindow(m_width, m_height, name.c_str(), nullptr, glfwGetCurrentContext());
+          glfwCreateWindow(m_width, m_height, m_name.c_str(), nullptr, glfwGetCurrentContext());
 
       if (m_windowHandle != nullptr) {
         Logger::info("[Window] OpenGL version {}.{} found.", major, minor);

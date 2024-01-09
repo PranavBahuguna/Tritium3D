@@ -8,7 +8,7 @@ using namespace TritiumEngine::Core;
 namespace TritiumEngine::Rendering
 {
   class ShaderManager;
-  class Camera;
+  struct Camera;
 
   class RenderSystem : public System {
   public:

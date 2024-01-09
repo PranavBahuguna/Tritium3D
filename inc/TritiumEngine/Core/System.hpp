@@ -8,9 +8,10 @@ namespace TritiumEngine::Core
   class System {
   public:
     virtual void init() {}
+    virtual void dispose() {}
     virtual void update(const float dt) {}
 
-    void Setup(Application &engine) { m_app = &engine; }
+    void Setup(Application &app) { m_app = &app; }
 
   protected:
     Application *m_app;
