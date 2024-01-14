@@ -15,15 +15,15 @@ void setup(Application *app) {
                                                "Resources/Shaders/");
 
   // Add window controls callbacks
-  app->window.addKeyCallback(Key::ESCAPE, KeyState::PRESSED, [&app]() { app->stop(); });
-  app->window.setCloseCallback([&app]() { app->stop(); });
+  app->window.addKeyCallback(Key::ESCAPE, KeyState::PRESSED, [app]() { app->stop(); });
+  app->window.setCloseCallback([app]() { app->stop(); });
 
   // Add some more key and mouse callbacks to test functionality
   app->window.addKeyCallback(Key::A, KeyState::PRESSED, []() { Logger::debug("A key pressed!"); });
   app->window.addKeyCallback(Key::A, KeyState::RELEASED,
                              []() { Logger::debug("A key released!"); });
   app->window.addKeyCallback(Key::R, KeyState::RELEASED,
-                             [&app]() { app->sceneManager.reloadCurrentScene(); });
+                             [app]() { app->sceneManager.reloadCurrentScene(); });
   app->window.addMouseButtonCallback(MouseButton::MOUSE_1, MouseButtonState::PRESSED,
                                      []() { Logger::debug("Mouse button pressed!"); });
   app->window.addMouseButtonCallback(MouseButton::MOUSE_1, MouseButtonState::RELEASED,
@@ -37,8 +37,7 @@ void setup(Application *app) {
   // Setup scenes and systems
   auto mainScene = std::make_unique<FallingSquaresScene>();
   mainScene->addSystem<RenderSystem>();
-  mainScene->addSystem<Gravity>(0.6f);
-  mainScene->removeSystem<Gravity>();
+  mainScene->addSystem<Gravity>(0.1f);
 
   // Add scenes
   app->sceneManager.addScene(std::move(mainScene));

@@ -9,6 +9,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <random>
+
 #define SCREEN_UNITS 100.0f
 
 using namespace TritiumEngine::Core;
@@ -19,9 +21,6 @@ public:
 
 protected:
   void init() override {
-    Gravity *grav = getSystem<Gravity>();
-    //if (grav != nullptr)
-    //  grav->g = 0.01f;
     setupCamera();
     generateSquares(10);
   }
@@ -49,21 +48,27 @@ private:
         0, 2, 3  // second triangle
     };
 
+    // Setup random number generator
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_real_distribution<float> rand(0.f, 1.f);
+
+    // Setup square properties
     RenderData renderData{2, vertices, indices};
 
-    glm::vec4 color{1.f, 0.5f, 0.2f, 1.f};
     ShaderId shader = m_app->shaderManager.get("default");
 
-    glm::vec3 currentPos{-40.f, 40.f, 0.f};
+    glm::vec3 startPos{0.f, 40.f, 0.f};
     glm::quat rotation{1.f, 0.f, 0.f, 0.f};
     glm::vec3 scale{5.f, 5.f, 5.f};
 
     for (size_t i = 0; i < n; ++i) {
-      glm::vec3 pos = currentPos;
-      currentPos.x += 10.f;
+      float xDisplacement = (rand(mt) - 0.5f) * 100.f;
+      glm::vec3 pos = startPos + glm::vec3(xDisplacement, 0.f, 0.f);
+      glm::vec4 color{rand(mt), rand(mt), rand(mt), 1.f};
 
       entt::entity entity = m_app->registry.create();
-      m_app->registry.emplace<Transform>(entity, currentPos, rotation, scale);
+      m_app->registry.emplace<Transform>(entity, pos, rotation, scale);
       m_app->registry.emplace<Renderable>(entity, GL_TRIANGLES, renderData);
       m_app->registry.emplace<Material>(entity, color, shader);
       m_app->registry.emplace<Rigidbody>(entity, glm::vec3());
