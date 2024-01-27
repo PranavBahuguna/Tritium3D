@@ -11,7 +11,7 @@ namespace TritiumEngine::Core
     virtual void dispose() {}
     virtual void update(const float dt) {}
 
-    void Setup(Application &app) { m_app = &app; }
+    void setup(Application &app) { m_app = &app; }
 
   protected:
     Application *m_app;

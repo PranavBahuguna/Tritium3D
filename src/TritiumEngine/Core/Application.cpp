@@ -42,6 +42,8 @@ namespace TritiumEngine::Core
       window.update();
       window.refresh();
 
+      Logger::info("FPS = {}", 1.0f / deltaTime);
+
       // Update scene
       sceneManager.update(deltaTime);
     }

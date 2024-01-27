@@ -1,5 +1,5 @@
-#ifndef RENDERABLE_HPP
-#define RENDERABLE_HPP
+#ifndef RERNDERABLE_HPP
+#define RERNDERABLE_HPP
 
 #include <TritiumEngine/Rendering/RenderData.hpp>
 
@@ -12,10 +12,10 @@ namespace TritiumEngine::Rendering
     Renderable(GLenum renderMode, const RenderData &renderData);
     virtual ~Renderable();
 
-    GLuint getVAO() const;
-    GLsizei getNumVertices() const;
-    GLsizei getNumIndices() const;
-    GLenum getRenderMode() const;
+    GLuint getVao() const { return m_vao; }
+    GLsizei getNumIndices() const { return m_nIndices; }
+    GLsizei getNumVertices() const { return m_nVertices; }
+    GLenum getRenderMode() const { return m_renderMode; }
 
   private:
     GLuint m_vao;
@@ -27,4 +27,4 @@ namespace TritiumEngine::Rendering
   };
 } // namespace TritiumEngine::Rendering
 
-#endif // RENDERABLE_HPP
+#endif // RERNDERABLE_HPP

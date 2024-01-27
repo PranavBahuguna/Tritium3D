@@ -14,11 +14,10 @@ namespace TritiumEngine::Core
    * @param scene Pointer to the scene to be registered
    */
   void SceneManager::addScene(std::unique_ptr<Scene> scene) {
+    scene->registerWithApplication(*m_app);
     m_scenes.emplace_back(std::move(scene));
     if (m_scenes.size() == 1)
       m_sceneIt = m_scenes.begin();
-
-    m_scenes.back()->registerWithApplication(*m_app);
   }
 
   /**

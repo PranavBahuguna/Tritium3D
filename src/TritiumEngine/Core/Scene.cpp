@@ -19,8 +19,6 @@ namespace TritiumEngine::Core
    */
   void Scene::registerWithApplication(Application &app) {
     m_app = &app;
-    for (auto &system : m_systems)
-      system->Setup(*m_app);
   }
 
   /** @brief Initialises the scene and all constituent systems */
@@ -28,8 +26,10 @@ namespace TritiumEngine::Core
     Logger::info("[Scene] Loading scene '{}'...", name);
     m_sceneEntity = m_app->registry.create();
     init();
-    for (auto &system : m_systems)
+    for (auto &system : m_systems) {
+      system->setup(*m_app);
       system->init();
+    }
   }
 
   /** @brief Clears the ECS registry, dispatcher and any registered systems */

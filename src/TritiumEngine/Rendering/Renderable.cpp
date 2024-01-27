@@ -37,12 +37,4 @@ namespace TritiumEngine::Rendering
     glDeleteBuffers(1, &m_vbo);
     glDeleteBuffers(1, &m_ebo);
   }
-
-  GLuint Renderable::getVAO() const { return m_vao; }
-
-  GLsizei Renderable::getNumVertices() const { return m_nVertices; }
-
-  GLsizei Renderable::getNumIndices() const { return m_nIndices; }
-
-  GLenum Renderable::getRenderMode() const { return m_renderMode; }
 } // namespace TritiumEngine::Rendering

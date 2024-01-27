@@ -34,8 +34,7 @@ namespace TritiumEngine::Core
      * @tparam T Type of system to register
      * @tparam Args Additional parameters required to construct the system
      */
-    template <class T, typename... Args, IsSystemType<T> = true>
-    void addSystem(Args &&...args) {
+    template <class T, typename... Args, IsSystemType<T> = true> void addSystem(Args &&...args) {
       if (!hasSystem<T>())
         m_systems.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
     }
@@ -44,8 +43,7 @@ namespace TritiumEngine::Core
      * @brief Unregisters an existing system
      * @tparam T Type of system to remove
      */
-    template <class T, IsSystemType<T> = true>
-    void removeSystem() {
+    template <class T, IsSystemType<T> = true> void removeSystem() {
       auto it = std::find_if(m_systems.begin(), m_systems.end(),
                              [&](const auto &s) { return dynamic_cast<T *>(s.get()) != nullptr; });
       if (it != m_systems.end())
@@ -57,8 +55,7 @@ namespace TritiumEngine::Core
      * @tparam T The system type to find
      * @return True if system type T is registered, false otherwise
      */
-    template <class T, IsSystemType<T> = true>
-    bool hasSystem() const {
+    template <class T, IsSystemType<T> = true> bool hasSystem() const {
       for (auto &system : m_systems) {
         if (dynamic_cast<T *>(system.get()))
           return true;
@@ -71,8 +68,7 @@ namespace TritiumEngine::Core
      * @tparam T The system type to obtain
      * @return Pointer to system if successful, nullptr otherwise
      */
-    template <class T, IsSystemType<T> = true>
-    T *getSystem() const {
+    template <class T, IsSystemType<T> = true> T *getSystem() const {
       for (auto &system : m_systems) {
         if (T *cast = dynamic_cast<T *>(system.get()))
           return cast;

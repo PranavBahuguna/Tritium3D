@@ -1,9 +1,9 @@
 #include "Application/FallingSquaresScene.hpp"
 
+#include <TritiumEngine/Core/Application.hpp>
 #include <TritiumEngine/Core/ResourceManager.hpp>
-#include <TritiumEngine/Rendering/RenderSystem.hpp>
 #include <TritiumEngine/Rendering/ShaderLoaderFactory.hpp>
-#include <TritiumEngine/Rendering/ShaderManager.hpp>
+#include <TritiumEngine/Rendering/Window.hpp>
 #include <TritiumEngine/Utilities/Logger.hpp>
 
 using namespace TritiumEngine::Rendering;
@@ -17,30 +17,11 @@ void setup(Application *app) {
   // Add window controls callbacks
   app->window.addKeyCallback(Key::ESCAPE, KeyState::PRESSED, [app]() { app->stop(); });
   app->window.setCloseCallback([app]() { app->stop(); });
-
-  // Add some more key and mouse callbacks to test functionality
-  app->window.addKeyCallback(Key::A, KeyState::PRESSED, []() { Logger::debug("A key pressed!"); });
-  app->window.addKeyCallback(Key::A, KeyState::RELEASED,
-                             []() { Logger::debug("A key released!"); });
   app->window.addKeyCallback(Key::R, KeyState::RELEASED,
                              [app]() { app->sceneManager.reloadCurrentScene(); });
-  app->window.addMouseButtonCallback(MouseButton::MOUSE_1, MouseButtonState::PRESSED,
-                                     []() { Logger::debug("Mouse button pressed!"); });
-  app->window.addMouseButtonCallback(MouseButton::MOUSE_1, MouseButtonState::RELEASED,
-                                     []() { Logger::debug("Mouse button released!"); });
-  app->window.addMouseMoveCallback(
-      [](double xPos, double yPos) { Logger::debug("Mouse at x:{}, y:{}", xPos, yPos); });
-  app->window.addMouseScrollCallback([](double xOffSet, double yOffSet) {
-    Logger::debug("Mouse scroll offset x:{}, y:{}", xOffSet, yOffSet);
-  });
-
-  // Setup scenes and systems
-  auto mainScene = std::make_unique<FallingSquaresScene>();
-  mainScene->addSystem<RenderSystem>();
-  mainScene->addSystem<Gravity>(0.1f);
 
   // Add scenes
-  app->sceneManager.addScene(std::move(mainScene));
+  app->sceneManager.addScene(std::move(std::make_unique<FallingSquaresScene>()));
 }
 
 int main() {

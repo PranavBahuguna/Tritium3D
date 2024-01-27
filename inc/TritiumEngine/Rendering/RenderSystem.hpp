@@ -3,6 +3,10 @@
 
 #include <TritiumEngine/Core/System.hpp>
 
+#include <entt/entity/entity.hpp>
+
+#include <vector>
+
 using namespace TritiumEngine::Core;
 
 namespace TritiumEngine::Rendering
@@ -12,18 +16,11 @@ namespace TritiumEngine::Rendering
 
   class RenderSystem : public System {
   public:
-    enum class DrawMode { STANDARD, INSTANCED };
-
-    void draw(const Camera &camera) const;
-
     void update(float dt) override;
-    void setDrawMode(DrawMode drawMode);
 
   private:
-    void drawStandard(const Camera &camera) const;
+    void draw(const Camera &camera) const;
     void drawInstanced(const Camera &camera) const;
-
-    DrawMode m_drawMode = DrawMode::STANDARD;
   };
 } // namespace TritiumEngine::Rendering
 
