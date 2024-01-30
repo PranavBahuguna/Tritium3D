@@ -1,5 +1,4 @@
-#ifndef SHADER_HPP
-#define SHADER_HPP
+#pragma once
 
 namespace TritiumEngine::Rendering
 {
@@ -7,5 +6,3 @@ namespace TritiumEngine::Rendering
     unsigned int id;
   };
 } // namespace TritiumEngine::Rendering
-
-#endif // SHADER_HPP

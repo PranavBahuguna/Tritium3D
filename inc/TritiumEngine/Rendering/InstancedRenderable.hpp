@@ -1,5 +1,4 @@
-#ifndef INSTANCED_RERNDERABLE_HPP
-#define INSTANCED_RERNDERABLE_HPP
+#pragma once
 
 #include <TritiumEngine/Core/Transform.hpp>
 #include <TritiumEngine/Rendering/RenderData.hpp>
@@ -31,8 +30,9 @@ namespace TritiumEngine::Rendering
     void updateInstanceDataBuffer() const;
 
     GLuint getVao() const { return m_vao; }
-    GLsizei getNumIndices() const { return m_nIndices; }
+    GLint getVertexStride() const { return m_vertexStride; }
     GLsizei getNumVertices() const { return m_nVertices; }
+    GLsizei getNumIndices() const { return m_nIndices; }
     GLsizei getNumInstances() const { return m_nInstances; }
     GLenum getRenderMode() const { return m_renderMode; }
     uint32_t getInstanceId() const { return m_instanceId; }
@@ -44,6 +44,7 @@ namespace TritiumEngine::Rendering
     GLuint m_ibo; // instance buffer
 
     GLsizei m_nInstances;
+    GLint m_vertexStride;
     GLsizei m_nVertices;
     GLsizei m_nIndices;
     GLenum m_renderMode;
@@ -51,5 +52,3 @@ namespace TritiumEngine::Rendering
     std::vector<InstanceData> m_instanceData;
   };
 } // namespace TritiumEngine::Rendering
-
-#endif // INSTANCED_RERNDERABLE_HPP

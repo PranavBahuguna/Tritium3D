@@ -1,5 +1,4 @@
-#ifndef SCENE_MANAGER_HPP
-#define SCENE_MANAGER_HPP
+#pragma once
 
 #include <entt/entity/entity.hpp>
 
@@ -36,5 +35,3 @@ namespace TritiumEngine::Core
     SceneList::iterator m_sceneIt;
   };
 } // namespace TritiumEngine::Core
-
-#endif // SCENE_MANAGER_HPP

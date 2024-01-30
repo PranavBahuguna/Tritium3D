@@ -1,5 +1,4 @@
-#ifndef SYSTEM_HPP
-#define SYSTEM_HPP
+#pragma once
 
 namespace TritiumEngine::Core
 {
@@ -17,5 +16,3 @@ namespace TritiumEngine::Core
     Application *m_app;
   };
 } // namespace TritiumEngine::Core
-
-#endif // SYSTEM_HPP

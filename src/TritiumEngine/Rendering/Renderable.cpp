@@ -4,12 +4,13 @@ namespace TritiumEngine::Rendering
 {
   Renderable::Renderable(GLenum renderMode, const RenderData &renderData)
       : m_renderMode(renderMode), m_ebo(0) {
-    unsigned int stride  = renderData.vertexStride;
-    const auto &vertices = renderData.vertices;
-    const auto &indices  = renderData.indices;
+    unsigned int vertexStride = renderData.vertexStride;
+    const auto &vertices      = renderData.vertices;
+    const auto &indices       = renderData.indices;
 
-    m_nVertices = (GLsizei)vertices.size();
-    m_nIndices  = (GLsizei)indices.size();
+    m_vertexStride = static_cast<GLint>(vertexStride);
+    m_nVertices    = static_cast<GLsizei>(vertices.size());
+    m_nIndices     = static_cast<GLsizei>(indices.size());
 
     // Bind vertex array object
     glGenVertexArrays(1, &m_vao);
@@ -18,15 +19,15 @@ namespace TritiumEngine::Rendering
     // Bind vertex data buffer
     glGenBuffers(1, &m_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, stride, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void *)0);
+    glBufferData(GL_ARRAY_BUFFER, m_nVertices * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0, m_vertexStride, GL_FLOAT, GL_FALSE, 0, (void *)0);
     glEnableVertexAttribArray(0);
 
     // Bind index data buffer
     if (m_nIndices > 0) {
       glGenBuffers(1, &m_ebo);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(),
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_nIndices * sizeof(GLuint), indices.data(),
                    GL_STATIC_DRAW);
     }
   }

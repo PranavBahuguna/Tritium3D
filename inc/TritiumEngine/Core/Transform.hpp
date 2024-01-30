@@ -1,5 +1,4 @@
-#ifndef TRANSFORM_HPP
-#define TRANSFORM_HPP
+#pragma once
 
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -38,5 +37,3 @@ namespace TritiumEngine::Core
     glm::vec3 m_scale;
   };
 } // namespace TritiumEngine::Core
-
-#endif // TRANSFORM_HPP

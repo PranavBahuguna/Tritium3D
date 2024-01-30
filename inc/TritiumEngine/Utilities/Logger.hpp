@@ -1,5 +1,4 @@
-#ifndef LOGGER_HPP
-#define LOGGER_HPP
+#pragma once
 
 #include <TritiumEngine/Utilities/EnumUtils.hpp>
 
@@ -106,5 +105,3 @@ namespace TritiumEngine::Utilities
     }
   };
 } // namespace TritiumEngine::Utilities
-
-#endif // LOGGER_HPP

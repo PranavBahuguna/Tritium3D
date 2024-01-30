@@ -1,5 +1,4 @@
-#ifndef WINDOW_HPP
-#define WINDOW_HPP
+#pragma once
 
 #include <TritiumEngine/Input/Cursor.hpp>
 #include <TritiumEngine/Input/Keyboard.hpp>
@@ -94,5 +93,3 @@ namespace TritiumEngine::Rendering
     CloseCallback m_closeCallback;
   };
 } // namespace TritiumEngine::Rendering
-
-#endif // WINDOW_HPP

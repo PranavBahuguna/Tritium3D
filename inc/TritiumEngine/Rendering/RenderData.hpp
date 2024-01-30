@@ -1,5 +1,4 @@
-#ifndef RENDER_DATA_HPP
-#define RENDER_DATA_HPP
+#pragma once
 
 #include <vector>
 
@@ -11,5 +10,3 @@ namespace TritiumEngine::Rendering
     std::vector<unsigned int> indices;
   };
 } // namespace TritiumEngine::Rendering
-
-#endif // RENDER_DATA_HPP

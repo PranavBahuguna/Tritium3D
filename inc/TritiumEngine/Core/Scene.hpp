@@ -1,5 +1,4 @@
-#ifndef SCENE_HPP
-#define SCENE_HPP
+#pragma once
 
 #include <entt/entity/entity.hpp>
 
@@ -89,5 +88,3 @@ namespace TritiumEngine::Core
     std::vector<std::unique_ptr<System>> m_systems;
   };
 } // namespace TritiumEngine::Core
-
-#endif // SCENE_HPP

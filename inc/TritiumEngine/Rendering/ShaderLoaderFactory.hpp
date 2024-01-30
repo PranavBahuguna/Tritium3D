@@ -1,5 +1,4 @@
-#ifndef SHADER_LOADER_FACTORY_HPP
-#define SHADER_LOADER_FACTORY_HPP
+#pragma once
 
 #include <TritiumEngine/Core/ResourceLoaderFactory.hpp>
 
@@ -17,5 +16,3 @@ namespace TritiumEngine::Rendering
     ShaderCode *load(const std::string &filePath) override;
   };
 } // namespace TritiumEngine::Rendering
-
-#endif // SHADER_LOADER_FACTORY_HPP

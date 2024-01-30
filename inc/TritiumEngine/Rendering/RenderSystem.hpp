@@ -1,5 +1,4 @@
-#ifndef RENDER_SYSTEM_HPP
-#define RENDER_SYSTEM_HPP
+#pragma once
 
 #include <TritiumEngine/Core/System.hpp>
 
@@ -23,5 +22,3 @@ namespace TritiumEngine::Rendering
     void drawInstanced(const Camera &camera) const;
   };
 } // namespace TritiumEngine::Rendering
-
-#endif // RENDER_SYSTEM_HPP

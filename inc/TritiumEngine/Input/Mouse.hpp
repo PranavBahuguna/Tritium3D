@@ -1,5 +1,4 @@
-#ifndef MOUSE_HPP
-#define MOUSE_HPP
+#pragma once
 
 #include <GLFW/glfw3.h>
 
@@ -22,5 +21,3 @@ namespace TritiumEngine::Input::Mouse
     MOUSE_8 = GLFW_MOUSE_BUTTON_8,
   };
 } // namespace TritiumEngine::Input::Mouse
-
-#endif // MOUSE_HPP

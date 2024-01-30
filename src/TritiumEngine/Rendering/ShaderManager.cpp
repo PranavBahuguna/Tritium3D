@@ -66,7 +66,7 @@ namespace TritiumEngine::Rendering
    * @brief Activates this shader program.
    * @param id The id of the shader program to activate.
    */
-  void ShaderManager::Use(ShaderId id) {
+  void ShaderManager::use(ShaderId id) {
     if (id != m_currentShaderId) {
       glUseProgram(id);
       m_currentShaderId = id;

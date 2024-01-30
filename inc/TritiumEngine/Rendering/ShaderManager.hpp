@@ -1,5 +1,4 @@
-#ifndef SHADER_MANAGER_HPP
-#define SHADER_MANAGER_HPP
+#pragma once
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -18,7 +17,7 @@ namespace TritiumEngine::Rendering
     ShaderId create(const std::string &name, const std::string &vertexData,
                     const std::string &fragmentData);
     ShaderId get(const std::string &name, bool forceReload = false);
-    void Use(ShaderId id);
+    void use(ShaderId id);
 
     // Shader parameter setter methods
     void setBool(const std::string &name, bool value);
@@ -43,5 +42,3 @@ namespace TritiumEngine::Rendering
     ShaderId m_currentShaderId = 0;
   };
 } // namespace TritiumEngine::Rendering
-
-#endif // SHADER_MANAGER_HPP

@@ -1,5 +1,4 @@
-#ifndef CAMERA_HPP
-#define CAMERA_HPP
+#pragma once
 
 #include <TritiumEngine/Core/Transform.hpp>
 
@@ -40,5 +39,3 @@ namespace TritiumEngine::Rendering
     Transform transform;
   };
 } // namespace TritiumEngine::Rendering
-
-#endif // CAMERA_HPP

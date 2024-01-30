@@ -1,5 +1,4 @@
-#ifndef RESOURCE_MANAGER_HPP
-#define RESOURCE_MANAGER_HPP
+#pragma once
 
 #include <TritiumEngine/Core/ResourceLoaderFactory.hpp>
 #include <TritiumEngine/Utilities/Logger.hpp>
@@ -15,7 +14,6 @@ namespace TritiumEngine::Core
   public:
     /**
      * @brief Registers a resource loader factory of type T into the manager
-     *
      * @param loaderFactory The loader factory to be registered
      * @param rootDir The root directory where all objects to construct of the given type are
      * stored
@@ -37,7 +35,6 @@ namespace TritiumEngine::Core
     /**
      * @brief Loads and constructs a new resource of type T from file, returns existing one if
      * already loaded
-     *
      * @param filePath The file path of the resource to load.
      * @param forceReload If true, will forcibly load the resource again and overwrite an existing
      * resource.
@@ -63,7 +60,6 @@ namespace TritiumEngine::Core
 
     /**
      * @brief Tries locating a stored resource of type T given its file path
-     *
      * @return True if resource is found
      */
     static bool find(const std::string &filePath) {
@@ -93,5 +89,3 @@ namespace TritiumEngine::Core
     static inline std::unique_ptr<ResourceLoaderFactory<T>> m_loaderFactory;
   };
 } // namespace TritiumEngine::Core
-
-#endif // RESOURCE_MANAGER_HPP

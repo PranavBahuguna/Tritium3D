@@ -26,22 +26,23 @@ namespace TritiumEngine::Rendering
         [&](auto entity, Renderable &renderable, Transform &transform, Shader &shader,
             Color &color) {
           // Apply properties to shader
-          shaderManager.Use(shader.id);
+          shaderManager.use(shader.id);
           shaderManager.setMatrix4("model", transform.getModelMatrix());
           shaderManager.setMatrix4("projectionView", camera.calcProjectionViewMatrix());
           shaderManager.setVector4("color", color.asNormalizedVec4());
 
-          GLuint vao        = renderable.getVao();
-          GLsizei nIndices  = renderable.getNumIndices();
-          GLsizei nVertices = renderable.getNumVertices();
-          GLenum renderMode = renderable.getRenderMode();
+          GLuint vao         = renderable.getVao();
+          GLint vertexStride = renderable.getVertexStride();
+          GLsizei nVertices  = renderable.getNumVertices();
+          GLsizei nIndices   = renderable.getNumIndices();
+          GLenum renderMode  = renderable.getRenderMode();
 
           // Draw the renderable
           glBindVertexArray(vao);
           if (nIndices > 0)
             glDrawElements(renderMode, nIndices, GL_UNSIGNED_INT, 0);
           else
-            glDrawArrays(renderMode, 0, nVertices);
+            glDrawArrays(renderMode, 0, nVertices / vertexStride);
         });
   }
 
@@ -51,13 +52,14 @@ namespace TritiumEngine::Rendering
     m_app->registry.view<InstancedRenderable, Shader>().each(
         [&](auto entity, InstancedRenderable &renderable, Shader &shader) {
           GLuint vao          = renderable.getVao();
-          GLsizei nIndices    = renderable.getNumIndices();
+          GLint vertexStride  = renderable.getVertexStride();
           GLsizei nVertices   = renderable.getNumVertices();
+          GLsizei nIndices    = renderable.getNumIndices();
           GLsizei nInstances  = renderable.getNumInstances();
           GLenum renderMode   = renderable.getRenderMode();
           uint32_t instanceId = renderable.getInstanceId();
 
-          shaderManager.Use(shader.id);
+          shaderManager.use(shader.id);
           shaderManager.setMatrix4("projectionView", camera.calcProjectionViewMatrix());
 
           // Update model matrices
@@ -75,7 +77,7 @@ namespace TritiumEngine::Rendering
           if (nIndices > 0)
             glDrawElementsInstanced(renderMode, nIndices, GL_UNSIGNED_INT, 0, nInstances);
           else
-            glDrawArraysInstanced(renderMode, 0, nVertices, nInstances);
+            glDrawArraysInstanced(renderMode, 0, nVertices / vertexStride, nInstances);
         });
   }
 } // namespace TritiumEngine::Rendering

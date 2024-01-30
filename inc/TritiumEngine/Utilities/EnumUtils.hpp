@@ -1,5 +1,4 @@
-#ifndef ENUM_UTILS_HPP
-#define ENUM_UTILS_HPP
+#pragma once
 
 #include <type_traits>
 
@@ -65,9 +64,6 @@ template <typename T> typename std::enable_if<EnumFlags<T>::enable, bool>::type 
 }
 
 // Inner type conversion helper function
-template <typename T>
-constexpr inline decltype(auto) innerType(T x) {
+template <typename T> constexpr inline decltype(auto) innerType(T x) {
   return static_cast<std::underlying_type_t<T>>(x);
 }
-
-#endif // ENUM_UTILS_HPP

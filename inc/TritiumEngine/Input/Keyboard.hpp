@@ -1,5 +1,4 @@
-#ifndef KEYBOARD_HPP
-#define KEYBOARD_HPP
+#pragma once
 
 #include <GLFW/glfw3.h>
 
@@ -143,5 +142,3 @@ namespace TritiumEngine::Input::Keyboard
     MENU          = GLFW_KEY_MENU
   };
 } // namespace TritiumEngine::Input::Keyboard
-
-#endif // KEYBOARD_HPP

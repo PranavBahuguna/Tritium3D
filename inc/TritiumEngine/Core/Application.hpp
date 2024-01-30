@@ -1,5 +1,4 @@
-#ifndef APPLICATION_HPP
-#define APPLICATION_HPP
+#pragma once
 
 #include <TritiumEngine/Core/SceneManager.hpp>
 #include <TritiumEngine/Rendering/ShaderManager.hpp>
@@ -47,5 +46,3 @@ namespace TritiumEngine::Core
     TimePoint m_prevFrameTime;
   };
 } // namespace TritiumEngine::Core
-
-#endif // APPLICATION_HPP

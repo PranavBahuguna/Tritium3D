@@ -1,5 +1,4 @@
-#ifndef CURSOR_HPP
-#define CURSOR_HPP
+#pragma once
 
 #include <GLFW/glfw3.h>
 
@@ -12,5 +11,3 @@ namespace TritiumEngine::Input::Cursor
     CAPTURED = GLFW_CURSOR_CAPTURED, // Show cursor, but restrict to the window area only
   };
 } // namespace TritiumEngine::Input::Cursor
-
-#endif // CURSOR_HPP

@@ -7,6 +7,7 @@
 #include <TritiumEngine/Rendering/Camera.hpp>
 #include <TritiumEngine/Rendering/Color.hpp>
 #include <TritiumEngine/Rendering/InstancedRenderable.hpp>
+#include <TritiumEngine/Rendering/Primitives.hpp>
 #include <TritiumEngine/Rendering/RenderSystem.hpp>
 #include <TritiumEngine/Rendering/Renderable.hpp>
 #include <TritiumEngine/Rendering/Shader.hpp>
@@ -43,8 +44,6 @@ void FallingSquaresScene::setupCamera() {
 }
 
 void FallingSquaresScene::generateSquares(size_t n) {
-  ShaderId shaderId = m_app->shaderManager.get("default");
-
   for (size_t i = 0; i < n; ++i) {
     glm::vec3 displacement{(m_rand(m_mt) - 0.5f) * 100.f, (m_rand(m_mt) - 0.5f) * 100.f, 0.f};
     Color color{0};
@@ -55,22 +54,19 @@ void FallingSquaresScene::generateSquares(size_t n) {
 
     entt::entity entity = m_app->registry.create();
     m_app->registry.emplace<Transform>(entity, m_startPos + displacement);
-    m_app->registry.emplace<Renderable>(entity, GL_TRIANGLES, m_squareRenderData);
-    m_app->registry.emplace<Shader>(entity, shaderId);
+    m_app->registry.emplace<Renderable>(entity, GL_TRIANGLES, Primitives::createSquare());
+    m_app->registry.emplace<Shader>(entity, m_app->shaderManager.get("default"));
     m_app->registry.emplace<Color>(entity, color);
-    m_app->registry.emplace<Rigidbody>(entity, glm::vec3());
+    m_app->registry.emplace<Rigidbody>(entity);
   }
 }
 
 void FallingSquaresScene::generateSquaresInstanced(size_t n) {
-  // Setup square properties
-  ShaderId shaderId = m_app->shaderManager.get("instanced");
-
   // Create instanced renderable template
   entt::entity entity = m_app->registry.create();
   auto &renderable    = m_app->registry.emplace<InstancedRenderable>(
-      entity, GL_TRIANGLES, m_squareRenderData, static_cast<GLsizei>(n));
-  m_app->registry.emplace<Shader>(entity, shaderId);
+      entity, GL_TRIANGLES, Primitives::createSquare(), static_cast<GLsizei>(n));
+  m_app->registry.emplace<Shader>(entity, m_app->shaderManager.get("instanced"));
 
   // Add instances
   for (size_t i = 0; i < n; ++i) {
@@ -84,7 +80,7 @@ void FallingSquaresScene::generateSquaresInstanced(size_t n) {
     entt::entity instancedEntity = m_app->registry.create();
     m_app->registry.emplace<InstancedRenderableTag>(instancedEntity, renderable.getInstanceId());
     m_app->registry.emplace<Transform>(instancedEntity, m_startPos + displacement);
-    m_app->registry.emplace<Rigidbody>(instancedEntity, glm::vec3());
     m_app->registry.emplace<Color>(instancedEntity, color);
+    m_app->registry.emplace<Rigidbody>(instancedEntity);
   }
 }
