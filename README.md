@@ -1,2 +1,2 @@
 # TritiumEngine
-3D game engine built with C++ and OpenGL
+Game engine built with C++ and OpenGL. I intend to eventually turn this into a physics simulation library.
