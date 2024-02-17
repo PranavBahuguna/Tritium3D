@@ -1,4 +1,4 @@
-#include "Application/DefaultScene.hpp"
+#include <RenderingBenchmark/Scenes/DefaultScene.hpp>
 
 #include <TritiumEngine/Core/Application.hpp>
 #include <TritiumEngine/Core/ResourceManager.hpp>
@@ -6,13 +6,14 @@
 #include <TritiumEngine/Rendering/Window.hpp>
 #include <TritiumEngine/Utilities/Logger.hpp>
 
+using namespace RenderingBenchmark::Scenes;
 using namespace TritiumEngine::Rendering;
 using namespace TritiumEngine::Utilities;
 
 void setup(Application *app) {
   // Setup resource paths
   ResourceManager<ShaderCode>::registerFactory(std::make_unique<ShaderLoaderFactory>(),
-                                               "Resources/Shaders/");
+                                               "resources/shaders/");
 
   // Add window controls callbacks
   app->window.addKeyCallback(Key::ESCAPE, KeyState::PRESSED, [app]() { app->stop(); });

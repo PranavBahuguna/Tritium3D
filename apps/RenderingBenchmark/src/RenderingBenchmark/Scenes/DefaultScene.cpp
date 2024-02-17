@@ -1,8 +1,9 @@
 #pragma once
 
-#include "DefaultScene.hpp"
-#include "BoxContainerSystem.hpp"
-#include "Rigidbody.hpp"
+#include <RenderingBenchmark/Components/Rigidbody.hpp>
+#include <RenderingBenchmark/Config.hpp>
+#include <RenderingBenchmark/Scenes/DefaultScene.hpp>
+#include <RenderingBenchmark/Systems/BoxContainerSystem.hpp>
 
 #include <TritiumEngine/Rendering/Camera.hpp>
 #include <TritiumEngine/Rendering/Color.hpp>
@@ -11,21 +12,15 @@
 #include <TritiumEngine/Rendering/RenderSystem.hpp>
 #include <TritiumEngine/Rendering/Renderable.hpp>
 #include <TritiumEngine/Rendering/Shader.hpp>
+#include <TritiumEngine/Utilities/Random.hpp>
 
-#include <cmath>
-#include <numbers>
-
-#define SCREEN_UNITS        100.f
-#define USE_INSTANCED       true
-#define CONTAINER_SIZE      80.f
-#define SHAPE_VELOCITY      glm::vec3(10.f, 10.f, 0.f)
-#define START_POSITION      glm::vec3(-20.f, 0.f, 0.f)
-#define DISPLACEMENT_RADIUS 10.f
-#define NUM_SQUARES         10000
-
+using namespace RenderingBenchmark::Components;
+using namespace RenderingBenchmark::Scenes;
+using namespace RenderingBenchmark::Systems;
 using namespace TritiumEngine::Core;
+using namespace TritiumEngine::Utilities;
 
-DefaultScene::DefaultScene() : Scene("DefaultScene"), m_mt(m_rd()), m_rand(0.f, 1.f) {}
+DefaultScene::DefaultScene() : Scene("DefaultScene") {}
 
 void DefaultScene::init() {
   addSystem<RenderSystem>();
@@ -34,9 +29,9 @@ void DefaultScene::init() {
   setupCamera();
   setupContainer();
   if (!USE_INSTANCED)
-    generateSquares(NUM_SQUARES);
+    generateSquares(NUM_SHAPES);
   else
-    generateSquaresInstanced(NUM_SQUARES);
+    generateSquaresInstanced(NUM_SHAPES);
 }
 
 void DefaultScene::setupCamera() {
@@ -98,19 +93,6 @@ void DefaultScene::generateSquaresInstanced(size_t n) {
     m_app->registry.emplace<Transform>(
         instancedEntity, START_POSITION + randRadialPosition(DISPLACEMENT_RADIUS, true));
     m_app->registry.emplace<Color>(instancedEntity, 0xFF0000FF);
-    m_app->registry.emplace<Rigidbody>(instancedEntity, SQUARE_VELOCITY);
+    m_app->registry.emplace<Rigidbody>(instancedEntity, SHAPE_VELOCITY);
   }
-}
-
-glm::vec3 DefaultScene::randRadialPosition(float radius, bool uniform) {
-  float a = m_rand(m_mt);
-  float b = m_rand(m_mt);
-
-  if (uniform && a > b)
-    std::swap(a, b);
-
-  float randX = b * radius * std::cos(2 * std::numbers::pi * a / b);
-  float randY = b * radius * std::sin(2 * std::numbers::pi * a / b);
-
-  return {randX, randY, 0.f};
 }
