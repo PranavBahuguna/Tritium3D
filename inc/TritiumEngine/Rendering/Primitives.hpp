@@ -2,10 +2,24 @@
 
 #include <TritiumEngine/Rendering/RenderData.hpp>
 
+#include <glm/glm.hpp>
+
 #include <numbers>
 
 namespace TritiumEngine::Rendering::Primitives
 {
+  /**
+   * @brief Line generator helper method, vertices only
+   */
+  static RenderData createLine(float aX, float aY, float bX, float bY) {
+    std::vector<float> vertices{
+        aX, aY, // line start
+        bX, bY  // line end
+    };
+
+    return RenderData{2, vertices};
+  }
+
   /**
    * @brief Triangle generator helper method, vertices only
    */

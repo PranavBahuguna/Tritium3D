@@ -10,22 +10,23 @@
 using namespace TritiumEngine::Core;
 using namespace TritiumEngine::Rendering;
 
-class FallingSquaresScene : public Scene {
+class DefaultScene : public Scene {
 public:
-  FallingSquaresScene();
+  DefaultScene();
 
 protected:
   void init() override;
 
 private:
   void setupCamera();
+  void setupContainer();
+  void createWall(float aX, float aY, float bX, float bY);
   void generateSquares(size_t n);
   void generateSquaresInstanced(size_t n);
 
-  const glm::vec3 m_startPos{0.f, 100.f, 0.f};
+  glm::vec3 randRadialPosition(float radius, bool uniform);
 
   std::random_device m_rd;
   std::mt19937 m_mt;
   std::uniform_real_distribution<float> m_rand;
-  std::uniform_int_distribution<uint32_t> m_rand256;
 };

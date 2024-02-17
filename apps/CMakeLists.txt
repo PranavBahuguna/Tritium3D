@@ -11,4 +11,4 @@ function(copy_resources APP_NAME)
 endfunction()
 
 # Add example applications
-add_subdirectory(${APPS_DIR}/FallingSquares)
+add_subdirectory(${APPS_DIR}/RenderingBenchmark)

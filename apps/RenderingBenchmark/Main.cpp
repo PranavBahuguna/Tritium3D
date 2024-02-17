@@ -1,4 +1,4 @@
-#include "Application/FallingSquaresScene.hpp"
+#include "Application/DefaultScene.hpp"
 
 #include <TritiumEngine/Core/Application.hpp>
 #include <TritiumEngine/Core/ResourceManager.hpp>
@@ -21,7 +21,11 @@ void setup(Application *app) {
                              [app]() { app->sceneManager.reloadCurrentScene(); });
 
   // Add scenes
-  app->sceneManager.addScene(std::move(std::make_unique<FallingSquaresScene>()));
+  app->sceneManager.addScene(std::move(std::make_unique<DefaultScene>()));
+
+  // Additional OpenGL settings
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_COLOR, GL_DST_COLOR);
 }
 
 int main() {
@@ -33,7 +37,7 @@ int main() {
 #endif // _DEBUG
 
   try {
-    auto *app = new Application("FallingSquares", windowSettings);
+    auto *app = new Application("RenderingBenchmark", windowSettings);
     setup(app);
     app->run();
   } catch (std::exception &e) {
@@ -41,6 +45,6 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  Logger::info("Thank you for playing Falling Squares!");
+  Logger::info("RenderingBenchmark program exited successfully!");
   return EXIT_SUCCESS;
 }

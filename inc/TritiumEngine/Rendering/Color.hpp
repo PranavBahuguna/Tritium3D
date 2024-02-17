@@ -7,7 +7,7 @@
 namespace TritiumEngine::Rendering
 {
   struct Color {
-    uint32_t value; // 0xRRGGBBAA
+    Color(uint32_t value) : value(value) {}
 
     glm::vec4 asNormalizedVec4() {
       float r = (value & 0x0000000FF) / 255.f;
@@ -16,5 +16,7 @@ namespace TritiumEngine::Rendering
       float a = ((value & 0xFF000000) >> 24) / 255.f;
       return glm::vec4{r, g, b, a};
     }
+
+    uint32_t value; // 0xRRGGBBAA
   };
 } // namespace TritiumEngine::Rendering
