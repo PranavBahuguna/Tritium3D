@@ -1,9 +1,9 @@
 #pragma once
 
-#include <RenderingBenchmark/Components/Rigidbody.hpp>
-#include <RenderingBenchmark/Config.hpp>
-#include <RenderingBenchmark/Scenes/DefaultScene.hpp>
-#include <RenderingBenchmark/Systems/BoxContainerSystem.hpp>
+#include "Scenes/DefaultScene.hpp"
+#include "Components/Rigidbody.hpp"
+#include "Config.hpp"
+#include "Systems/BoxContainerSystem.hpp"
 
 #include <TritiumEngine/Rendering/Camera.hpp>
 #include <TritiumEngine/Rendering/Color.hpp>
@@ -28,10 +28,18 @@ void DefaultScene::init() {
 
   setupCamera();
   setupContainer();
-  if (!USE_INSTANCED)
+
+  switch (RENDERING_TYPE) {
+  case RenderingType::Default:
     generateSquares(NUM_SHAPES);
-  else
+    break;
+  case RenderingType::Instanced:
     generateSquaresInstanced(NUM_SHAPES);
+    break;
+  case RenderingType::Geometry:
+    generateSquaresGeometry(NUM_SHAPES);
+    break;
+  }
 }
 
 void DefaultScene::setupCamera() {
@@ -85,6 +93,24 @@ void DefaultScene::generateSquaresInstanced(size_t n) {
   auto &renderable    = m_app->registry.emplace<InstancedRenderable>(
       entity, GL_TRIANGLES, Primitives::createSquare(), static_cast<GLsizei>(n));
   m_app->registry.emplace<Shader>(entity, m_app->shaderManager.get("instanced"));
+
+  // Add instances
+  for (size_t i = 0; i < n; ++i) {
+    entt::entity instancedEntity = m_app->registry.create();
+    m_app->registry.emplace<InstancedRenderableTag>(instancedEntity, renderable.getInstanceId());
+    m_app->registry.emplace<Transform>(
+        instancedEntity, START_POSITION + randRadialPosition(DISPLACEMENT_RADIUS, true));
+    m_app->registry.emplace<Color>(instancedEntity, 0xFF0000FF);
+    m_app->registry.emplace<Rigidbody>(instancedEntity, SHAPE_VELOCITY);
+  }
+}
+
+void DefaultScene::generateSquaresGeometry(size_t n) {
+  // Create instanced renderable template
+  entt::entity entity = m_app->registry.create();
+  auto &renderable    = m_app->registry.emplace<InstancedRenderable>(
+      entity, GL_POINTS, Primitives::createPoint(0.f, 0.f), static_cast<GLsizei>(n));
+  m_app->registry.emplace<Shader>(entity, m_app->shaderManager.get("geometry"));
 
   // Add instances
   for (size_t i = 0; i < n; ++i) {

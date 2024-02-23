@@ -9,6 +9,14 @@
 namespace TritiumEngine::Rendering::Primitives
 {
   /**
+   * @brief Point generator helper method, vertices only
+   */
+  static RenderData createPoint(float x, float y) {
+    std::vector<float> vertices {x, y};
+    return RenderData{2, vertices};
+  }
+
+  /**
    * @brief Line generator helper method, vertices only
    */
   static RenderData createLine(float aX, float aY, float bX, float bY) {

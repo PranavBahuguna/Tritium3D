@@ -1,6 +1,6 @@
 #pragma once
 
-#include <RenderingBenchmark/Components/Rigidbody.hpp>
+#include "Components/Rigidbody.hpp"
 
 #include <TritiumEngine/Core/Application.hpp>
 #include <TritiumEngine/Core/System.hpp>

@@ -21,5 +21,6 @@ namespace RenderingBenchmark::Scenes
     void createWall(float aX, float aY, float bX, float bY);
     void generateSquares(size_t n);
     void generateSquaresInstanced(size_t n);
+    void generateSquaresGeometry(size_t n);
   };
 } // namespace RenderingBenchmark::Scenes
