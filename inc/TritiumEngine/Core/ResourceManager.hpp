@@ -3,6 +3,7 @@
 #include <TritiumEngine/Core/ResourceLoaderFactory.hpp>
 #include <TritiumEngine/Utilities/Logger.hpp>
 
+#include <filesystem>
 #include <memory>
 #include <unordered_map>
 
@@ -35,10 +36,10 @@ namespace TritiumEngine::Core
     /**
      * @brief Loads and constructs a new resource of type T from file, returns existing one if
      * already loaded
-     * @param filePath The file path of the resource to load.
+     * @param filePath The file path of the resource to load
      * @param forceReload If true, will forcibly load the resource again and overwrite an existing
-     * resource.
-     * @return Shared pointer to resource of given type, nullptr if resource file path isn't found.
+     * resource
+     * @return Shared pointer to resource of given type, nullptr if resource file path isn't found
      */
     static std::shared_ptr<T> get(const std::string &filePath, bool forceReload = false) {
       if (!checkIfRegistered() || filePath.empty())
@@ -49,6 +50,12 @@ namespace TritiumEngine::Core
       std::shared_ptr<T> returnItem = nullptr;
 
       if (foundItem.expired() || forceReload) {
+        // Check if file exists
+        if (!std::filesystem::exists(totalFilePath)) {
+          Logger::error("[ResourceManager] File {} not found", totalFilePath);
+          return nullptr;
+        }
+        // Load from file path
         returnItem = std::shared_ptr<T>(m_loaderFactory->load(totalFilePath));
         foundItem  = returnItem;
       } else {
@@ -56,6 +63,18 @@ namespace TritiumEngine::Core
       }
 
       return returnItem;
+    }
+
+    /**
+     * @brief Checks if a given file exists
+     * @param filePath The file path of a resource to find
+     */
+    static bool fileExists(const std::string &filePath) {
+      if (!checkIfRegistered() || filePath.empty())
+        return false;
+
+      std::string totalFilePath = m_rootDir + filePath;
+      return std::filesystem::exists(totalFilePath);
     }
 
     /**

@@ -19,6 +19,7 @@ namespace TritiumEngine::Core
    */
   void Scene::registerWithApplication(Application &app) {
     m_app = &app;
+    onRegister();
   }
 
   /** @brief Initialises the scene and all constituent systems */

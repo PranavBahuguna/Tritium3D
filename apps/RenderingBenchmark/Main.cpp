@@ -1,4 +1,4 @@
-#include "Scenes/DefaultScene.hpp"
+#include "Scenes/ParticlesBoxScene.hpp"
 
 #include <TritiumEngine/Core/Application.hpp>
 #include <TritiumEngine/Core/ResourceManager.hpp>
@@ -22,7 +22,7 @@ static void setup(Application *app) {
                              [app]() { app->sceneManager.reloadCurrentScene(); });
 
   // Add scenes
-  app->sceneManager.addScene(std::move(std::make_unique<DefaultScene>()));
+  app->sceneManager.addScene(std::move(std::make_unique<ParticlesBoxScene>()));
 
   // Additional OpenGL settings
   glEnable(GL_BLEND);
@@ -46,6 +46,6 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  Logger::info("RenderingBenchmark program exited successfully!");
+  Logger::info("[RenderingBenchmark] Program exited successfully!");
   return EXIT_SUCCESS;
 }

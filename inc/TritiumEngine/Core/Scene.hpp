@@ -78,6 +78,7 @@ namespace TritiumEngine::Core
     const std::string name;
 
   protected:
+    virtual void onRegister() {}
     virtual void init() {}
     virtual void dispose() {}
 

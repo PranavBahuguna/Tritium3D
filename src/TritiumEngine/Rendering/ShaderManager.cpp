@@ -62,15 +62,19 @@ namespace TritiumEngine::Rendering
 
     const auto &vertexShader   = ResourceManager<ShaderCode>::get(name + ".vert", forceReload);
     const auto &fragmentShader = ResourceManager<ShaderCode>::get(name + ".frag", forceReload);
-    const auto &geometryShader = ResourceManager<ShaderCode>::get(name + ".geom", forceReload);
 
     if (vertexShader == nullptr || fragmentShader == nullptr)
       return 0;
 
-    if (geometryShader == nullptr)
+    if (!ResourceManager<ShaderCode>::fileExists(name + ".geom"))
       return create(name, vertexShader->data, fragmentShader->data);
-    else
-      return create(name, vertexShader->data, fragmentShader->data, geometryShader->data);
+
+    // Add the geometry shader if one can be found
+    const auto &geometryShader = ResourceManager<ShaderCode>::get(name + ".geom", forceReload);
+    if (geometryShader == nullptr)
+      return 0;
+
+    return create(name, vertexShader->data, fragmentShader->data, geometryShader->data);
   }
 
   /**
