@@ -29,6 +29,7 @@ static void setup(Application *app) {
   app->sceneManager.addScene(std::move(std::make_unique<ParticlesBoxScene>()));
 
   // Additional OpenGL settings
+  glEnable(GL_CULL_FACE);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }

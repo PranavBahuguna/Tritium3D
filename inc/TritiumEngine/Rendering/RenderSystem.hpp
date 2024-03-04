@@ -2,10 +2,6 @@
 
 #include <TritiumEngine/Core/System.hpp>
 
-#include <entt/entity/entity.hpp>
-
-#include <vector>
-
 using namespace TritiumEngine::Core;
 
 namespace TritiumEngine::Rendering
@@ -20,6 +16,5 @@ namespace TritiumEngine::Rendering
   private:
     void draw(const Camera &camera) const;
     void drawInstanced(const Camera &camera) const;
-    void drawText(const Camera &camera) const;
   };
 } // namespace TritiumEngine::Rendering

@@ -5,12 +5,13 @@
 #include "Systems/BoxContainerSystem.hpp"
 
 #include <TritiumEngine/Rendering/Camera.hpp>
-#include <TritiumEngine/Rendering/Color.hpp>
 #include <TritiumEngine/Rendering/InstancedRenderable.hpp>
 #include <TritiumEngine/Rendering/Primitives.hpp>
 #include <TritiumEngine/Rendering/RenderSystem.hpp>
 #include <TritiumEngine/Rendering/Renderable.hpp>
 #include <TritiumEngine/Rendering/Shader.hpp>
+#include <TritiumEngine/Rendering/TextRendering/TextRenderSystem.hpp>
+#include <TritiumEngine/Utilities/ColorUtils.hpp>
 #include <TritiumEngine/Utilities/Logger.hpp>
 #include <TritiumEngine/Utilities/Random.hpp>
 
@@ -31,15 +32,13 @@ namespace
   constexpr static float DISPLACEMENT_RADIUS = 10.f;
 
   // UI
-  constexpr static uint32_t TEXT_COLOR    = 0xFF00FF00; // green
   constexpr static const char *TEXT_FONT  = "Hack-Regular";
   constexpr static float TEXT_TITLE_SCALE = 0.1f;
   constexpr static float TEXT_INFO_SCALE  = 0.04f;
 } // namespace
 
 ParticlesBoxScene::ParticlesBoxScene()
-    : Scene("ParticlesBox"), m_renderType(RenderType::Default), m_nParticles(10000), m_titleText{},
-      m_fpsText{}, m_frameTimeText{} {}
+    : Scene("ParticlesBox"), m_renderType(RenderType::Default), m_nParticles(10000) {}
 
 void ParticlesBoxScene::onRegister() { setupControls(); }
 
@@ -73,6 +72,7 @@ void ParticlesBoxScene::init() {
 
 void ParticlesBoxScene::setupSystems() {
   addSystem<RenderSystem>();
+  addSystem<TextRenderSystem>();
   addSystem<BoxContainerSystem>(CONTAINER_SIZE);
 }
 
@@ -121,11 +121,10 @@ void ParticlesBoxScene::setupContainer() {
 }
 
 void ParticlesBoxScene::setupUI() {
-  float containerPosY = CONTAINER_SIZE / SCREEN_UNITS;
-  m_titleText =
-      addText("", {0.f, containerPosY + 0.05f}, TEXT_TITLE_SCALE, Text::Alignment::BottomCenter);
-  m_fpsText       = addText("FPS:   ", {-0.98f, 0.98f}, TEXT_INFO_SCALE);
-  m_frameTimeText = addText("Frame: ", {-0.98f, 0.93f}, TEXT_INFO_SCALE);
+  m_titleText     = addText("", {0.f, (CONTAINER_SIZE / SCREEN_UNITS) + 0.1f}, TEXT_TITLE_SCALE,
+                            Text::Alignment::BOTTOM_CENTER);
+  m_fpsText       = addText("FPS:   ", {-0.98f, 0.98f}, TEXT_INFO_SCALE, Text::Alignment::TOP_LEFT);
+  m_frameTimeText = addText("Frame: ", {-0.98f, 0.93f}, TEXT_INFO_SCALE, Text::Alignment::TOP_LEFT);
 }
 
 entt::entity ParticlesBoxScene::addText(const std::string &text, const glm::vec2 &position,
@@ -134,7 +133,7 @@ entt::entity ParticlesBoxScene::addText(const std::string &text, const glm::vec2
   m_app->registry.emplace<Text>(entity, text, TEXT_FONT, scale, alignment);
   m_app->registry.emplace<Transform>(entity, glm::vec3{position.x, position.y, 0.f});
   m_app->registry.emplace<Shader>(entity, m_app->shaderManager.get("text"));
-  m_app->registry.emplace<Color>(entity, TEXT_COLOR);
+  m_app->registry.emplace<Color>(entity, COLOR_GREEN);
   return entity;
 }
 

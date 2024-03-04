@@ -2,8 +2,6 @@
 #include <TritiumEngine/Rendering/TextRendering/FontLoaderFactory.hpp>
 #include <TritiumEngine/Rendering/TextRendering/Text.hpp>
 
-#include <numeric>
-
 namespace TritiumEngine::Rendering::TextRendering
 {
   Text::Text(const std::string &text, const std::string &font, float scale, Alignment alignment)
@@ -27,6 +25,7 @@ namespace TritiumEngine::Rendering::TextRendering
   }
 
   float Text::getPixelWidth() const {
+    // Obtains the total pixel width of the text string
     const auto &fontResource = ResourceManager<Font>::get(font + ".ttf");
     float width              = 0.f;
     for (const char &c : text)
@@ -36,6 +35,7 @@ namespace TritiumEngine::Rendering::TextRendering
   }
 
   float Text::getPixelHeight() const {
+    // Obtains the greatest pixel height from all characters in the text string
     const auto &fontResource = ResourceManager<Font>::get(font + ".ttf");
     int maxHeight            = 0;
     for (const char &c : text)

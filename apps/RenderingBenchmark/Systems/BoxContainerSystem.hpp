@@ -5,9 +5,10 @@
 #include <TritiumEngine/Core/Application.hpp>
 #include <TritiumEngine/Core/System.hpp>
 #include <TritiumEngine/Core/Transform.hpp>
-#include <TritiumEngine/Rendering/Color.hpp>
+#include <TritiumEngine/Utilities/ColorUtils.hpp>
 
 using namespace TritiumEngine::Core;
+using namespace TritiumEngine::Utilities;
 using namespace RenderingBenchmark::Components;
 
 namespace RenderingBenchmark::Systems
@@ -61,13 +62,13 @@ namespace RenderingBenchmark::Systems
       bool posVelocityY = velocity.y > 0;
 
       if (posVelocityX && posVelocityY)
-        color = Color{0xFF0000FF}; // RED
+        color = COLOR_RED;
       if (posVelocityX && !posVelocityY)
-        color = Color{0xFF00FF00}; // GREEN
+        color = COLOR_GREEN;
       if (!posVelocityX && posVelocityY)
-        color = Color{0xFFFF0000}; // BLUE
+        color = COLOR_BLUE;
       if (!posVelocityX && !posVelocityY)
-        color = Color{0xFF00FFFF}; // YELLOW
+        color = COLOR_YELLOW;
     }
 
     float m_boxSize;

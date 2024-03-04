@@ -53,8 +53,8 @@ namespace TritiumEngine::Rendering::Primitives
     };
 
     std::vector<unsigned int> indices{
-        0, 1, 2, // first triangle
-        0, 2, 3  // second triangle
+        0, 2, 1, // first triangle
+        0, 3, 2  // second triangle
     };
 
     return RenderData{2, vertices, indices};

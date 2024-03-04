@@ -28,7 +28,7 @@ namespace RenderingBenchmark::Scenes
     void setupContainer();
     void setupUI();
     entt::entity addText(const std::string &text, const glm::vec2 &position, float scale,
-                         Text::Alignment alignment = Text::Alignment::TopLeft);
+                         Text::Alignment alignment);
     void setText(entt::entity textEntity, const std::string &textString);
 
     void setRenderType(RenderType renderType);
@@ -43,8 +43,8 @@ namespace RenderingBenchmark::Scenes
     int m_nParticles;
 
     // Dynamic UI entities
-    entt::entity m_titleText;
-    entt::entity m_fpsText;
-    entt::entity m_frameTimeText;
+    entt::entity m_titleText{};
+    entt::entity m_fpsText{};
+    entt::entity m_frameTimeText{};
   };
 } // namespace RenderingBenchmark::Scenes

@@ -11,19 +11,19 @@ namespace TritiumEngine::Rendering::TextRendering
   class Text {
   public:
     enum class Alignment {
-      TopLeft,
-      TopCenter,
-      TopRight,
-      CenterLeft,
-      Center,
-      CenterRight,
-      BottomLeft,
-      BottomCenter,
-      BottomRight
+      TOP_LEFT,
+      TOP_CENTER,
+      TOP_RIGHT,
+      CENTER_LEFT,
+      CENTER,
+      CENTER_RIGHT,
+      BOTTOM_LEFT,
+      BOTTOM_CENTER,
+      BOTTOM_RIGHT
     };
 
     Text(const std::string &text, const std::string &font, float scale = 1.f,
-         Alignment alignment = Alignment::BottomLeft);
+         Alignment alignment = Alignment::BOTTOM_LEFT);
     ~Text();
 
     float getPixelWidth() const;
