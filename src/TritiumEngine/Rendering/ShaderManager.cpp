@@ -1,5 +1,5 @@
 #include <TritiumEngine/Core/ResourceManager.hpp>
-#include <TritiumEngine/Rendering/ShaderLoaderFactory.hpp>
+#include <TritiumEngine/Rendering/ShaderCode.hpp>
 #include <TritiumEngine/Rendering/ShaderManager.hpp>
 
 #include <glm/gtc/type_ptr.hpp>

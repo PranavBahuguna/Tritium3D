@@ -1,10 +1,12 @@
 #pragma once
 
 #include <TritiumEngine/Core/Scene.hpp>
+#include <TritiumEngine/Rendering/TextRendering/Text.hpp>
 
 #include <glm/glm.hpp>
 
 using namespace TritiumEngine::Core;
+using namespace TritiumEngine::Rendering::TextRendering;
 
 namespace RenderingBenchmark::Scenes
 {
@@ -16,6 +18,7 @@ namespace RenderingBenchmark::Scenes
 
   protected:
     void onRegister() override;
+    void onUpdate(float dt) override;
     void init() override;
 
   private:
@@ -23,9 +26,13 @@ namespace RenderingBenchmark::Scenes
     void setupControls();
     void setupCamera();
     void setupContainer();
+    void setupUI();
+    entt::entity addText(const std::string &text, const glm::vec2 &position, float scale,
+                         Text::Alignment alignment = Text::Alignment::TopLeft);
+    void setText(entt::entity textEntity, const std::string &textString);
 
     void setRenderType(RenderType renderType);
-    void setParticleCount(size_t nParticles);
+    void setParticleCount(int nParticles);
 
     void createWall(float aX, float aY, float bX, float bY);
     void generateParticlesDefault();
@@ -33,6 +40,11 @@ namespace RenderingBenchmark::Scenes
     void generateParticlesGeometry();
 
     RenderType m_renderType;
-    size_t m_nParticles;
+    int m_nParticles;
+
+    // Dynamic UI entities
+    entt::entity m_titleText;
+    entt::entity m_fpsText;
+    entt::entity m_frameTimeText;
   };
 } // namespace RenderingBenchmark::Scenes

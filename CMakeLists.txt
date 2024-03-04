@@ -39,11 +39,18 @@ if (DIR_SIZE EQUAL 0)
     message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
 
-# Init settings for thirdparty modules
+# GLFW settings
 add_definitions(-DGLEW_STATIC)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+# FreeType settings
+set(FT_DISABLE_ZLIB TRUE CACHE BOOL "" FORCE)
+set(FT_DISABLE_BZIP2 TRUE CACHE BOOL "" FORCE)
+set(FT_DISABLE_PNG TRUE CACHE BOOL "" FORCE)
+set(FT_DISABLE_HARFBUZZ TRUE CACHE BOOL "" FORCE)
+set(FT_DISABLE_BROTLI TRUE CACHE BOOL "" FORCE)
 
 # Add header-only libraries
 add_library(thirdparty_headers_lib INTERFACE)
@@ -54,6 +61,7 @@ add_subdirectory(${THIRDPARTY_DIR}/glew)
 add_subdirectory(${THIRDPARTY_DIR}/glfw)
 add_subdirectory(${THIRDPARTY_DIR}/glm)
 add_subdirectory(${THIRDPARTY_DIR}/entt)
+add_subdirectory(${THIRDPARTY_DIR}/freetype)
 
 # Add generation of documentation
 if (TRITIUM_BUILD_DOCS)
@@ -71,7 +79,7 @@ target_include_directories(TritiumEngine PUBLIC ${TRITIUM_INC_DIR})
 
 target_link_libraries(TritiumEngine
     PUBLIC thirdparty_headers_lib
-    PRIVATE glm glfw libglew_static EnTT)
+    PRIVATE glm glfw libglew_static EnTT freetype)
 
 # Add example apps
 if (TRITIUM_BUILD_APPS)

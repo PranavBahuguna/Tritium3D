@@ -3,17 +3,21 @@
 #include <TritiumEngine/Core/Application.hpp>
 #include <TritiumEngine/Core/ResourceManager.hpp>
 #include <TritiumEngine/Rendering/ShaderLoaderFactory.hpp>
+#include <TritiumEngine/Rendering/TextRendering/FontLoaderFactory.hpp>
 #include <TritiumEngine/Rendering/Window.hpp>
 #include <TritiumEngine/Utilities/Logger.hpp>
 
 using namespace RenderingBenchmark::Scenes;
 using namespace TritiumEngine::Rendering;
+using namespace TritiumEngine::Rendering::TextRendering;
 using namespace TritiumEngine::Utilities;
 
 static void setup(Application *app) {
   // Setup resource paths
   ResourceManager<ShaderCode>::registerFactory(std::make_unique<ShaderLoaderFactory>(),
                                                "Resources/Shaders/");
+  ResourceManager<Font>::registerFactory(std::make_unique<FontLoaderFactory>("Hack-Regular"),
+                                         "Resources/Fonts/");
 
   // Add window controls callbacks
   app->window.addKeyCallback(Key::ESCAPE, KeyState::PRESSED, [app]() { app->stop(); });
@@ -26,7 +30,7 @@ static void setup(Application *app) {
 
   // Additional OpenGL settings
   glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_COLOR, GL_DST_COLOR);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 int main() {

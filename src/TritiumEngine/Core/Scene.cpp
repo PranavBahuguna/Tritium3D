@@ -48,9 +48,11 @@ namespace TritiumEngine::Core
    * @brief Updates all systems active in this scene
    * @param dt Time delta since last frame
    */
-  void Scene::update(float dt) const {
+  void Scene::update(float dt) {
     for (auto &system : m_systems)
       system->update(dt);
+
+    onUpdate(dt);
   }
 
   /**

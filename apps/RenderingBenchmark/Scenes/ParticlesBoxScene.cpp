@@ -11,6 +11,7 @@
 #include <TritiumEngine/Rendering/RenderSystem.hpp>
 #include <TritiumEngine/Rendering/Renderable.hpp>
 #include <TritiumEngine/Rendering/Shader.hpp>
+#include <TritiumEngine/Utilities/Logger.hpp>
 #include <TritiumEngine/Utilities/Random.hpp>
 
 using namespace RenderingBenchmark::Components;
@@ -18,34 +19,53 @@ using namespace RenderingBenchmark::Scenes;
 using namespace RenderingBenchmark::Systems;
 using namespace TritiumEngine::Core;
 using namespace TritiumEngine::Utilities;
+using namespace TritiumEngine::Rendering::TextRendering;
 
 namespace
 {
-  constexpr static float CONTAINER_SIZE      = 80.f;
+  // Simulation
+  constexpr static float CONTAINER_SIZE      = 75.f;
   constexpr static float SCREEN_UNITS        = 100.f;
   constexpr static glm::vec3 SHAPE_VELOCITY  = {10.f, 10.f, 0.f};
   constexpr static glm::vec3 START_POSITION  = {0.f, 0.f, 0.f};
   constexpr static float DISPLACEMENT_RADIUS = 10.f;
+
+  // UI
+  constexpr static uint32_t TEXT_COLOR    = 0xFF00FF00; // green
+  constexpr static const char *TEXT_FONT  = "Hack-Regular";
+  constexpr static float TEXT_TITLE_SCALE = 0.1f;
+  constexpr static float TEXT_INFO_SCALE  = 0.04f;
 } // namespace
 
 ParticlesBoxScene::ParticlesBoxScene()
-    : Scene("ParticlesBox"), m_renderType(RenderType::Default), m_nParticles(10000) {}
+    : Scene("ParticlesBox"), m_renderType(RenderType::Default), m_nParticles(10000), m_titleText{},
+      m_fpsText{}, m_frameTimeText{} {}
 
 void ParticlesBoxScene::onRegister() { setupControls(); }
+
+void ParticlesBoxScene::onUpdate(float dt) {
+  // Update UI
+  setText(m_fpsText, std::format("FPS:   {:3.1f}", 1.f / dt));
+  setText(m_frameTimeText, std::format("Frame: {:3.2f}ms", dt * 1000.f));
+}
 
 void ParticlesBoxScene::init() {
   setupSystems();
   setupCamera();
   setupContainer();
+  setupUI();
 
   switch (m_renderType) {
   case RenderType::Default:
+    setText(m_titleText, "Default");
     generateParticlesDefault();
     break;
   case RenderType::Instanced:
+    setText(m_titleText, "Instanced");
     generateParticlesInstanced();
     break;
   case RenderType::Geometry:
+    setText(m_titleText, "Geometry Shader");
     generateParticlesGeometry();
     break;
   }
@@ -88,7 +108,7 @@ void ParticlesBoxScene::setupCamera() {
 }
 
 void ParticlesBoxScene::setupContainer() {
-  float halfSize = (CONTAINER_SIZE + 1.f) / 2.f;
+  float halfSize = (CONTAINER_SIZE + 1.f) * 0.5f;
   float right    = halfSize;
   float left     = -halfSize;
   float top      = halfSize;
@@ -100,12 +120,34 @@ void ParticlesBoxScene::setupContainer() {
   createWall(left, bottom, right, bottom); // bottom
 }
 
+void ParticlesBoxScene::setupUI() {
+  float containerPosY = CONTAINER_SIZE / SCREEN_UNITS;
+  m_titleText =
+      addText("", {0.f, containerPosY + 0.05f}, TEXT_TITLE_SCALE, Text::Alignment::BottomCenter);
+  m_fpsText       = addText("FPS:   ", {-0.98f, 0.98f}, TEXT_INFO_SCALE);
+  m_frameTimeText = addText("Frame: ", {-0.98f, 0.93f}, TEXT_INFO_SCALE);
+}
+
+entt::entity ParticlesBoxScene::addText(const std::string &text, const glm::vec2 &position,
+                                        float scale, Text::Alignment alignment) {
+  entt::entity entity = m_app->registry.create();
+  m_app->registry.emplace<Text>(entity, text, TEXT_FONT, scale, alignment);
+  m_app->registry.emplace<Transform>(entity, glm::vec3{position.x, position.y, 0.f});
+  m_app->registry.emplace<Shader>(entity, m_app->shaderManager.get("text"));
+  m_app->registry.emplace<Color>(entity, TEXT_COLOR);
+  return entity;
+}
+
+void ParticlesBoxScene::setText(entt::entity textEntity, const std::string &textString) {
+  m_app->registry.get<Text>(textEntity).text = textString;
+}
+
 void ParticlesBoxScene::setRenderType(RenderType renderType) {
   m_renderType = renderType;
   m_app->sceneManager.reloadCurrentScene();
 }
 
-void ParticlesBoxScene::setParticleCount(size_t nParticles) {
+void ParticlesBoxScene::setParticleCount(int nParticles) {
   m_nParticles = nParticles;
   m_app->sceneManager.reloadCurrentScene();
 }
@@ -119,9 +161,7 @@ void ParticlesBoxScene::createWall(float aX, float aY, float bX, float bY) {
 }
 
 void ParticlesBoxScene::generateParticlesDefault() {
-  for (size_t i = 0; i < m_nParticles; ++i) {
-    glm::vec3 displacement = randRadialPosition(DISPLACEMENT_RADIUS, true);
-
+  for (int i = 0; i < m_nParticles; ++i) {
     entt::entity entity = m_app->registry.create();
     m_app->registry.emplace<Transform>(entity, START_POSITION +
                                                    randRadialPosition(DISPLACEMENT_RADIUS, true));
@@ -136,11 +176,11 @@ void ParticlesBoxScene::generateParticlesInstanced() {
   // Create instanced renderable template
   entt::entity entity = m_app->registry.create();
   auto &renderable    = m_app->registry.emplace<InstancedRenderable>(
-      entity, GL_TRIANGLES, Primitives::createSquare(), static_cast<GLsizei>(m_nParticles));
+      entity, GL_TRIANGLES, Primitives::createSquare(), m_nParticles);
   m_app->registry.emplace<Shader>(entity, m_app->shaderManager.get("instanced"));
 
   // Add instances
-  for (size_t i = 0; i < m_nParticles; ++i) {
+  for (int i = 0; i < m_nParticles; ++i) {
     entt::entity instancedEntity = m_app->registry.create();
     m_app->registry.emplace<InstancedRenderableTag>(instancedEntity, renderable.getInstanceId());
     m_app->registry.emplace<Transform>(
@@ -154,11 +194,11 @@ void ParticlesBoxScene::generateParticlesGeometry() {
   // Create instanced renderable template
   entt::entity entity = m_app->registry.create();
   auto &renderable    = m_app->registry.emplace<InstancedRenderable>(
-      entity, GL_POINTS, Primitives::createPoint(0.f, 0.f), static_cast<GLsizei>(m_nParticles));
+      entity, GL_POINTS, Primitives::createPoint(0.f, 0.f), m_nParticles);
   m_app->registry.emplace<Shader>(entity, m_app->shaderManager.get("geometry"));
 
   // Add instances
-  for (size_t i = 0; i < m_nParticles; ++i) {
+  for (int i = 0; i < m_nParticles; ++i) {
     entt::entity instancedEntity = m_app->registry.create();
     m_app->registry.emplace<InstancedRenderableTag>(instancedEntity, renderable.getInstanceId());
     m_app->registry.emplace<Transform>(

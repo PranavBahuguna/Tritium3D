@@ -1,16 +1,12 @@
 #pragma once
 
 #include <TritiumEngine/Core/ResourceLoaderFactory.hpp>
+#include <TritiumEngine/Rendering/ShaderCode.hpp>
 
 using namespace TritiumEngine::Core;
 
 namespace TritiumEngine::Rendering
 {
-  // Struct wrapper for shader code data
-  struct ShaderCode {
-    std::string data;
-  };
-
   class ShaderLoaderFactory : public ResourceLoaderFactory<ShaderCode> {
   public:
     ShaderCode *load(const std::string &filePath) override;

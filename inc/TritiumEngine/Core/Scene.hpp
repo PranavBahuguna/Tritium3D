@@ -24,8 +24,8 @@ namespace TritiumEngine::Core
     void registerWithApplication(Application &app);
     void load();
     void unload();
+    void update(float dt);
 
-    void update(float dt) const;
     entt::entity getEntity() const;
 
     /**
@@ -79,6 +79,7 @@ namespace TritiumEngine::Core
 
   protected:
     virtual void onRegister() {}
+    virtual void onUpdate(float dt) {}
     virtual void init() {}
     virtual void dispose() {}
 
