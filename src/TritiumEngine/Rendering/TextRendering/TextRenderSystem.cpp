@@ -2,6 +2,7 @@
 #include <TritiumEngine/Core/ResourceManager.hpp>
 #include <TritiumEngine/Rendering/Camera.hpp>
 #include <TritiumEngine/Rendering/Shader.hpp>
+#include <TritiumEngine/Rendering/TextRendering/Font.hpp>
 #include <TritiumEngine/Rendering/TextRendering/Text.hpp>
 #include <TritiumEngine/Rendering/TextRendering/TextRenderSystem.hpp>
 #include <TritiumEngine/Utilities/ColorUtils.hpp>
@@ -26,8 +27,6 @@ namespace TritiumEngine::Rendering::TextRendering
                                    transform.getModelMatrix() * camera.calcProjectionViewMatrix());
           shaderManager.setVector4("color", ColorUtils::ToNormalizedVec4(color));
 
-          const auto &font = ResourceManager<Font>::get(text.font + ".ttf");
-
           // Starting x/y position current character in text string
           glm::vec2 startPos = getStartPosition(text);
 
@@ -36,7 +35,7 @@ namespace TritiumEngine::Rendering::TextRendering
 
           // Iterate and draw each character
           for (const char &c : text.text) {
-            const auto &ch = font->characters[c];
+            const auto &ch = text.getFont()->characters[c];
 
             // Calculate position and size for the given character
             float scale = text.scale;

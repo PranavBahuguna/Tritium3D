@@ -1,13 +1,14 @@
-#include <TritiumEngine/Rendering/TextRendering/Font.hpp>
+#pragma once
 
 #include <GL/glew.h>
 
+#include <memory>
 #include <string>
-
-using namespace TritiumEngine::Rendering;
 
 namespace TritiumEngine::Rendering::TextRendering
 {
+  struct Font;
+
   class Text {
   public:
     enum class Alignment {
@@ -28,15 +29,16 @@ namespace TritiumEngine::Rendering::TextRendering
 
     float getPixelWidth() const;
     float getPixelHeight() const;
+    Font *getFont() const { return m_font.get(); }
     GLuint getVao() const { return m_vao; }
     GLuint getVbo() const { return m_vbo; }
 
     std::string text;
-    std::string font;
     float scale;
     Alignment align;
 
   private:
+    std::shared_ptr<Font> m_font;
     GLuint m_vao;
     GLuint m_vbo;
   };

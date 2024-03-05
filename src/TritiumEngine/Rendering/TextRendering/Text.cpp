@@ -5,7 +5,8 @@
 namespace TritiumEngine::Rendering::TextRendering
 {
   Text::Text(const std::string &text, const std::string &font, float scale, Alignment alignment)
-      : text(text), font(font), scale(scale), align(alignment) {
+      : text(text), scale(scale), align(alignment),
+        m_font(ResourceManager<Font>::get(font + ".ttf")) {
     // Bind vertex array object
     glGenVertexArrays(1, &m_vao);
     glBindVertexArray(m_vao);
@@ -26,20 +27,18 @@ namespace TritiumEngine::Rendering::TextRendering
 
   float Text::getPixelWidth() const {
     // Obtains the total pixel width of the text string
-    const auto &fontResource = ResourceManager<Font>::get(font + ".ttf");
-    float width              = 0.f;
+    float width = 0.f;
     for (const char &c : text)
-      width += fontResource->characters[c].advance >> 6;
+      width += m_font->characters[c].advance >> 6;
 
     return width * scale;
   }
 
   float Text::getPixelHeight() const {
     // Obtains the greatest pixel height from all characters in the text string
-    const auto &fontResource = ResourceManager<Font>::get(font + ".ttf");
-    int maxHeight            = 0;
+    int maxHeight = 0;
     for (const char &c : text)
-      maxHeight = std::max(fontResource->characters[c].bearing.y, maxHeight);
+      maxHeight = std::max(m_font->characters[c].bearing.y, maxHeight);
 
     return maxHeight * scale;
   }

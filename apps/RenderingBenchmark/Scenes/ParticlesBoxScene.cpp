@@ -44,6 +44,14 @@ void ParticlesBoxScene::onRegister() { setupControls(); }
 
 void ParticlesBoxScene::onUpdate(float dt) {
   // Update UI
+  static float sumDt = 0.f;
+  if (sumDt < 0.2f) {
+    // Update elements only every 0.2 seconds
+    sumDt += dt;
+    return;
+  }
+  sumDt = 0.f;
+
   setText(m_fpsText, std::format("FPS:   {:3.1f}", 1.f / dt));
   setText(m_frameTimeText, std::format("Frame: {:3.2f}ms", dt * 1000.f));
 }
