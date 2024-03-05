@@ -52,8 +52,8 @@ namespace TritiumEngine::Rendering
   struct WindowSettings {
     std::string name;
     WindowHints hints = WindowHints::DEFAULT;
-    int width         = 1200;
-    int height        = 900;
+    int width         = 1280;
+    int height        = 720;
   };
 
   class Window {

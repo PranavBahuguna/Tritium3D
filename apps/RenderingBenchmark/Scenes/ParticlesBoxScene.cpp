@@ -38,7 +38,7 @@ namespace
 } // namespace
 
 ParticlesBoxScene::ParticlesBoxScene()
-    : Scene("ParticlesBox"), m_renderType(RenderType::Default), m_nParticles(10000) {}
+    : Scene("ParticlesBox"), m_renderType(RenderType::Default), m_nParticles(1000) {}
 
 void ParticlesBoxScene::onRegister() { setupControls(); }
 
@@ -52,8 +52,8 @@ void ParticlesBoxScene::onUpdate(float dt) {
   }
   sumDt = 0.f;
 
-  setText(m_fpsText, std::format("FPS:   {:3.1f}", 1.f / dt));
-  setText(m_frameTimeText, std::format("Frame: {:3.2f}ms", dt * 1000.f));
+  setText(m_fpsText, std::format("FPS:      {:3.1f}", 1.f / dt));
+  setText(m_frameTimeText, std::format("Frame:    {:3.2f}ms", dt * 1000.f));
 }
 
 void ParticlesBoxScene::init() {
@@ -129,10 +129,26 @@ void ParticlesBoxScene::setupContainer() {
 }
 
 void ParticlesBoxScene::setupUI() {
-  m_titleText     = addText("", {0.f, (CONTAINER_SIZE / SCREEN_UNITS) + 0.1f}, TEXT_TITLE_SCALE,
+  // Stats
+  m_titleText     = addText("", {0.f, (CONTAINER_SIZE / SCREEN_UNITS) + 0.1f}, 0.1f,
                             Text::Alignment::BOTTOM_CENTER);
-  m_fpsText       = addText("FPS:   ", {-0.98f, 0.98f}, TEXT_INFO_SCALE, Text::Alignment::TOP_LEFT);
-  m_frameTimeText = addText("Frame: ", {-0.98f, 0.93f}, TEXT_INFO_SCALE, Text::Alignment::TOP_LEFT);
+  m_fpsText       = addText("FPS:  ", {-0.98f, 0.98f}, 0.04f, Text::Alignment::TOP_LEFT);
+  m_frameTimeText = addText("Frame:", {-0.98f, 0.93f}, 0.04f, Text::Alignment::TOP_LEFT);
+  addText(std::format("Entities: {}", m_nParticles), {-0.98f, 0.88f}, 0.04f,
+          Text::Alignment::TOP_LEFT);
+
+  // Help panel
+  addText("Controls:           ", {-0.97f, 0.75f}, 0.08f, Text::Alignment::TOP_LEFT);
+  addText("D: Default rendering", {-0.95f, 0.55f}, 0.05f, Text::Alignment::TOP_LEFT);
+  addText("I: Instancing       ", {-0.95f, 0.45f}, 0.05f, Text::Alignment::TOP_LEFT);
+  addText("G: Geometry shader  ", {-0.95f, 0.35f}, 0.05f, Text::Alignment::TOP_LEFT);
+  addText("1: 1 entity         ", {-0.95f, 0.20f}, 0.05f, Text::Alignment::TOP_LEFT);
+  addText("2: 10 entities      ", {-0.95f, 0.10f}, 0.05f, Text::Alignment::TOP_LEFT);
+  addText("3: 100 entities     ", {-0.95f, 0.00f}, 0.05f, Text::Alignment::TOP_LEFT);
+  addText("4: 1000 entities    ", {-0.95f, -0.1f}, 0.05f, Text::Alignment::TOP_LEFT);
+  addText("5: 10000 entities   ", {-0.95f, -0.2f}, 0.05f, Text::Alignment::TOP_LEFT);
+  addText("6: 100000 entities  ", {-0.95f, -0.3f}, 0.05f, Text::Alignment::TOP_LEFT);
+  addText("7: 1000000 entities ", {-0.95f, -0.4f}, 0.05f, Text::Alignment::TOP_LEFT);
 }
 
 entt::entity ParticlesBoxScene::addText(const std::string &text, const glm::vec2 &position,
