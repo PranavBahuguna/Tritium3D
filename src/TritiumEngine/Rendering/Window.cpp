@@ -113,10 +113,11 @@ namespace TritiumEngine::Rendering
    * @param key The keyboard key to add a callback for
    * @param state The state of the key to trigger the callback on
    * @param callback Callback action to run
+   * @returns Id referencing this callback
    */
-  void Window::addKeyCallback(Key key, KeyState state, KeyCallback callback) {
+  CallbackId Window::addKeyCallback(Key key, KeyState state, KeyCallback callback) {
     // Add action to callbacks
-    m_keyCallbacks[innerType(key)].emplace_back(state, std::move(callback));
+    m_keyCallbacks[innerType(key)].emplace_back(state, std::move(callback), ++s_lastCallbackId);
 
     glfwSetKeyCallback(m_windowHandle,
                        [](GLFWwindow *windowHandle, int key, int scancode, int action, int mods) {
@@ -124,13 +125,12 @@ namespace TritiumEngine::Rendering
 
                          // Run all callbacks for the given key
                          for (const auto &callbackItem : window->m_keyCallbacks[key]) {
-                           KeyState state              = std::get<0>(callbackItem);
-                           const KeyCallback &callback = std::get<1>(callbackItem);
-
-                           if (action == innerType(state))
-                             callback();
+                           if (action == innerType(callbackItem.state))
+                             callbackItem.callback();
                          }
                        });
+
+    return s_lastCallbackId;
   }
 
   /**
@@ -138,11 +138,13 @@ namespace TritiumEngine::Rendering
    * @param button The mouse button to add a callback for
    * @param state The state of the button to trigger the callback on
    * @param callback Callback action to run
+   * @returns Id referencing this callback
    */
-  void Window::addMouseButtonCallback(MouseButton button, MouseButtonState state,
-                                      MouseButtonCallback callback) {
+  CallbackId Window::addMouseButtonCallback(MouseButton button, MouseButtonState state,
+                                            MouseButtonCallback callback) {
     // Add action to callbacks
-    m_mouseButtonCallbacks[innerType(button)].emplace_back(state, std::move(callback));
+    m_mouseButtonCallbacks[innerType(button)].emplace_back(state, std::move(callback),
+                                                           ++s_lastCallbackId);
 
     glfwSetMouseButtonCallback(
         m_windowHandle, [](GLFWwindow *windowHandle, int button, int action, int mods) {
@@ -150,55 +152,61 @@ namespace TritiumEngine::Rendering
 
           // Run all callbacks for the given mouse button
           for (const auto &callbackItem : window->m_mouseButtonCallbacks[button]) {
-            MouseButtonState state              = std::get<0>(callbackItem);
-            const MouseButtonCallback &callback = std::get<1>(callbackItem);
-
-            if (action == innerType(state))
-              callback();
+            if (action == innerType(callbackItem.state))
+              callbackItem.callback();
           }
         });
+
+    return s_lastCallbackId;
   }
 
   /**
    * @brief Adds a callback action for mouse movement input
    * @param callback Callback action to run
+   * @returns Id referencing this callback
    */
-  void Window::addMouseMoveCallback(MouseMoveCallback callback) {
+  CallbackId Window::addMouseMoveCallback(MouseMoveCallback callback) {
     // Add action to callbacks
-    m_mouseMoveCallbacks.emplace_back(std::move(callback));
+    m_mouseMoveCallbacks.emplace_back(std::move(callback), ++s_lastCallbackId);
 
-    glfwSetCursorPosCallback(
-        m_windowHandle, [](GLFWwindow *windowHandle, double xpos, double ypos) {
-          const auto &window = getUserPointer(windowHandle);
+    glfwSetCursorPosCallback(m_windowHandle,
+                             [](GLFWwindow *windowHandle, double xpos, double ypos) {
+                               const auto &window = getUserPointer(windowHandle);
 
-          // Run all mouse movement callbacks
-          for (const MouseMoveCallback &callback : window->m_mouseMoveCallbacks)
-            callback(xpos, ypos);
-        });
+                               // Run all mouse movement callbacks
+                               for (const auto &callbackItem : window->m_mouseMoveCallbacks)
+                                 callbackItem.callback(xpos, ypos);
+                             });
+
+    return s_lastCallbackId;
   }
 
   /**
    * @brief Adds a callback action for mouse scroll input
    * @param callback Callback action to run
+   * @returns Id referencing this callback
    */
-  void Window::addMouseScrollCallback(MouseScrollCallback callback) {
+  CallbackId Window::addMouseScrollCallback(MouseScrollCallback callback) {
     // Add action to callbacks
-    m_mouseScrollCallbacks.emplace_back(std::move(callback));
+    m_mouseScrollCallbacks.emplace_back(std::move(callback), ++s_lastCallbackId);
 
     glfwSetScrollCallback(m_windowHandle, [](GLFWwindow *windowHandle, double xPos, double yPos) {
       const auto &window = getUserPointer(windowHandle);
 
       // Run all mouse scroll callbacks
-      for (const MouseScrollCallback &callback : window->m_mouseScrollCallbacks)
-        callback(xPos, yPos);
+      for (const auto &callbackItem : window->m_mouseScrollCallbacks)
+        callbackItem.callback(xPos, yPos);
     });
+
+    return s_lastCallbackId;
   }
 
   /**
    * @brief Adds a callback acion to trigger on window close
    * @param callback Callback action to run
+   * @returns Id referencing this callback
    */
-  void Window::setCloseCallback(CloseCallback callback) {
+  CallbackId Window::setCloseCallback(CloseCallback callback) {
     // Set the close callback
     m_closeCallback = std::move(callback);
 
@@ -207,6 +215,73 @@ namespace TritiumEngine::Rendering
       const auto &window = getUserPointer(windowHandle);
       window->m_closeCallback();
     });
+
+    return s_lastCallbackId;
+  }
+
+  /**
+   * @brief Removes a callback given its id
+   * @param id Id referencing the callback to be removed
+   */
+  void Window::removeCallback(CallbackId id) {
+    if (id == 0)
+      return; // null callback
+
+    // Check key callbacks
+    for (auto &callbacks : m_keyCallbacks) {
+      auto it = std::find_if(callbacks.begin(), callbacks.end(),
+                             [id](const KeyCallbackRecord &record) { return id == record.id; });
+      if (it != callbacks.end()) {
+        callbacks.erase(it);
+        return;
+      }
+    }
+
+    // Check mouse button callbacks
+    for (auto &callbacks : m_mouseButtonCallbacks) {
+      auto it =
+          std::find_if(callbacks.begin(), callbacks.end(),
+                       [id](const MouseButtonCallbackRecord &record) { return id == record.id; });
+      if (it != callbacks.end()) {
+        callbacks.erase(it);
+        return;
+      }
+    }
+
+    // Check mouse move callbacks
+    auto mouseMoveIt =
+        std::find_if(m_mouseMoveCallbacks.begin(), m_mouseMoveCallbacks.end(),
+                     [id](const MouseMoveCallbackRecord &record) { return id == record.id; });
+    if (mouseMoveIt != m_mouseMoveCallbacks.end()) {
+      m_mouseMoveCallbacks.erase(mouseMoveIt);
+      return;
+    }
+
+    // Check mouse scroll callbacks
+    auto mouseScrollIt =
+        std::find_if(m_mouseScrollCallbacks.begin(), m_mouseScrollCallbacks.end(),
+                     [id](const MouseScrollCallbackRecord &record) { return id == record.id; });
+    if (mouseScrollIt != m_mouseScrollCallbacks.end()) {
+      m_mouseScrollCallbacks.erase(mouseScrollIt);
+      return;
+    }
+
+    // Check close callback
+    if (id == CLOSE_CALLBACK_ID) {
+      m_closeCallback = {};
+      return;
+    }
+
+    Logger::warn("[Window] Could not find callback to remove with id {}.", id);
+  }
+
+  /**
+   * @brief Removes multiple callbacks with a collection of ids
+   * @param ids Ids referencing the callbacks to be removed
+   */
+  void Window::removeCallbacks(const std::span<CallbackId> &ids) {
+    for (CallbackId id : ids)
+      removeCallback(id);
   }
 
   /**

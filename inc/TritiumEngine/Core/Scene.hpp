@@ -1,12 +1,10 @@
 #pragma once
 
+#include <TritiumEngine/Utilities/Logger.hpp>
+
 #include <entt/entity/entity.hpp>
 
-#include <algorithm>
-#include <memory>
-#include <string>
-#include <type_traits>
-#include <vector>
+using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Core
 {
@@ -34,8 +32,20 @@ namespace TritiumEngine::Core
      * @tparam Args Additional parameters required to construct the system
      */
     template <class T, typename... Args, IsSystemType<T> = true> void addSystem(Args &&...args) {
-      if (!hasSystem<T>())
-        m_systems.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
+      if (m_app == nullptr) {
+        Logger::error("[Scene] Cannot add system {} before scene is registered with application.",
+                      typeid(T).name());
+        return;
+      }
+
+      if (hasSystem<T>()) {
+        Logger::warn("[Scene] System {} is already registered with this scene.", typeid(T).name());
+        return;
+      }
+
+      m_systems.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
+      m_systems.back()->setup(*m_app);
+      m_systems.back()->init();
     }
 
     /**
@@ -45,8 +55,13 @@ namespace TritiumEngine::Core
     template <class T, IsSystemType<T> = true> void removeSystem() {
       auto it = std::find_if(m_systems.begin(), m_systems.end(),
                              [&](const auto &s) { return dynamic_cast<T *>(s.get()) != nullptr; });
-      if (it != m_systems.end())
-        m_systems.erase(it);
+      if (it == m_systems.end()) {
+        Logger::warn("[Scene] Could not remove system {} from this scene.", typeid(T).name());
+        return;
+      }
+
+      (*it)->dispose();
+      m_systems.erase(it);
     }
 
     /**
@@ -83,10 +98,10 @@ namespace TritiumEngine::Core
     virtual void init() {}
     virtual void dispose() {}
 
-    Application *m_app;
+    Application *m_app = nullptr;
 
   private:
-    entt::entity m_sceneEntity;
+    entt::entity m_sceneEntity{};
     std::vector<std::unique_ptr<System>> m_systems;
   };
 } // namespace TritiumEngine::Core

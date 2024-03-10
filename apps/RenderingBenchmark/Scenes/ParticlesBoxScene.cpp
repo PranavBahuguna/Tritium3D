@@ -3,7 +3,9 @@
 #include "Scenes/ParticlesBoxScene.hpp"
 #include "Components/Rigidbody.hpp"
 #include "Systems/BoxContainerSystem.hpp"
+#include "Systems/FpsDisplaySystem.hpp"
 
+#include <TritiumEngine/Core/Application.hpp>
 #include <TritiumEngine/Rendering/Camera.hpp>
 #include <TritiumEngine/Rendering/InstancedRenderable.hpp>
 #include <TritiumEngine/Rendering/Primitives.hpp>
@@ -24,85 +26,66 @@ using namespace TritiumEngine::Rendering::TextRendering;
 
 namespace
 {
-  // Simulation
   constexpr static float CONTAINER_SIZE      = 75.f;
   constexpr static float SCREEN_UNITS        = 100.f;
   constexpr static glm::vec3 SHAPE_VELOCITY  = {10.f, 10.f, 0.f};
   constexpr static glm::vec3 START_POSITION  = {0.f, 0.f, 0.f};
   constexpr static float DISPLACEMENT_RADIUS = 10.f;
-
-  // UI
-  constexpr static const char *TEXT_FONT  = "Hack-Regular";
-  constexpr static float TEXT_TITLE_SCALE = 0.1f;
-  constexpr static float TEXT_INFO_SCALE  = 0.04f;
+  const static char *TEXT_FONT               = "Hack-Regular";
 } // namespace
 
 ParticlesBoxScene::ParticlesBoxScene()
-    : Scene("ParticlesBox"), m_renderType(RenderType::Default), m_nParticles(1000) {}
-
-void ParticlesBoxScene::onRegister() { setupControls(); }
-
-void ParticlesBoxScene::onUpdate(float dt) {
-  // Update UI
-  static float sumDt = 0.f;
-  if (sumDt < 0.2f) {
-    // Update elements only every 0.2 seconds
-    sumDt += dt;
-    return;
-  }
-  sumDt = 0.f;
-
-  setText(m_fpsText, std::format("FPS:      {:3.1f}", 1.f / dt));
-  setText(m_frameTimeText, std::format("Frame:    {:3.2f}ms", dt * 1000.f));
-}
+    : Scene("ParticlesBox"), m_renderType(RenderType::Default), m_nParticles(1000), m_callbackIds(),
+      m_fpsDisplayOn(true) {}
 
 void ParticlesBoxScene::init() {
   setupSystems();
+  setupControls();
   setupCamera();
   setupContainer();
   setupUI();
-
-  switch (m_renderType) {
-  case RenderType::Default:
-    setText(m_titleText, "Default");
-    generateParticlesDefault();
-    break;
-  case RenderType::Instanced:
-    setText(m_titleText, "Instanced");
-    generateParticlesInstanced();
-    break;
-  case RenderType::Geometry:
-    setText(m_titleText, "Geometry Shader");
-    generateParticlesGeometry();
-    break;
-  }
+  setupParticles();
 }
+
+void ParticlesBoxScene::dispose() { m_app->window.removeCallbacks(m_callbackIds); }
 
 void ParticlesBoxScene::setupSystems() {
   addSystem<RenderSystem>();
   addSystem<TextRenderSystem>();
   addSystem<BoxContainerSystem>(CONTAINER_SIZE);
+  addSystem<FpsDisplaySystem>();
 }
 
 void ParticlesBoxScene::setupControls() {
   auto &window = m_app->window;
 
   // Render types
-  window.addKeyCallback(Key::D, KeyState::RELEASED,
-                        [this]() { setRenderType(RenderType::Default); });
-  window.addKeyCallback(Key::I, KeyState::RELEASED,
-                        [this]() { setRenderType(RenderType::Instanced); });
-  window.addKeyCallback(Key::G, KeyState::RELEASED,
-                        [this]() { setRenderType(RenderType::Geometry); });
+  m_callbackIds[0] = window.addKeyCallback(Key::D, KeyState::RELEASED,
+                                           [this]() { setRenderType(RenderType::Default); });
+  m_callbackIds[1] = window.addKeyCallback(Key::I, KeyState::RELEASED,
+                                           [this]() { setRenderType(RenderType::Instanced); });
+  m_callbackIds[2] = window.addKeyCallback(Key::G, KeyState::RELEASED,
+                                           [this]() { setRenderType(RenderType::Geometry); });
 
   // Particle counts
-  window.addKeyCallback(Key::NUM_1, KeyState::RELEASED, [this]() { setParticleCount(1); });
-  window.addKeyCallback(Key::NUM_2, KeyState::RELEASED, [this]() { setParticleCount(10); });
-  window.addKeyCallback(Key::NUM_3, KeyState::RELEASED, [this]() { setParticleCount(100); });
-  window.addKeyCallback(Key::NUM_4, KeyState::RELEASED, [this]() { setParticleCount(1000); });
-  window.addKeyCallback(Key::NUM_5, KeyState::RELEASED, [this]() { setParticleCount(10000); });
-  window.addKeyCallback(Key::NUM_6, KeyState::RELEASED, [this]() { setParticleCount(100000); });
-  window.addKeyCallback(Key::NUM_7, KeyState::RELEASED, [this]() { setParticleCount(1000000); });
+  m_callbackIds[3] =
+      window.addKeyCallback(Key::NUM_1, KeyState::RELEASED, [this]() { setParticleCount(1); });
+  m_callbackIds[4] =
+      window.addKeyCallback(Key::NUM_2, KeyState::RELEASED, [this]() { setParticleCount(10); });
+  m_callbackIds[5] =
+      window.addKeyCallback(Key::NUM_3, KeyState::RELEASED, [this]() { setParticleCount(100); });
+  m_callbackIds[6] =
+      window.addKeyCallback(Key::NUM_4, KeyState::RELEASED, [this]() { setParticleCount(1000); });
+  m_callbackIds[7] =
+      window.addKeyCallback(Key::NUM_5, KeyState::RELEASED, [this]() { setParticleCount(10000); });
+  m_callbackIds[8] =
+      window.addKeyCallback(Key::NUM_6, KeyState::RELEASED, [this]() { setParticleCount(100000); });
+  m_callbackIds[9] = window.addKeyCallback(Key::NUM_7, KeyState::RELEASED,
+                                           [this]() { setParticleCount(1000000); });
+
+  // FPS display toggle
+  m_callbackIds[10] =
+      window.addKeyCallback(Key::F, KeyState::RELEASED, [this]() { toggleFpsDisplay(); });
 }
 
 void ParticlesBoxScene::setupCamera() {
@@ -129,26 +112,41 @@ void ParticlesBoxScene::setupContainer() {
 }
 
 void ParticlesBoxScene::setupUI() {
-  // Stats
-  m_titleText     = addText("", {0.f, (CONTAINER_SIZE / SCREEN_UNITS) + 0.1f}, 0.1f,
-                            Text::Alignment::BOTTOM_CENTER);
-  m_fpsText       = addText("FPS:  ", {-0.98f, 0.98f}, 0.04f, Text::Alignment::TOP_LEFT);
-  m_frameTimeText = addText("Frame:", {-0.98f, 0.93f}, 0.04f, Text::Alignment::TOP_LEFT);
-  addText(std::format("Entities: {}", m_nParticles), {-0.98f, 0.88f}, 0.04f,
-          Text::Alignment::TOP_LEFT);
+  m_titleText = addText("", {0.f, 0.82f}, 0.055f, Text::Alignment::BOTTOM_CENTER);
 
   // Help panel
-  addText("Controls:           ", {-0.97f, 0.75f}, 0.08f, Text::Alignment::TOP_LEFT);
-  addText("D: Default rendering", {-0.95f, 0.55f}, 0.05f, Text::Alignment::TOP_LEFT);
-  addText("I: Instancing       ", {-0.95f, 0.45f}, 0.05f, Text::Alignment::TOP_LEFT);
-  addText("G: Geometry shader  ", {-0.95f, 0.35f}, 0.05f, Text::Alignment::TOP_LEFT);
-  addText("1: 1 entity         ", {-0.95f, 0.20f}, 0.05f, Text::Alignment::TOP_LEFT);
-  addText("2: 10 entities      ", {-0.95f, 0.10f}, 0.05f, Text::Alignment::TOP_LEFT);
-  addText("3: 100 entities     ", {-0.95f, 0.00f}, 0.05f, Text::Alignment::TOP_LEFT);
-  addText("4: 1000 entities    ", {-0.95f, -0.1f}, 0.05f, Text::Alignment::TOP_LEFT);
-  addText("5: 10000 entities   ", {-0.95f, -0.2f}, 0.05f, Text::Alignment::TOP_LEFT);
-  addText("6: 100000 entities  ", {-0.95f, -0.3f}, 0.05f, Text::Alignment::TOP_LEFT);
-  addText("7: 1000000 entities ", {-0.95f, -0.4f}, 0.05f, Text::Alignment::TOP_LEFT);
+  addText("Controls:            ", {-0.97f, 0.75f}, 0.055f, Text::Alignment::TOP_LEFT);
+  addText("D: Default rendering ", {-0.95f, 0.6f}, 0.045f, Text::Alignment::TOP_LEFT);
+  addText("I: Instancing        ", {-0.95f, 0.5f}, 0.045f, Text::Alignment::TOP_LEFT);
+  addText("G: Geometry shader   ", {-0.95f, 0.4f}, 0.045f, Text::Alignment::TOP_LEFT);
+  addText("1: 1 particle        ", {-0.95f, 0.25f}, 0.045f, Text::Alignment::TOP_LEFT);
+  addText("2: 10 particles      ", {-0.95f, 0.15f}, 0.045f, Text::Alignment::TOP_LEFT);
+  addText("3: 100 particles     ", {-0.95f, 0.05f}, 0.045f, Text::Alignment::TOP_LEFT);
+  addText("4: 1000 particles    ", {-0.95f, -0.05f}, 0.045f, Text::Alignment::TOP_LEFT);
+  addText("5: 10000 particles   ", {-0.95f, -0.15f}, 0.045f, Text::Alignment::TOP_LEFT);
+  addText("6: 100000 particles  ", {-0.95f, -0.25f}, 0.045f, Text::Alignment::TOP_LEFT);
+  addText("7: 1000000 particles ", {-0.95f, -0.35f}, 0.045f, Text::Alignment::TOP_LEFT);
+  addText("F: Toggle FPS display", {-0.95f, -0.5f}, 0.045f, Text::Alignment::TOP_LEFT);
+}
+
+void ParticlesBoxScene::setupParticles() {
+  switch (m_renderType) {
+  case RenderType::Default:
+    m_app->registry.get<Text>(m_titleText).text =
+        std::format("Default, {} particles", m_nParticles);
+    generateParticlesDefault();
+    break;
+  case RenderType::Instanced:
+    m_app->registry.get<Text>(m_titleText).text =
+        std::format("Instanced, {} particles", m_nParticles);
+    generateParticlesInstanced();
+    break;
+  case RenderType::Geometry:
+    m_app->registry.get<Text>(m_titleText).text =
+        std::format("Geometry Shader, {} particles", m_nParticles);
+    generateParticlesGeometry();
+    break;
+  }
 }
 
 entt::entity ParticlesBoxScene::addText(const std::string &text, const glm::vec2 &position,
@@ -159,10 +157,6 @@ entt::entity ParticlesBoxScene::addText(const std::string &text, const glm::vec2
   m_app->registry.emplace<Shader>(entity, m_app->shaderManager.get("text"));
   m_app->registry.emplace<Color>(entity, COLOR_GREEN);
   return entity;
-}
-
-void ParticlesBoxScene::setText(entt::entity textEntity, const std::string &textString) {
-  m_app->registry.get<Text>(textEntity).text = textString;
 }
 
 void ParticlesBoxScene::setRenderType(RenderType renderType) {
@@ -229,4 +223,12 @@ void ParticlesBoxScene::generateParticlesGeometry() {
     m_app->registry.emplace<Color>(instancedEntity, 0xFF0000FF);
     m_app->registry.emplace<Rigidbody>(instancedEntity, SHAPE_VELOCITY);
   }
+}
+
+void ParticlesBoxScene::toggleFpsDisplay() {
+  m_fpsDisplayOn = !m_fpsDisplayOn;
+  if (!m_fpsDisplayOn)
+    removeSystem<FpsDisplaySystem>();
+  else
+    addSystem<FpsDisplaySystem>();
 }

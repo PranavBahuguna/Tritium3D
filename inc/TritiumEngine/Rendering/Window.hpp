@@ -10,6 +10,7 @@
 #include <array>
 #include <functional>
 #include <string>
+#include <span>
 
 using namespace TritiumEngine::Input::Cursor;
 using namespace TritiumEngine::Input::Keyboard;
@@ -19,16 +20,34 @@ struct GLFWwindow;
 
 namespace TritiumEngine::Rendering
 {
+  using CallbackId          = uint32_t;
   using KeyCallback         = std::function<void()>;
   using MouseButtonCallback = std::function<void()>;
   using MouseMoveCallback   = std::function<void(double, double)>; // xPos, yPos
   using MouseScrollCallback = std::function<void(double, double)>; // xOffset, yOffset
   using CloseCallback       = std::function<void()>;
 
-  using KeyCallbackList         = std::vector<std::tuple<KeyState, KeyCallback>>;
-  using MouseButtonCallbackList = std::vector<std::tuple<MouseButtonState, MouseButtonCallback>>;
-  using MouseMoveCallbackList   = std::vector<MouseMoveCallback>;
-  using MouseScrollCallbackList = std::vector<MouseScrollCallback>;
+  struct KeyCallbackRecord {
+    KeyState state;
+    KeyCallback callback;
+    CallbackId id;
+  };
+
+  struct MouseButtonCallbackRecord {
+    MouseButtonState state;
+    MouseButtonCallback callback;
+    CallbackId id;
+  };
+
+  struct MouseMoveCallbackRecord {
+    MouseMoveCallback callback;
+    CallbackId id;
+  };
+
+  struct MouseScrollCallbackRecord {
+    MouseScrollCallback callback;
+    CallbackId id;
+  };
 
   enum class WindowHints : uint32_t {
     FOCUSED        = 1u << 0, // Window automatically takes focus
@@ -69,27 +88,33 @@ namespace TritiumEngine::Rendering
     int getWidth() const;
     int getHeight() const;
 
-    void addKeyCallback(Key key, KeyState state, KeyCallback callback);
-    void addMouseButtonCallback(MouseButton button, MouseButtonState state,
-                                MouseButtonCallback callback);
-    void addMouseMoveCallback(MouseMoveCallback callback);
-    void addMouseScrollCallback(MouseScrollCallback callback);
-    void setCloseCallback(CloseCallback callback);
+    CallbackId addKeyCallback(Key key, KeyState state, KeyCallback callback);
+    CallbackId addMouseButtonCallback(MouseButton button, MouseButtonState state,
+                                      MouseButtonCallback callback);
+    CallbackId addMouseMoveCallback(MouseMoveCallback callback);
+    CallbackId addMouseScrollCallback(MouseScrollCallback callback);
+    CallbackId setCloseCallback(CloseCallback callback);
+    
+    void removeCallback(CallbackId id);
+    void removeCallbacks(const std::span<CallbackId> &ids);
 
   private:
     static Window *getUserPointer(GLFWwindow *windowHandle);
 
-    static inline int s_nWindows = 0;
+    static inline int s_nWindows              = 0;
+    static inline CallbackId s_lastCallbackId = 0;
+
+    constexpr static CallbackId CLOSE_CALLBACK_ID = UINT32_MAX;
 
     GLFWwindow *m_windowHandle = nullptr;
     std::string m_name;
     int m_width;
     int m_height;
 
-    std::array<KeyCallbackList, NUM_KEYS> m_keyCallbacks;
-    std::array<MouseButtonCallbackList, NUM_MOUSE_BUTTONS> m_mouseButtonCallbacks;
-    MouseMoveCallbackList m_mouseMoveCallbacks;
-    MouseScrollCallbackList m_mouseScrollCallbacks;
+    std::array<std::vector<KeyCallbackRecord>, NUM_KEYS> m_keyCallbacks;
+    std::array<std::vector<MouseButtonCallbackRecord>, NUM_MOUSE_BUTTONS> m_mouseButtonCallbacks;
+    std::vector<MouseMoveCallbackRecord> m_mouseMoveCallbacks;
+    std::vector<MouseScrollCallbackRecord> m_mouseScrollCallbacks;
     CloseCallback m_closeCallback;
   };
 } // namespace TritiumEngine::Rendering

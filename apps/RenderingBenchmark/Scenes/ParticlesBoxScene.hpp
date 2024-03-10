@@ -2,10 +2,12 @@
 
 #include <TritiumEngine/Core/Scene.hpp>
 #include <TritiumEngine/Rendering/TextRendering/Text.hpp>
+#include <TritiumEngine/Rendering/Window.hpp>
 
 #include <glm/glm.hpp>
 
 using namespace TritiumEngine::Core;
+using namespace TritiumEngine::Rendering;
 using namespace TritiumEngine::Rendering::TextRendering;
 
 namespace RenderingBenchmark::Scenes
@@ -17,9 +19,8 @@ namespace RenderingBenchmark::Scenes
     ParticlesBoxScene();
 
   protected:
-    void onRegister() override;
-    void onUpdate(float dt) override;
     void init() override;
+    void dispose() override;
 
   private:
     void setupSystems();
@@ -27,9 +28,9 @@ namespace RenderingBenchmark::Scenes
     void setupCamera();
     void setupContainer();
     void setupUI();
+    void setupParticles();
     entt::entity addText(const std::string &text, const glm::vec2 &position, float scale,
                          Text::Alignment alignment);
-    void setText(entt::entity textEntity, const std::string &textString);
 
     void setRenderType(RenderType renderType);
     void setParticleCount(int nParticles);
@@ -39,12 +40,12 @@ namespace RenderingBenchmark::Scenes
     void generateParticlesInstanced();
     void generateParticlesGeometry();
 
+    void toggleFpsDisplay();
+
     RenderType m_renderType;
     int m_nParticles;
-
-    // Dynamic UI entities
+    std::array<CallbackId, 11> m_callbackIds;
     entt::entity m_titleText{};
-    entt::entity m_fpsText{};
-    entt::entity m_frameTimeText{};
+    bool m_fpsDisplayOn;
   };
 } // namespace RenderingBenchmark::Scenes

@@ -1,11 +1,6 @@
 #include <TritiumEngine/Core/Application.hpp>
 #include <TritiumEngine/Core/Scene.hpp>
 #include <TritiumEngine/Core/System.hpp>
-#include <TritiumEngine/Utilities/Logger.hpp>
-
-#include <algorithm>
-
-using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Core
 {
@@ -27,10 +22,6 @@ namespace TritiumEngine::Core
     Logger::info("[Scene] Loading scene '{}'...", name);
     m_sceneEntity = m_app->registry.create();
     init();
-    for (auto &system : m_systems) {
-      system->setup(*m_app);
-      system->init();
-    }
   }
 
   /** @brief Clears the ECS registry, dispatcher and any registered systems */
@@ -40,6 +31,7 @@ namespace TritiumEngine::Core
     for (auto &system : m_systems)
       system->dispose();
 
+    m_systems.clear();
     m_app->registry.clear();
     m_app->dispatcher.clear();
   }

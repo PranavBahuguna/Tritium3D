@@ -21,9 +21,9 @@ static void setup(Application *app) {
 
   // Add window controls callbacks
   app->window.addKeyCallback(Key::ESCAPE, KeyState::PRESSED, [app]() { app->stop(); });
-  app->window.setCloseCallback([app]() { app->stop(); });
   app->window.addKeyCallback(Key::R, KeyState::RELEASED,
                              [app]() { app->sceneManager.reloadCurrentScene(); });
+  app->window.setCloseCallback([app]() { app->stop(); });
 
   // Add scenes
   app->sceneManager.addScene(std::move(std::make_unique<ParticlesBoxScene>()));
