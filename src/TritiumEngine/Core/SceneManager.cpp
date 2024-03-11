@@ -15,9 +15,9 @@ namespace TritiumEngine::Core
    */
   void SceneManager::addScene(std::unique_ptr<Scene> scene) {
     scene->registerWithApplication(*m_app);
+    size_t currentSceneIndex = hasScenes() ? 0 : m_sceneIt - m_scenes.begin();
     m_scenes.emplace_back(std::move(scene));
-    if (m_scenes.size() == 1)
-      m_sceneIt = m_scenes.begin();
+    m_sceneIt = m_scenes.begin() + currentSceneIndex; // reset iterator
   }
 
   /**

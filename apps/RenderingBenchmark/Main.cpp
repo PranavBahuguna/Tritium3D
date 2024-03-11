@@ -1,4 +1,5 @@
 #include "Scenes/ParticlesBoxScene.hpp"
+#include "Scenes/TestScene.hpp"
 
 #include <TritiumEngine/Core/Application.hpp>
 #include <TritiumEngine/Core/ResourceManager.hpp>
@@ -23,10 +24,15 @@ static void setup(Application *app) {
   app->window.addKeyCallback(Key::ESCAPE, KeyState::PRESSED, [app]() { app->stop(); });
   app->window.addKeyCallback(Key::R, KeyState::RELEASED,
                              [app]() { app->sceneManager.reloadCurrentScene(); });
+  app->window.addKeyCallback(Key::LEFT, KeyState::RELEASED,
+                             [app]() { app->sceneManager.prevScene(); });
+  app->window.addKeyCallback(Key::RIGHT, KeyState::RELEASED,
+                             [app]() { app->sceneManager.nextScene(); });
   app->window.setCloseCallback([app]() { app->stop(); });
 
   // Add scenes
   app->sceneManager.addScene(std::move(std::make_unique<ParticlesBoxScene>()));
+  app->sceneManager.addScene(std::move(std::make_unique<TestScene>()));
 
   // Additional OpenGL settings
   glEnable(GL_CULL_FACE);
