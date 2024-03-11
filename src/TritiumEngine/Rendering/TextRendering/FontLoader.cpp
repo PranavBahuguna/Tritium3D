@@ -1,4 +1,4 @@
-#include <TritiumEngine/Rendering/TextRendering/FontLoaderFactory.hpp>
+#include <TritiumEngine/Rendering/TextRendering/FontLoader.hpp>
 #include <TritiumEngine/Utilities/Logger.hpp>
 
 #include <GL/glew.h>
@@ -7,10 +7,9 @@ using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Rendering::TextRendering
 {
-  FontLoaderFactory::FontLoaderFactory(const std::string &defaultFilePath)
-      : m_defaultFilePath(defaultFilePath) {}
+  FontLoader::FontLoader(const std::string &defaultFilePath) : m_defaultFilePath(defaultFilePath) {}
 
-  Font *FontLoaderFactory::load(const std::string &filePath) {
+  Font *FontLoader::load(const std::string &filePath) {
     FT_Library ft;
     FT_Error ftError = FT_Init_FreeType(&ft);
     if (ftError != FT_Err_Ok) {
@@ -21,11 +20,11 @@ namespace TritiumEngine::Rendering::TextRendering
     // Try loading the font, fallback to default if unsuccessful
     Font *font = new Font();
     if (!loadFont(font, filePath, ft)) {
-      Logger::warn("[FontLoaderFactory] Unable to load font from path {}, will try loading default "
+      Logger::warn("[FontLoader] Unable to load font from path {}, will try loading default "
                    "font instead.",
                    filePath);
       if (!loadFont(font, m_defaultFilePath, ft)) {
-        Logger::error("[FontLoaderFactory] Unable to load default font.");
+        Logger::error("[FontLoader] Unable to load default font.");
         return nullptr;
       }
     }
@@ -33,7 +32,7 @@ namespace TritiumEngine::Rendering::TextRendering
     return font;
   }
 
-  bool FontLoaderFactory::loadFont(Font *font, const std::string &filePath, FT_Library &ft) const {
+  bool FontLoader::loadFont(Font *font, const std::string &filePath, FT_Library &ft) const {
     // Try loading font face
     FT_Face face;
     FT_Error ftError = FT_New_Face(ft, filePath.c_str(), 0, &face);
@@ -84,7 +83,7 @@ namespace TritiumEngine::Rendering::TextRendering
     return true;
   }
 
-  void FontLoaderFactory::logFTErrorMessage(const FT_Error &error) const {
+  void FontLoader::logFTErrorMessage(const FT_Error &error) const {
     const char *errMsg;
 #undef FTERRORS_H_
 #define FT_ERRORDEF(e, v, s)                                                                       \
@@ -95,6 +94,6 @@ namespace TritiumEngine::Rendering::TextRendering
 #include FT_ERRORS_H
     errMsg = "(Unknown error)";
 
-    Logger::error("[FontLoaderFactory] FreeType error: {}", errMsg);
+    Logger::error("[FontLoader] FreeType error: {}", errMsg);
   }
 }; // namespace TritiumEngine::Rendering::TextRendering

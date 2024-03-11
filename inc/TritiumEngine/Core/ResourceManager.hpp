@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TritiumEngine/Core/ResourceLoaderFactory.hpp>
+#include <TritiumEngine/Core/ResourceLoader.hpp>
 #include <TritiumEngine/Utilities/Logger.hpp>
 
 #include <filesystem>
@@ -11,26 +11,31 @@ using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Core
 {
+  template <typename T, typename U>
+  using IsResourceLoaderType =
+      typename std::enable_if_t<std::is_base_of_v<ResourceLoader<T>, U>, bool>;
+
   template <class T> class ResourceManager {
   public:
     /**
-     * @brief Registers a resource loader factory of type T into the manager
-     * @param loaderFactory The loader factory to be registered
+     * @brief Registers a resource loader (loading type T) into the manager
+     * @tparam U Type of resource loader, must provide resources of type T
+     * @param loader The resource loader class to be registered
      * @param rootDir The root directory where all objects to construct of the given type are
-     * stored
+     * @param Args Additional parameters required to construct the system stored
      */
-    static void registerFactory(std::unique_ptr<ResourceLoaderFactory<T>> loaderFactory,
-                                const std::string &rootDir) {
+    template <class U, typename... Args, IsResourceLoaderType<T, U> = true>
+    static void registerLoader(const std::string &rootDir, Args &&...args) {
       if (m_isRegistered) {
         Logger::warn(
-            "[ResourceManager] Factory of type {} already registered for this resource manager.",
+            "[ResourceManager] Loader of type {} already registered for this resource manager.",
             typeid(T).name());
         return;
       }
 
-      m_isRegistered  = true;
-      m_loaderFactory = std::move(loaderFactory);
-      m_rootDir       = rootDir;
+      m_isRegistered = true;
+      m_loader       = std::make_unique<U>(std::forward<Args>(args)...);
+      m_rootDir      = rootDir;
     }
 
     /**
@@ -56,7 +61,7 @@ namespace TritiumEngine::Core
           return nullptr;
         }
         // Load from file path
-        returnItem = std::shared_ptr<T>(m_loaderFactory->load(totalFilePath));
+        returnItem = std::shared_ptr<T>(m_loader->load(totalFilePath));
         foundItem  = returnItem;
       } else {
         returnItem = foundItem.lock();
@@ -105,6 +110,6 @@ namespace TritiumEngine::Core
     static inline bool m_isRegistered   = false;
     static inline std::string m_rootDir = "";
     static inline std::unordered_map<std::string, std::weak_ptr<T>> m_resourceMap;
-    static inline std::unique_ptr<ResourceLoaderFactory<T>> m_loaderFactory;
+    static inline std::unique_ptr<ResourceLoader<T>> m_loader;
   };
 } // namespace TritiumEngine::Core

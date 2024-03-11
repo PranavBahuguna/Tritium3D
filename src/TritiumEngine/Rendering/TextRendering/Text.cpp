@@ -1,5 +1,5 @@
 #include <TritiumEngine/Core/ResourceManager.hpp>
-#include <TritiumEngine/Rendering/TextRendering/FontLoaderFactory.hpp>
+#include <TritiumEngine/Rendering/TextRendering/FontLoader.hpp>
 #include <TritiumEngine/Rendering/TextRendering/Text.hpp>
 
 namespace TritiumEngine::Rendering::TextRendering

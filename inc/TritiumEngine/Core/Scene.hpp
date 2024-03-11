@@ -29,7 +29,7 @@ namespace TritiumEngine::Core
     /**
      * @brief Registers a new system
      * @tparam T Type of system to register
-     * @tparam Args Additional parameters required to construct the system
+     * @param Args Additional parameters required to construct the system
      */
     template <class T, typename... Args, IsSystemType<T> = true> void addSystem(Args &&...args) {
       if (m_app == nullptr) {

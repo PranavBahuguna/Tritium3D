@@ -1,4 +1,4 @@
-#include <TritiumEngine/Rendering/ShaderLoaderFactory.hpp>
+#include <TritiumEngine/Rendering/ShaderLoader.hpp>
 #include <TritiumEngine/Utilities/Logger.hpp>
 
 #include <fstream>
@@ -8,7 +8,7 @@ using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Rendering
 {
-  ShaderCode *ShaderLoaderFactory::load(const std::string &filePath) {
+  ShaderCode *ShaderLoader::load(const std::string &filePath) {
     std::string fileData;
     std::ifstream fileStream;
     // Allow ifstream to throw exceptions
@@ -21,7 +21,7 @@ namespace TritiumEngine::Rendering
       fileStream.close();
       fileData = ss.str();
     } catch (std::ifstream::failure e) {
-      Logger::error("[ShaderLoaderFactory] Could not read from file {}", filePath);
+      Logger::error("[ShaderLoader] Could not read from file {}", filePath);
       return nullptr;
     }
 

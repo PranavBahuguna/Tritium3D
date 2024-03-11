@@ -27,7 +27,7 @@ namespace RenderingBenchmark::Scenes
   TestScene::TestScene() : Scene("Test") {}
 
   void TestScene::init() {
-    addSystem<TextRenderSystem>();
+    addSystem<TextRenderSystem>(BlendOptions{true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA});
 
     float screenWidth  = (float)m_app->window.getWidth();
     float screenHeight = (float)m_app->window.getHeight();

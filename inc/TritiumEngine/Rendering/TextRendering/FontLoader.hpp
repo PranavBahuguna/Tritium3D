@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TritiumEngine/Core/ResourceLoaderFactory.hpp>
+#include <TritiumEngine/Core/ResourceLoader.hpp>
 #include <TritiumEngine/Rendering/TextRendering/Font.hpp>
 
 #include <ft2build.h>
@@ -10,9 +10,9 @@ using namespace TritiumEngine::Core;
 
 namespace TritiumEngine::Rendering::TextRendering
 {
-  class FontLoaderFactory : public ResourceLoaderFactory<Font> {
+  class FontLoader : public ResourceLoader<Font> {
   public:
-    FontLoaderFactory(const std::string &defaultFilePath);
+    FontLoader(const std::string &defaultFilePath);
     Font *load(const std::string &filePath) override;
 
   private:

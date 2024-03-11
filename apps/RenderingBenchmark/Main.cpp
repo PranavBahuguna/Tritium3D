@@ -3,22 +3,15 @@
 
 #include <TritiumEngine/Core/Application.hpp>
 #include <TritiumEngine/Core/ResourceManager.hpp>
-#include <TritiumEngine/Rendering/ShaderLoaderFactory.hpp>
-#include <TritiumEngine/Rendering/TextRendering/FontLoaderFactory.hpp>
-#include <TritiumEngine/Rendering/Window.hpp>
-#include <TritiumEngine/Utilities/Logger.hpp>
+#include <TritiumEngine/Rendering/ShaderLoader.hpp>
+#include <TritiumEngine/Rendering/TextRendering/FontLoader.hpp>
 
 using namespace RenderingBenchmark::Scenes;
-using namespace TritiumEngine::Rendering;
-using namespace TritiumEngine::Rendering::TextRendering;
-using namespace TritiumEngine::Utilities;
 
 static void setup(Application *app) {
   // Setup resource paths
-  ResourceManager<ShaderCode>::registerFactory(std::make_unique<ShaderLoaderFactory>(),
-                                               "Resources/Shaders/");
-  ResourceManager<Font>::registerFactory(std::make_unique<FontLoaderFactory>("Hack-Regular"),
-                                         "Resources/Fonts/");
+  ResourceManager<ShaderCode>::registerLoader<ShaderLoader>("Resources/Shaders/");
+  ResourceManager<Font>::registerLoader<FontLoader>("Resources/Fonts/", "Hack-Regular");
 
   // Add window controls callbacks
   app->window.addKeyCallback(Key::ESCAPE, KeyState::PRESSED, [app]() { app->stop(); });
@@ -33,11 +26,6 @@ static void setup(Application *app) {
   // Add scenes
   app->sceneManager.addScene(std::move(std::make_unique<ParticlesBoxScene>()));
   app->sceneManager.addScene(std::move(std::make_unique<TestScene>()));
-
-  // Additional OpenGL settings
-  glEnable(GL_CULL_FACE);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 int main() {
