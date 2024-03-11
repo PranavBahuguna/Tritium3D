@@ -1,18 +1,18 @@
 #pragma once
 
-#include <TritiumEngine/Core/System.hpp>
+#include <TritiumEngine/Rendering/RenderSystem.hpp>
 
 #include <glm/glm.hpp>
-
-using namespace TritiumEngine::Core;
 
 namespace TritiumEngine::Rendering::TextRendering
 {
   class Text;
 
-  class TextRenderSystem : public System {
+  class TextRenderSystem : public RenderSystem {
   public:
-    void update(float dt) override;
+    TextRenderSystem(BlendOptions blendOptions = {});
+
+    void draw(const Camera &camera) const override;
 
   private:
     glm::vec2 getStartPosition(const Text &text) const;

@@ -9,9 +9,9 @@
 #include <TritiumEngine/Rendering/Camera.hpp>
 #include <TritiumEngine/Rendering/InstancedRenderable.hpp>
 #include <TritiumEngine/Rendering/Primitives.hpp>
-#include <TritiumEngine/Rendering/RenderSystem.hpp>
 #include <TritiumEngine/Rendering/Renderable.hpp>
 #include <TritiumEngine/Rendering/Shader.hpp>
+#include <TritiumEngine/Rendering/StandardRenderSystem.hpp>
 #include <TritiumEngine/Rendering/TextRendering/TextRenderSystem.hpp>
 #include <TritiumEngine/Utilities/ColorUtils.hpp>
 #include <TritiumEngine/Utilities/Logger.hpp>
@@ -50,8 +50,8 @@ void ParticlesBoxScene::init() {
 void ParticlesBoxScene::dispose() { m_app->window.removeCallbacks(m_callbackIds); }
 
 void ParticlesBoxScene::setupSystems() {
-  addSystem<RenderSystem>();
-  addSystem<TextRenderSystem>();
+  addSystem<StandardRenderSystem>(BlendOptions{true, GL_SRC_COLOR, GL_DST_COLOR});
+  addSystem<TextRenderSystem>(BlendOptions{true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA});
   addSystem<BoxContainerSystem>(CONTAINER_SIZE);
   addSystem<FpsDisplaySystem>();
 }

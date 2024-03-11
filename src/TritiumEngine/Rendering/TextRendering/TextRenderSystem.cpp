@@ -1,5 +1,6 @@
 #include <TritiumEngine/Core/Application.hpp>
 #include <TritiumEngine/Core/ResourceManager.hpp>
+#include <TritiumEngine/Core/Transform.hpp>
 #include <TritiumEngine/Rendering/Camera.hpp>
 #include <TritiumEngine/Rendering/Shader.hpp>
 #include <TritiumEngine/Rendering/TextRendering/Font.hpp>
@@ -7,16 +8,13 @@
 #include <TritiumEngine/Rendering/TextRendering/TextRenderSystem.hpp>
 #include <TritiumEngine/Utilities/ColorUtils.hpp>
 
-#include <entt/entity/registry.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
-using namespace TritiumEngine::Core;
-using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Rendering::TextRendering
 {
-  void TextRenderSystem::update(float dt) {
-    const Camera &camera = m_app->registry.get<Camera>(m_app->sceneManager.getCurrentSceneEntity());
+  TextRenderSystem::TextRenderSystem(BlendOptions blendOptions) : RenderSystem(blendOptions) {}
+
+  void TextRenderSystem::draw(const Camera &camera) const {
     ShaderManager &shaderManager = m_app->shaderManager;
 
     m_app->registry.view<Text, Transform, Shader, Color>().each(

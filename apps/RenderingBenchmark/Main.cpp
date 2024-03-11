@@ -25,9 +25,9 @@ static void setup(Application *app) {
   app->window.addKeyCallback(Key::R, KeyState::RELEASED,
                              [app]() { app->sceneManager.reloadCurrentScene(); });
   app->window.addKeyCallback(Key::LEFT, KeyState::RELEASED,
-                             [app]() { app->sceneManager.prevScene(); });
+                             [app]() { app->sceneManager.prevScene(true); });
   app->window.addKeyCallback(Key::RIGHT, KeyState::RELEASED,
-                             [app]() { app->sceneManager.nextScene(); });
+                             [app]() { app->sceneManager.nextScene(true); });
   app->window.setCloseCallback([app]() { app->stop(); });
 
   // Add scenes
