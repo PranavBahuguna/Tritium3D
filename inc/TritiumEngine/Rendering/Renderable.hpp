@@ -8,22 +8,22 @@ namespace TritiumEngine::Rendering
 {
   class Renderable {
   public:
-    Renderable(GLenum renderMode, const RenderData &renderData);
+    Renderable(unsigned int renderMode, const RenderData &renderData);
     virtual ~Renderable();
 
-    GLuint getVao() const { return m_vao; }
-    GLint getVertexStride() const { return m_vertexStride; }
-    GLsizei getNumVertices() const { return m_nVertices; }
-    GLsizei getNumIndices() const { return m_nIndices; }
-    GLenum getRenderMode() const { return m_renderMode; }
+    unsigned int getVao() const { return m_vao; }
+    int getVertexStride() const { return m_vertexStride; }
+    int getNumVertices() const { return m_nVertices; }
+    int getNumIndices() const { return m_nIndices; }
+    unsigned int getRenderMode() const { return m_renderMode; }
 
   private:
-    GLuint m_vao;
-    GLuint m_vbo;
-    GLuint m_ebo;
-    GLint m_vertexStride;
-    GLsizei m_nVertices;
-    GLsizei m_nIndices;
-    GLenum m_renderMode;
+    unsigned int m_vao;
+    unsigned int m_vbo;
+    unsigned int m_ebo;
+    int m_vertexStride;
+    int m_nVertices;
+    int m_nIndices;
+    unsigned int m_renderMode;
   };
 } // namespace TritiumEngine::Rendering

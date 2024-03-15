@@ -113,7 +113,7 @@ namespace TritiumEngine::Rendering
     glUniform2fv(uniformLocation, 1, glm::value_ptr(value));
   }
 
-  void ShaderManager::setVector2(const std::string &name, GLfloat x, GLfloat y) const {
+  void ShaderManager::setVector2(const std::string &name, float x, float y) const {
     int uniformLocation = glGetUniformLocation(m_currentShaderId, name.c_str());
     glUniform2f(uniformLocation, x, y);
   }
@@ -123,7 +123,7 @@ namespace TritiumEngine::Rendering
     glUniform3fv(uniformLocation, 1, glm::value_ptr(value));
   }
 
-  void ShaderManager::setVector3(const std::string &name, GLfloat x, GLfloat y, GLfloat z) const {
+  void ShaderManager::setVector3(const std::string &name, float x, float y, float z) const {
     int uniformLocation = glGetUniformLocation(m_currentShaderId, name.c_str());
     glUniform3f(uniformLocation, x, y, z);
   }
@@ -133,8 +133,8 @@ namespace TritiumEngine::Rendering
     glUniform4fv(uniformLocation, 1, glm::value_ptr(value));
   }
 
-  void ShaderManager::setVector4(const std::string &name, GLfloat x, GLfloat y, GLfloat z,
-                                 GLfloat w) const {
+  void ShaderManager::setVector4(const std::string &name, float x, float y, float z,
+                                 float w) const {
     int uniformLocation = glGetUniformLocation(m_currentShaderId, name.c_str());
     glUniform4f(uniformLocation, x, y, z, w);
   }
@@ -155,7 +155,7 @@ namespace TritiumEngine::Rendering
   }
 
   // Compiles shader from code, returning its program ID
-  ShaderId ShaderManager::compile(const char *shaderCode, GLenum shaderType) {
+  ShaderId ShaderManager::compile(const char *shaderCode, unsigned int shaderType) {
     ShaderId shaderId = glCreateShader(shaderType);
     glShaderSource(shaderId, 1, &shaderCode, NULL);
     glCompileShader(shaderId);

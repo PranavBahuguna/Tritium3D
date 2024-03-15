@@ -5,7 +5,7 @@
 namespace TritiumEngine::Rendering
 {
   struct RenderData {
-    unsigned int vertexStride = 0;
+    int vertexStride = 0;
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
   };

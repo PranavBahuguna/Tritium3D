@@ -3,8 +3,6 @@
 #include <TritiumEngine/Core/System.hpp>
 #include <TritiumEngine/Rendering/BlendOptions.hpp>
 
-#include <GL/glew.h>
-
 using namespace TritiumEngine::Core;
 
 namespace TritiumEngine::Rendering

@@ -2,15 +2,12 @@
 
 namespace TritiumEngine::Rendering
 {
-  Renderable::Renderable(GLenum renderMode, const RenderData &renderData)
-      : m_renderMode(renderMode), m_ebo(0) {
-    unsigned int vertexStride = renderData.vertexStride;
-    const auto &vertices      = renderData.vertices;
-    const auto &indices       = renderData.indices;
-
-    m_vertexStride = static_cast<GLint>(vertexStride);
-    m_nVertices    = static_cast<GLsizei>(vertices.size());
-    m_nIndices     = static_cast<GLsizei>(indices.size());
+  Renderable::Renderable(unsigned int renderMode, const RenderData &renderData)
+      : m_vertexStride(renderData.vertexStride), m_renderMode(renderMode), m_ebo(0) {
+    const auto &vertices = renderData.vertices;
+    const auto &indices  = renderData.indices;
+    m_nVertices          = static_cast<int>(vertices.size());
+    m_nIndices           = static_cast<int>(indices.size());
 
     // Bind vertex array object
     glGenVertexArrays(1, &m_vao);
@@ -27,7 +24,7 @@ namespace TritiumEngine::Rendering
     if (m_nIndices > 0) {
       glGenBuffers(1, &m_ebo);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_nIndices * sizeof(GLuint), indices.data(),
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_nIndices * sizeof(unsigned int), indices.data(),
                    GL_STATIC_DRAW);
     }
   }

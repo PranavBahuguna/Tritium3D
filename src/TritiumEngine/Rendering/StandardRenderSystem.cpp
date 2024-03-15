@@ -24,16 +24,18 @@ namespace TritiumEngine::Rendering
         [&](auto entity, Renderable &renderable, Transform &transform, Shader &shader,
             Color &color) {
           // Apply properties to shader
-          shaderManager.use(shader.id);
+          if (shader.id != shaderManager.getCurrentShader()) {
+            shaderManager.use(shader.id);
+            shaderManager.setMatrix4("projectionView", camera.calcProjectionViewMatrix());
+          }
           shaderManager.setMatrix4("model", transform.getModelMatrix());
-          shaderManager.setMatrix4("projectionView", camera.calcProjectionViewMatrix());
           shaderManager.setVector4("color", ColorUtils::ToNormalizedVec4(color));
 
-          GLuint vao         = renderable.getVao();
-          GLint vertexStride = renderable.getVertexStride();
-          GLsizei nVertices  = renderable.getNumVertices();
-          GLsizei nIndices   = renderable.getNumIndices();
-          GLenum renderMode  = renderable.getRenderMode();
+          unsigned int vao        = renderable.getVao();
+          int vertexStride        = renderable.getVertexStride();
+          int nVertices           = renderable.getNumVertices();
+          int nIndices            = renderable.getNumIndices();
+          unsigned int renderMode = renderable.getRenderMode();
 
           // Draw the renderable
           glBindVertexArray(vao);
@@ -49,19 +51,21 @@ namespace TritiumEngine::Rendering
 
     m_app->registry.view<InstancedRenderable, Shader>().each(
         [&](auto entity, InstancedRenderable &renderable, Shader &shader) {
-          GLuint vao          = renderable.getVao();
-          GLint vertexStride  = renderable.getVertexStride();
-          GLsizei nVertices   = renderable.getNumVertices();
-          GLsizei nIndices    = renderable.getNumIndices();
-          GLsizei nInstances  = renderable.getNumInstances();
-          GLenum renderMode   = renderable.getRenderMode();
-          uint32_t instanceId = renderable.getInstanceId();
+          unsigned int vao        = renderable.getVao();
+          int vertexStride        = renderable.getVertexStride();
+          int nVertices           = renderable.getNumVertices();
+          int nIndices            = renderable.getNumIndices();
+          int nInstances          = renderable.getNumInstances();
+          unsigned int renderMode = renderable.getRenderMode();
+          uint32_t instanceId     = renderable.getInstanceId();
 
-          shaderManager.use(shader.id);
-          shaderManager.setMatrix4("projectionView", camera.calcProjectionViewMatrix());
+          if (shader.id != shaderManager.getCurrentShader()) {
+            shaderManager.use(shader.id);
+            shaderManager.setMatrix4("projectionView", camera.calcProjectionViewMatrix());
+          }
 
           // Update model matrices
-          GLsizei index      = 0;
+          int index          = 0;
           auto instancesView = m_app->registry.view<Transform, InstancedRenderableTag>();
           m_app->registry.view<Transform, Color, InstancedRenderableTag>().each(
               [&](auto entity, Transform &transform, Color &color, InstancedRenderableTag &tag) {
