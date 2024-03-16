@@ -20,7 +20,6 @@ namespace TritiumEngine::Core
   /** @brief Initialises the scene and all constituent systems */
   void Scene::load() {
     Logger::info("[Scene] Loading scene '{}'...", name);
-    m_sceneEntity = m_app->registry.create();
     init();
   }
 
@@ -46,10 +45,4 @@ namespace TritiumEngine::Core
 
     onUpdate(dt);
   }
-
-  /**
-   * @brief Obtains the entity associated with this scene
-   * @return The scene entity
-   */
-  entt::entity Scene::getEntity() const { return m_sceneEntity; }
 } // namespace TritiumEngine::Core

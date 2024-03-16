@@ -13,10 +13,10 @@ namespace TritiumEngine::Rendering
     enum class ProjectionType { ORTHOGRAPHIC, PERSPECTIVE };
 
     Camera(ProjectionType projection, float frameWidth, float frameHeight, float nearPlane,
-           float farPlane, float fov = glm::radians(60.0f),
-           const Transform &transform = Transform())
+           float farPlane, const Transform &transform = Transform(),
+           float fov = glm::radians(60.0f))
         : projection(projection), width(frameWidth), height(frameHeight), nearPlane(nearPlane),
-          farPlane(farPlane), fov(fov), transform(transform) {}
+          farPlane(farPlane), transform(transform), fov(fov) {}
 
     float getAspectRatio() const { return width / height; }
 
@@ -35,7 +35,7 @@ namespace TritiumEngine::Rendering
     float height;
     float nearPlane;
     float farPlane;
-    float fov;
     Transform transform;
+    float fov;
   };
 } // namespace TritiumEngine::Rendering

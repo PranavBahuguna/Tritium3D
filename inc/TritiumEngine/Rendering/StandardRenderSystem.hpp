@@ -8,7 +8,7 @@ namespace TritiumEngine::Rendering
 {
   class StandardRenderSystem : public RenderSystem {
   public:
-    StandardRenderSystem(BlendOptions blendOptions = {});
+    StandardRenderSystem(Tag cameraTag, BlendOptions blendOptions = {});
 
     void draw(const Camera &camera) const override;
 

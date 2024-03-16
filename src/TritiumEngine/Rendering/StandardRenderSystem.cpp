@@ -9,8 +9,8 @@
 
 namespace TritiumEngine::Rendering
 {
-  StandardRenderSystem::StandardRenderSystem(BlendOptions blendOptions)
-      : RenderSystem(blendOptions) {}
+  StandardRenderSystem::StandardRenderSystem(Tag cameraTag, BlendOptions blendOptions)
+      : RenderSystem(cameraTag, blendOptions) {}
 
   void StandardRenderSystem::draw(const Camera &camera) const {
     drawNonInstanced(camera);

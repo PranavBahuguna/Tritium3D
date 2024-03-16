@@ -85,9 +85,6 @@ namespace TritiumEngine::Core
   /** @brief Determines if the manager has any registered scenes */
   bool SceneManager::hasScenes() const { return !m_scenes.empty(); }
 
-  /** @brief Obtains the current scene's entity */
-  entt::entity SceneManager::getCurrentSceneEntity() const { return (*m_sceneIt)->getEntity(); }
-
   void SceneManager::loadScene(SceneList::iterator it) {
     // Unloads current scene iterator and loads new one
     if (m_sceneIt != m_scenes.end())

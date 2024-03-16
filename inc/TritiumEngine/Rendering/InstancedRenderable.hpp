@@ -2,7 +2,6 @@
 
 #include <TritiumEngine/Rendering/RenderData.hpp>
 
-#include <GL/glew.h>
 #include <glm/glm.hpp>
 
 namespace TritiumEngine::Rendering
@@ -37,7 +36,7 @@ namespace TritiumEngine::Rendering
     unsigned int m_vao; // vertex array
     unsigned int m_vbo; // vertex buffer
     unsigned int m_ebo; // edges buffer
-    unsigned int m_ibo; // instance buffer
+    unsigned int m_ibo; // instance data buffer
 
     int m_nInstances;
     int m_vertexStride;

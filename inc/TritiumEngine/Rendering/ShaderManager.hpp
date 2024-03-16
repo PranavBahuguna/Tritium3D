@@ -1,9 +1,9 @@
 #pragma once
 
-#include <GL/glew.h>
 #include <glm/glm.hpp>
 
 #include <unordered_map>
+#include <string>
 
 namespace TritiumEngine::Rendering
 {

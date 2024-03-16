@@ -2,8 +2,6 @@
 
 #include <TritiumEngine/Rendering/RenderData.hpp>
 
-#include <GL/glew.h>
-
 namespace TritiumEngine::Rendering
 {
   class Renderable {

@@ -2,8 +2,6 @@
 
 #include <TritiumEngine/Utilities/Logger.hpp>
 
-#include <entt/entity/entity.hpp>
-
 using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Core
@@ -23,8 +21,6 @@ namespace TritiumEngine::Core
     void load();
     void unload();
     void update(float dt);
-
-    entt::entity getEntity() const;
 
     /**
      * @brief Registers a new system
@@ -101,7 +97,6 @@ namespace TritiumEngine::Core
     Application *m_app = nullptr;
 
   private:
-    entt::entity m_sceneEntity{};
     std::vector<std::unique_ptr<System>> m_systems;
   };
 } // namespace TritiumEngine::Core

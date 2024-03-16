@@ -2,6 +2,8 @@
 #include <TritiumEngine/Rendering/TextRendering/FontLoader.hpp>
 #include <TritiumEngine/Rendering/TextRendering/Text.hpp>
 
+#include <GL/glew.h>
+
 namespace TritiumEngine::Rendering::TextRendering
 {
   Text::Text(const std::string &text, const std::string &font, float scale, Alignment alignment)

@@ -1,4 +1,9 @@
 #include <TritiumEngine/Rendering/InstancedRenderable.hpp>
+#include <TritiumEngine/Utilities/Logger.hpp>
+
+#include <GL/glew.h>
+
+using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Rendering
 {
@@ -6,6 +11,9 @@ namespace TritiumEngine::Rendering
                                            int count)
       : m_nInstances(count), m_vertexStride(renderData.vertexStride), m_renderMode(renderMode),
         m_ebo(0), m_instanceData(count) {
+
+    Logger::info("[InstancedRenderable] Instance data size = {}",
+                 m_nInstances * sizeof(InstanceData));
 
     static uint32_t _id = 0;
     m_instanceId        = _id++;
@@ -38,8 +46,7 @@ namespace TritiumEngine::Rendering
     // Bind instance data buffer
     glGenBuffers(1, &m_ibo);
     glBindBuffer(GL_ARRAY_BUFFER, m_ibo);
-    glBufferData(GL_ARRAY_BUFFER, m_nInstances * sizeof(InstanceData), m_instanceData.data(),
-                 GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_nInstances * sizeof(InstanceData), NULL, GL_DYNAMIC_DRAW);
 
     // Instance models
     for (unsigned int i = 1; i < 5; ++i) {
@@ -70,8 +77,7 @@ namespace TritiumEngine::Rendering
 
   void InstancedRenderable::resizeInstanceDataBuffer(size_t newSize) {
     m_instanceData.resize(newSize);
-    glBufferData(GL_ARRAY_BUFFER, m_nInstances * sizeof(InstanceData), m_instanceData.data(),
-                 GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_nInstances * sizeof(InstanceData), NULL, GL_DYNAMIC_DRAW);
   }
 
   void InstancedRenderable::updateInstanceDataBuffer() const {

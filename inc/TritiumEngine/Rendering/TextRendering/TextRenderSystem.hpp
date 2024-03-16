@@ -10,7 +10,7 @@ namespace TritiumEngine::Rendering::TextRendering
 
   class TextRenderSystem : public RenderSystem {
   public:
-    TextRenderSystem(BlendOptions blendOptions = {});
+    TextRenderSystem(Tag cameraTag, BlendOptions blendOptions = {});
 
     void draw(const Camera &camera) const override;
 

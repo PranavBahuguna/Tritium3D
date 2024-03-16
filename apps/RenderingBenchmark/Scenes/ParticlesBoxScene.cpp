@@ -32,6 +32,8 @@ namespace
   constexpr static glm::vec3 START_POSITION  = {0.f, 0.f, 0.f};
   constexpr static float DISPLACEMENT_RADIUS = 10.f;
   const static char *TEXT_FONT               = "Hack-Regular";
+  constexpr static BlendOptions ENTITY_BLEND = {true, GL_SRC_COLOR, GL_DST_COLOR};
+  constexpr static BlendOptions TEXT_BLEND   = {true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
 } // namespace
 
 ParticlesBoxScene::ParticlesBoxScene()
@@ -50,8 +52,8 @@ void ParticlesBoxScene::init() {
 void ParticlesBoxScene::dispose() { m_app->window.removeCallbacks(m_callbackIds); }
 
 void ParticlesBoxScene::setupSystems() {
-  addSystem<StandardRenderSystem>(BlendOptions{true, GL_SRC_COLOR, GL_DST_COLOR});
-  addSystem<TextRenderSystem>(BlendOptions{true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA});
+  addSystem<StandardRenderSystem>(DEFAULT_TAG, ENTITY_BLEND);
+  addSystem<TextRenderSystem>(DEFAULT_TAG, TEXT_BLEND);
   addSystem<BoxContainerSystem>(CONTAINER_SIZE);
   addSystem<FpsDisplaySystem>();
 }
@@ -93,9 +95,10 @@ void ParticlesBoxScene::setupCamera() {
   float screenHeight = (float)m_app->window.getHeight();
   float aspect       = screenWidth / screenHeight;
 
-  m_app->registry.emplace<Camera>(m_app->sceneManager.getCurrentSceneEntity(),
-                                  Camera::ProjectionType::ORTHOGRAPHIC, SCREEN_UNITS * aspect,
-                                  SCREEN_UNITS, 0.1f, 100.0f);
+  entt::entity entity = m_app->registry.create();
+  m_app->registry.emplace<Camera>(entity, Camera::ProjectionType::ORTHOGRAPHIC,
+                                  SCREEN_UNITS * aspect, SCREEN_UNITS, 0.1f, 100.0f);
+  m_app->registry.emplace<Tag>(entity, DEFAULT_TAG);
 }
 
 void ParticlesBoxScene::setupContainer() {

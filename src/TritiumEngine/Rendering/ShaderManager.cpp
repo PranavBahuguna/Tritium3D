@@ -2,6 +2,7 @@
 #include <TritiumEngine/Rendering/ShaderCode.hpp>
 #include <TritiumEngine/Rendering/ShaderManager.hpp>
 
+#include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
 
 using namespace TritiumEngine::Core;

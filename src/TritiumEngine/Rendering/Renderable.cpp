@@ -1,5 +1,7 @@
 #include <TritiumEngine/Rendering/Renderable.hpp>
 
+#include <GL/glew.h>
+
 namespace TritiumEngine::Rendering
 {
   Renderable::Renderable(unsigned int renderMode, const RenderData &renderData)

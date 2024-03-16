@@ -1,8 +1,6 @@
 #include <TritiumEngine/Rendering/Window.hpp>
 #include <TritiumEngine/Utilities/Logger.hpp>
 
-#include <GLFW/glfw3.h>
-
 #include <array>
 #include <stdexcept>
 

@@ -25,7 +25,6 @@ namespace TritiumEngine::Core
 
     void update(float dt) const;
     bool hasScenes() const;
-    entt::entity getCurrentSceneEntity() const;
 
   private:
     void loadScene(SceneList::iterator it);

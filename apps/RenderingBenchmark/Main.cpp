@@ -1,5 +1,5 @@
 #include "Scenes/ParticlesBoxScene.hpp"
-#include "Scenes/TestScene.hpp"
+#include "Scenes/CubeScene.hpp"
 
 #include <TritiumEngine/Core/Application.hpp>
 #include <TritiumEngine/Core/ResourceManager.hpp>
@@ -25,7 +25,7 @@ static void setup(Application *app) {
 
   // Add scenes
   app->sceneManager.addScene(std::move(std::make_unique<ParticlesBoxScene>()));
-  app->sceneManager.addScene(std::move(std::make_unique<TestScene>()));
+  app->sceneManager.addScene(std::move(std::make_unique<CubeScene>()));
 }
 
 int main() {

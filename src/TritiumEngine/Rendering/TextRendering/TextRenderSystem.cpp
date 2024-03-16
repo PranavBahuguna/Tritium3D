@@ -12,7 +12,8 @@
 
 namespace TritiumEngine::Rendering::TextRendering
 {
-  TextRenderSystem::TextRenderSystem(BlendOptions blendOptions) : RenderSystem(blendOptions) {}
+  TextRenderSystem::TextRenderSystem(Tag cameraTag, BlendOptions blendOptions)
+      : RenderSystem(cameraTag, blendOptions) {}
 
   void TextRenderSystem::draw(const Camera &camera) const {
     ShaderManager &shaderManager = m_app->shaderManager;

@@ -4,6 +4,7 @@
 #include <TritiumEngine/Rendering/TextRendering/Text.hpp>
 #include <TritiumEngine/Rendering/Window.hpp>
 
+#include <entt/entity/entity.hpp>
 #include <glm/glm.hpp>
 
 using namespace TritiumEngine::Core;

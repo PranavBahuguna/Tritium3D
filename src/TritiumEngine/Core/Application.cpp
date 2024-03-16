@@ -3,8 +3,6 @@
 #include <TritiumEngine/Rendering/Window.hpp>
 #include <TritiumEngine/Utilities/Logger.hpp>
 
-#include <GL/glew.h>
-
 using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Core
