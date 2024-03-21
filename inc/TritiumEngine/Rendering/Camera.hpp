@@ -14,7 +14,7 @@ namespace TritiumEngine::Rendering
 
     Camera(ProjectionType projection, float frameWidth, float frameHeight, float nearPlane,
            float farPlane, const Transform &transform = Transform(),
-           float fov = glm::radians(60.0f))
+           float fov = glm::radians(60.f))
         : projection(projection), width(frameWidth), height(frameHeight), nearPlane(nearPlane),
           farPlane(farPlane), transform(transform), fov(fov) {}
 

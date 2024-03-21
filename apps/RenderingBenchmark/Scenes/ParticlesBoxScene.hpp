@@ -45,7 +45,7 @@ namespace RenderingBenchmark::Scenes
 
     RenderType m_renderType;
     int m_nParticles;
-    std::array<CallbackId, 11> m_callbackIds;
+    std::array<CallbackId, 11> m_callbacks;
     entt::entity m_titleText{};
     bool m_fpsDisplayOn;
   };

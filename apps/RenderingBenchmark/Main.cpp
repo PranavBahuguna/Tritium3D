@@ -1,5 +1,5 @@
-#include "Scenes/ParticlesBoxScene.hpp"
 #include "Scenes/CubeScene.hpp"
+#include "Scenes/ParticlesBoxScene.hpp"
 
 #include <TritiumEngine/Core/Application.hpp>
 #include <TritiumEngine/Core/ResourceManager.hpp>
@@ -14,12 +14,10 @@ static void setup(Application *app) {
   ResourceManager<Font>::registerLoader<FontLoader>("Resources/Fonts/", "Hack-Regular");
 
   // Add window controls callbacks
-  app->window.addKeyCallback(Key::ESCAPE, KeyState::PRESSED, [app]() { app->stop(); });
+  app->window.addKeyCallback(Key::ESCAPE, KeyState::START_PRESS, [app]() { app->stop(); });
   app->window.addKeyCallback(Key::R, KeyState::RELEASED,
                              [app]() { app->sceneManager.reloadCurrentScene(); });
-  app->window.addKeyCallback(Key::LEFT, KeyState::RELEASED,
-                             [app]() { app->sceneManager.prevScene(true); });
-  app->window.addKeyCallback(Key::RIGHT, KeyState::RELEASED,
+  app->window.addKeyCallback(Key::ENTER, KeyState::RELEASED,
                              [app]() { app->sceneManager.nextScene(true); });
   app->window.setCloseCallback([app]() { app->stop(); });
 

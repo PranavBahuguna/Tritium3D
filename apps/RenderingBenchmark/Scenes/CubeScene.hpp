@@ -2,9 +2,13 @@
 
 #include <TritiumEngine/Core/Scene.hpp>
 #include <TritiumEngine/Rendering/Window.hpp>
+#include <TritiumEngine/Utilities/CameraController.hpp>
+
+#include <entt/entity/entity.hpp>
 
 using namespace TritiumEngine::Core;
 using namespace TritiumEngine::Rendering;
+using namespace TritiumEngine::Utilities;
 
 namespace RenderingBenchmark::Scenes
 {
@@ -14,11 +18,15 @@ namespace RenderingBenchmark::Scenes
 
   protected:
     void init() override;
+    void onRegister() override;
     void dispose() override;
 
   private:
+    void setupSystems();
+    void setupCameras();
     void setupControls();
 
-    std::array<CallbackId, 1> m_callbackIds;
+    entt::entity m_sceneCamera{};
+    CameraController m_cameraController;
   };
 } // namespace RenderingBenchmark::Scenes

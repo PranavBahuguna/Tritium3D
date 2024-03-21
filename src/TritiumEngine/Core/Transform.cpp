@@ -25,15 +25,15 @@ namespace TritiumEngine::Core
 
   glm::mat4 Transform::getViewMatrix() const {
     glm::mat4 view = glm::mat4();
-    view = glm::mat4_cast(m_rotation);        // rotation
-    view = glm::translate(view, -m_position); // translation
+    view           = glm::mat4_cast(m_rotation);        // rotation
+    view           = glm::translate(view, -m_position); // translation
     return view;
   }
 
   glm::mat4 Transform::getModelMatrix() const {
     // Calculate model from position, rotation and scale
     glm::mat4 model = glm::mat4();
-    model = glm::translate(glm::mat4(1.0f), m_position);
+    model           = glm::translate(glm::mat4(1.0f), m_position);
     model *= glm::mat4_cast(m_rotation);
     model = glm::scale(model, m_scale);
     return model;
@@ -44,6 +44,13 @@ namespace TritiumEngine::Core
   void Transform::translate(const glm::vec3 &translation) { m_position += translation; }
 
   void Transform::setRotation(const glm::quat &rotation) { m_rotation = rotation; }
+
+  void Transform::setRotation(float pitch, float yaw, float roll) {
+    glm::quat qPitch = glm::angleAxis(pitch, glm::vec3{1.f, 0.f, 0.f});
+    glm::quat qYaw   = glm::angleAxis(yaw, glm::vec3{0.f, 1.0f, 0.f});
+    glm::quat qRoll  = glm::angleAxis(roll, glm::vec3{0.f, 0.f, 1.f});
+    m_rotation       = qPitch * qYaw * qRoll;
+  }
 
   void Transform::rotate(const glm::quat &rotation) { m_rotation *= rotation; }
 

@@ -19,4 +19,4 @@ namespace RenderingBenchmark::Systems
     entt::entity m_fpsText{};
     entt::entity m_frameTimeText{};
   };
-} // namespace RenderingBenchmark::Scenes
+} // namespace RenderingBenchmark::Systems

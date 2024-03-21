@@ -27,6 +27,7 @@ namespace TritiumEngine::Core
     void setPosition(const glm::vec3 &position);
     void translate(const glm::vec3 &translation);
     void setRotation(const glm::quat &rotation);
+    void setRotation(float pitch = 0.f, float yaw = 0.f, float roll = 0.f);
     void rotate(const glm::quat &rotation);
     void setScale(const glm::vec3 &scale);
     void scale(const glm::vec3 &scale);

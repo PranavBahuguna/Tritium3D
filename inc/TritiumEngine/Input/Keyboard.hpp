@@ -7,9 +7,16 @@ namespace TritiumEngine::Input::Keyboard
 {
   static constexpr int NUM_KEYS = 512;
 
-  enum class KeyState { RELEASED = GLFW_RELEASE, PRESSED = GLFW_PRESS };
+  enum class KeyState : uint8_t {
+    RELEASED    = GLFW_RELEASE,
+    START_PRESS = GLFW_PRESS,
+    PRESSED     = UINT8_MAX
+  };
 
-  enum class Key {
+  enum class Key : int16_t {
+    // Invalid
+    UNKNOWN = GLFW_KEY_UNKNOWN,
+
     // Alphanumeric
     NUM_0 = GLFW_KEY_0,
     NUM_1 = GLFW_KEY_1,

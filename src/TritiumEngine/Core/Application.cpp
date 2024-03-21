@@ -37,7 +37,7 @@ namespace TritiumEngine::Core
       m_prevFrameTime = m_currentTime;
 
       // Update window
-      window.update();
+      window.update(deltaTime);
       window.refresh();
 
       // Update scene

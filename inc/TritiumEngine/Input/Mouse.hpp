@@ -7,9 +7,13 @@ namespace TritiumEngine::Input::Mouse
 {
   static constexpr int NUM_MOUSE_BUTTONS = 8;
 
-  enum class MouseButtonState { RELEASED = GLFW_RELEASE, PRESSED = GLFW_PRESS };
+  enum class MouseButtonState : uint8_t {
+    RELEASED    = GLFW_RELEASE,
+    START_PRESS = GLFW_PRESS,
+    PRESSED     = UINT8_MAX
+  };
 
-  enum class MouseButton {
+  enum class MouseButton : uint8_t {
     MOUSE_1 = GLFW_MOUSE_BUTTON_1, // Left mouse button
     MOUSE_2 = GLFW_MOUSE_BUTTON_2, // Right mouse button
     MOUSE_3 = GLFW_MOUSE_BUTTON_3, // Middle mouse button
