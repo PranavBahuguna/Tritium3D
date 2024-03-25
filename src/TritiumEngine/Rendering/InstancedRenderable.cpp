@@ -11,10 +11,6 @@ namespace TritiumEngine::Rendering
                                            int count)
       : m_nInstances(count), m_vertexStride(renderData.vertexStride), m_renderMode(renderMode),
         m_ebo(0), m_instanceData(count) {
-
-    Logger::info("[InstancedRenderable] Instance data size = {}",
-                 m_nInstances * sizeof(InstanceData));
-
     static uint32_t _id = 0;
     m_instanceId        = _id++;
 

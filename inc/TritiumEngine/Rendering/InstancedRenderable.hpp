@@ -6,7 +6,7 @@
 
 namespace TritiumEngine::Rendering
 {
-  struct InstancedRenderableTag {
+  struct InstanceTag {
     uint32_t value;
   };
 

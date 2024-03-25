@@ -2,18 +2,15 @@
 
 #include "Scenes/ParticlesBoxScene.hpp"
 #include "Components/Rigidbody.hpp"
+#include "Components/Tags.hpp"
 #include "Systems/BoxContainerSystem.hpp"
 #include "Systems/FpsDisplaySystem.hpp"
 
 #include <TritiumEngine/Core/Application.hpp>
-#include <TritiumEngine/Rendering/Camera.hpp>
-#include <TritiumEngine/Rendering/InstancedRenderable.hpp>
+#include <TritiumEngine/Rendering/InstancedRenderSystem.hpp>
 #include <TritiumEngine/Rendering/Primitives.hpp>
-#include <TritiumEngine/Rendering/Renderable.hpp>
-#include <TritiumEngine/Rendering/Shader.hpp>
 #include <TritiumEngine/Rendering/StandardRenderSystem.hpp>
 #include <TritiumEngine/Rendering/TextRendering/TextRenderSystem.hpp>
-#include <TritiumEngine/Utilities/ColorUtils.hpp>
 #include <TritiumEngine/Utilities/Logger.hpp>
 #include <TritiumEngine/Utilities/Random.hpp>
 
@@ -54,8 +51,9 @@ namespace RenderingBenchmark::Scenes
   void ParticlesBoxScene::dispose() { m_app->window.removeCallbacks(m_callbacks); }
 
   void ParticlesBoxScene::setupSystems() {
-    addSystem<StandardRenderSystem>(DEFAULT_TAG, ENTITY_BLEND);
-    addSystem<TextRenderSystem>(DEFAULT_TAG, TEXT_BLEND);
+    addSystem<StandardRenderSystem<MainCameraTag::value>>(ENTITY_BLEND);
+    addSystem<InstancedRenderSystem<MainCameraTag::value>>(ENTITY_BLEND);
+    addSystem<TextRenderSystem<MainCameraTag::value>>(TEXT_BLEND);
     addSystem<BoxContainerSystem>(CONTAINER_SIZE);
     addSystem<FpsDisplaySystem>();
   }
@@ -100,7 +98,7 @@ namespace RenderingBenchmark::Scenes
     entt::entity entity = m_app->registry.create();
     m_app->registry.emplace<Camera>(entity, Camera::ProjectionType::ORTHOGRAPHIC,
                                     SCREEN_UNITS * aspect, SCREEN_UNITS, 0.1f, 100.0f);
-    m_app->registry.emplace<Tag>(entity, DEFAULT_TAG);
+    m_app->registry.emplace<MainCameraTag>(entity);
   }
 
   void ParticlesBoxScene::setupContainer() {
@@ -204,7 +202,7 @@ namespace RenderingBenchmark::Scenes
     // Add instances
     for (int i = 0; i < m_nParticles; ++i) {
       entt::entity instancedEntity = m_app->registry.create();
-      m_app->registry.emplace<InstancedRenderableTag>(instancedEntity, renderable.getInstanceId());
+      m_app->registry.emplace<InstanceTag>(instancedEntity, renderable.getInstanceId());
       m_app->registry.emplace<Transform>(
           instancedEntity, START_POSITION + randRadialPosition(DISPLACEMENT_RADIUS, true));
       m_app->registry.emplace<Color>(instancedEntity, 0xFF0000FF);
@@ -222,7 +220,7 @@ namespace RenderingBenchmark::Scenes
     // Add instances
     for (int i = 0; i < m_nParticles; ++i) {
       entt::entity instancedEntity = m_app->registry.create();
-      m_app->registry.emplace<InstancedRenderableTag>(instancedEntity, renderable.getInstanceId());
+      m_app->registry.emplace<InstanceTag>(instancedEntity, renderable.getInstanceId());
       m_app->registry.emplace<Transform>(
           instancedEntity, START_POSITION + randRadialPosition(DISPLACEMENT_RADIUS, true));
       m_app->registry.emplace<Color>(instancedEntity, 0xFF0000FF);

@@ -2,19 +2,14 @@
 
 #include "Scenes/CubeScene.hpp"
 #include "Components/Rigidbody.hpp"
+#include "Components/Tags.hpp"
 #include "Systems/FpsDisplaySystem.hpp"
 
 #include <TritiumEngine/Core/Application.hpp>
-#include <TritiumEngine/Core/Tag.hpp>
-#include <TritiumEngine/Core/Transform.hpp>
-#include <TritiumEngine/Rendering/Camera.hpp>
-#include <TritiumEngine/Rendering/InstancedRenderable.hpp>
+#include <TritiumEngine/Rendering/InstancedRenderSystem.hpp>
 #include <TritiumEngine/Rendering/Primitives.hpp>
-#include <TritiumEngine/Rendering/Shader.hpp>
 #include <TritiumEngine/Rendering/StandardRenderSystem.hpp>
-#include <TritiumEngine/Rendering/TextRendering/Text.hpp>
 #include <TritiumEngine/Rendering/TextRendering/TextRenderSystem.hpp>
-#include <TritiumEngine/Utilities/ColorUtils.hpp>
 #include <TritiumEngine/Utilities/Random.hpp>
 
 #include <glm/gtc/constants.hpp>
@@ -30,8 +25,6 @@ namespace
   constexpr static float SCREEN_UNITS        = 100.f;
   constexpr static BlendOptions TEXT_BLEND   = {true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
   constexpr static BlendOptions ENTITY_BLEND = {true, GL_SRC_COLOR, GL_DST_COLOR};
-  const static std::string MAIN_CAMERA_TAG   = "mainCamera";
-  const static std::string UI_CAMERA_TAG     = "uiCamera";
 } // namespace
 
 namespace RenderingBenchmark::Scenes
@@ -52,7 +45,7 @@ namespace RenderingBenchmark::Scenes
     // Add instances
     for (int i = 0; i < nParticles; ++i) {
       entt::entity instancedEntity = m_app->registry.create();
-      m_app->registry.emplace<InstancedRenderableTag>(instancedEntity, renderable.getInstanceId());
+      m_app->registry.emplace<InstanceTag>(instancedEntity, renderable.getInstanceId());
       m_app->registry.emplace<Transform>(instancedEntity, randRadialPosition(20.f, true));
       m_app->registry.emplace<Color>(instancedEntity, 0xFF0000FF);
       m_app->registry.emplace<Rigidbody>(instancedEntity);
@@ -67,8 +60,9 @@ namespace RenderingBenchmark::Scenes
   void CubeScene::dispose() { m_cameraController.dispose(); }
 
   void CubeScene::setupSystems() {
-    addSystem<StandardRenderSystem>(MAIN_CAMERA_TAG, ENTITY_BLEND);
-    addSystem<TextRenderSystem>(UI_CAMERA_TAG, TEXT_BLEND);
+    addSystem<StandardRenderSystem<MainCameraTag::value>>(ENTITY_BLEND);
+    addSystem<InstancedRenderSystem<MainCameraTag::value>>(ENTITY_BLEND);
+    addSystem<TextRenderSystem<UiCameraTag::value>>(TEXT_BLEND);
     addSystem<FpsDisplaySystem>();
   }
 
@@ -82,13 +76,13 @@ namespace RenderingBenchmark::Scenes
     m_app->registry.emplace<Camera>(m_sceneCamera, Camera::ProjectionType::PERSPECTIVE,
                                     SCREEN_UNITS * aspect, SCREEN_UNITS, 0.1f, 100.0f,
                                     Transform({0.f, 0.f, 10.f}));
-    m_app->registry.emplace<Tag>(m_sceneCamera, MAIN_CAMERA_TAG);
+    m_app->registry.emplace<MainCameraTag>(m_sceneCamera);
 
     // UI overlay camera
     entt::entity uiCamera = m_app->registry.create();
     m_app->registry.emplace<Camera>(uiCamera, Camera::ProjectionType::ORTHOGRAPHIC,
                                     SCREEN_UNITS * aspect, SCREEN_UNITS, 0.1f, 100.0f);
-    m_app->registry.emplace<Tag>(uiCamera, UI_CAMERA_TAG);
+    m_app->registry.emplace<UiCameraTag>(uiCamera);
   }
 
   void CubeScene::setupControls() {

@@ -107,4 +107,23 @@ namespace TritiumEngine::Rendering::Primitives
 
     return RenderData{2, vertices};
   }
+
+  /**
+   * @brief Cube generator helper method, uses vertices and indices
+   */
+  static RenderData createCube() {
+    std::vector<float> vertices{
+        0.5f,  0.5f,  // top right
+        0.5f,  -0.5f, // bottom right
+        -0.5f, -0.5f, // bottom left
+        -0.5f, 0.5f   // top left
+    };
+
+    std::vector<unsigned int> indices{
+        0, 2, 1, // first triangle
+        0, 3, 2  // second triangle
+    };
+
+    return RenderData{2, vertices, indices};
+  }
 } // namespace TritiumEngine::Rendering::Primitives
