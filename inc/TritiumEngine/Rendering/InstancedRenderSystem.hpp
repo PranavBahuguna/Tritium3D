@@ -15,8 +15,9 @@ namespace TritiumEngine::Rendering
     InstancedRenderSystem(BlendOptions blendOptions = {}) : RenderSystem<CameraTag>(blendOptions) {}
 
     void draw(const Camera &camera) const override {
-      auto &shaderManager = RenderSystem<CameraTag>::m_app->shaderManager;
-      auto &registry      = RenderSystem<CameraTag>::m_app->registry;
+      bool newDrawCycleStarted = true;
+      auto &shaderManager      = RenderSystem<CameraTag>::m_app->shaderManager;
+      auto &registry           = RenderSystem<CameraTag>::m_app->registry;
 
       registry.view<InstancedRenderable, Shader>().each(
           [&](auto entity, InstancedRenderable &renderable, Shader &shader) {
@@ -28,7 +29,8 @@ namespace TritiumEngine::Rendering
             unsigned int renderMode = renderable.getRenderMode();
             uint32_t instanceId     = renderable.getInstanceId();
 
-            if (shader.id != shaderManager.getCurrentShader()) {
+            if (shader.id != shaderManager.getCurrentShader() || newDrawCycleStarted) {
+              newDrawCycleStarted = false;
               shaderManager.use(shader.id);
               shaderManager.setMatrix4("projectionView", camera.calcProjectionViewMatrix());
             }

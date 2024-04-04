@@ -4,9 +4,12 @@ using namespace TritiumEngine::Rendering;
 
 namespace
 {
-  constexpr static float MOVE_SPEED = 5.0f;
-  constexpr static float TURN_SPEED = 1.0f;
-  constexpr static float ZOOM_SPEED = 0.5f;
+  constexpr static float MOVE_SPEED             = 5.0f;
+  constexpr static float TURN_SPEED             = 1.0f;
+  constexpr static float ZOOM_SPEED             = 0.5f;
+  constexpr static float MOUSE_TURN_SENSITIVITY = 0.33f;
+  constexpr static float MOUSE_ZOOM_SENSITIVITY = 1.f;
+
   constexpr static float MIN_PITCH  = glm::radians(-89.f);
   constexpr static float MAX_PITCH  = glm::radians(89.f);
   constexpr static float MIN_FOV    = glm::radians(20.f);
@@ -65,13 +68,13 @@ namespace TritiumEngine::Utilities
                                               });
     m_callbacks[10] =
         m_window->addMouseMoveCallback([this, &transform](float dt, double deltaX, double deltaY) {
-          addPitch(static_cast<float>(deltaY) * TURN_SPEED * dt);
-          addYaw(static_cast<float>(deltaX) * TURN_SPEED * dt);
+          addPitch(static_cast<float>(deltaY) * TURN_SPEED * MOUSE_TURN_SENSITIVITY * dt);
+          addYaw(static_cast<float>(deltaX) * TURN_SPEED * MOUSE_TURN_SENSITIVITY * dt);
           transform.setRotation(m_pitch, m_yaw);
         });
     m_callbacks[11] =
         m_window->addMouseScrollCallback([this, &camera](float dt, double xOffset, double yOffset) {
-          addZoom(camera, static_cast<float>(yOffset) * ZOOM_SPEED * dt);
+          addZoom(camera, static_cast<float>(yOffset) * ZOOM_SPEED * MOUSE_ZOOM_SENSITIVITY * dt);
         });
     m_callbacks[12] =
         m_window->addKeyCallback(m_actionKey[CameraAction::ZOOM_IN], KeyState::PRESSED,

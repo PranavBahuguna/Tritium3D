@@ -41,7 +41,6 @@ namespace TritiumEngine::Core
 
       m_systems.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
       m_systems.back()->setup(*m_app);
-      m_systems.back()->init();
     }
 
     /**

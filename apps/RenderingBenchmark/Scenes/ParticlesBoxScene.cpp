@@ -2,23 +2,23 @@
 
 #include "Scenes/ParticlesBoxScene.hpp"
 #include "Components/Rigidbody.hpp"
+#include "Components/Scripts/FpsStatsUI.hpp"
 #include "Components/Tags.hpp"
 #include "Systems/BoxContainerSystem.hpp"
-#include "Systems/FpsDisplaySystem.hpp"
 
 #include <TritiumEngine/Core/Application.hpp>
+#include <TritiumEngine/Core/NativeScript.hpp>
 #include <TritiumEngine/Rendering/InstancedRenderSystem.hpp>
 #include <TritiumEngine/Rendering/Primitives.hpp>
 #include <TritiumEngine/Rendering/StandardRenderSystem.hpp>
 #include <TritiumEngine/Rendering/TextRendering/TextRenderSystem.hpp>
-#include <TritiumEngine/Utilities/Logger.hpp>
 #include <TritiumEngine/Utilities/Random.hpp>
 
 using namespace RenderingBenchmark::Components;
 using namespace RenderingBenchmark::Scenes;
 using namespace RenderingBenchmark::Systems;
+using namespace RenderingBenchmark::Scripts;
 using namespace TritiumEngine::Core;
-using namespace TritiumEngine::Utilities;
 using namespace TritiumEngine::Rendering::TextRendering;
 
 namespace
@@ -28,7 +28,6 @@ namespace
   constexpr static glm::vec3 SHAPE_VELOCITY  = {10.f, 10.f, 0.f};
   constexpr static glm::vec3 START_POSITION  = {0.f, 0.f, 0.f};
   constexpr static float DISPLACEMENT_RADIUS = 10.f;
-  const static char *TEXT_FONT               = "Hack-Regular";
   constexpr static BlendOptions ENTITY_BLEND = {true, GL_SRC_COLOR, GL_DST_COLOR};
   constexpr static BlendOptions TEXT_BLEND   = {true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
 } // namespace
@@ -36,15 +35,15 @@ namespace
 namespace RenderingBenchmark::Scenes
 {
   ParticlesBoxScene::ParticlesBoxScene()
-      : Scene("ParticlesBox"), m_renderType(RenderType::Default), m_nParticles(1000), m_callbacks(),
-        m_fpsDisplayOn(true) {}
+      : Scene("ParticlesBox"), m_renderType(RenderType::Default), m_nParticles(1000),
+        m_callbacks() {}
 
   void ParticlesBoxScene::init() {
     setupSystems();
+    initUI();
     setupControls();
     setupCamera();
     setupContainer();
-    setupUI();
     setupParticles();
   }
 
@@ -55,7 +54,6 @@ namespace RenderingBenchmark::Scenes
     addSystem<InstancedRenderSystem<MainCameraTag::value>>(ENTITY_BLEND);
     addSystem<TextRenderSystem<MainCameraTag::value>>(TEXT_BLEND);
     addSystem<BoxContainerSystem>(CONTAINER_SIZE);
-    addSystem<FpsDisplaySystem>();
   }
 
   void ParticlesBoxScene::setupControls() {
@@ -86,8 +84,9 @@ namespace RenderingBenchmark::Scenes
                                            [this]() { setParticleCount(1000000); });
 
     // FPS display toggle
-    m_callbacks[10] =
-        window.addKeyCallback(Key::F, KeyState::RELEASED, [this]() { toggleFpsDisplay(); });
+    m_callbacks[10] = window.addKeyCallback(Key::F, KeyState::RELEASED, [this]() {
+      m_app->registry.get<NativeScript>(m_fpsStatsUI).getInstance().toggleEnabled();
+    });
   }
 
   void ParticlesBoxScene::setupCamera() {
@@ -114,7 +113,7 @@ namespace RenderingBenchmark::Scenes
     createWall(left, bottom, right, bottom); // bottom
   }
 
-  void ParticlesBoxScene::setupUI() {
+  void ParticlesBoxScene::initUI() {
     m_titleText = addText("", {0.f, 0.82f}, 0.055f, Text::Alignment::BOTTOM_CENTER);
 
     // Help panel
@@ -130,6 +129,12 @@ namespace RenderingBenchmark::Scenes
     addText("6: 100000 particles  ", {-0.95f, -0.25f}, 0.045f, Text::Alignment::TOP_LEFT);
     addText("7: 1000000 particles ", {-0.95f, -0.35f}, 0.045f, Text::Alignment::TOP_LEFT);
     addText("F: Toggle FPS display", {-0.95f, -0.5f}, 0.045f, Text::Alignment::TOP_LEFT);
+
+    auto &registry = m_app->registry;
+    m_fpsStatsUI   = registry.create();
+    auto &script =
+        registry.emplace<NativeScript>(m_fpsStatsUI, std::make_unique<FpsStatsUI>(*m_app));
+    // script.getInstance().setEnabled(false);
   }
 
   void ParticlesBoxScene::setupParticles() {
@@ -155,7 +160,7 @@ namespace RenderingBenchmark::Scenes
   entt::entity ParticlesBoxScene::addText(const std::string &text, const glm::vec2 &position,
                                           float scale, Text::Alignment alignment) {
     entt::entity entity = m_app->registry.create();
-    m_app->registry.emplace<Text>(entity, text, TEXT_FONT, scale, alignment);
+    m_app->registry.emplace<Text>(entity, text, "Hack-Regular", scale, alignment);
     m_app->registry.emplace<Transform>(entity, glm::vec3{position.x, position.y, 0.f});
     m_app->registry.emplace<Shader>(entity, m_app->shaderManager.get("text"));
     m_app->registry.emplace<Color>(entity, COLOR_GREEN);
@@ -226,13 +231,5 @@ namespace RenderingBenchmark::Scenes
       m_app->registry.emplace<Color>(instancedEntity, 0xFF0000FF);
       m_app->registry.emplace<Rigidbody>(instancedEntity, SHAPE_VELOCITY);
     }
-  }
-
-  void ParticlesBoxScene::toggleFpsDisplay() {
-    m_fpsDisplayOn = !m_fpsDisplayOn;
-    if (!m_fpsDisplayOn)
-      removeSystem<FpsDisplaySystem>();
-    else
-      addSystem<FpsDisplaySystem>();
   }
 } // namespace RenderingBenchmark::Scenes

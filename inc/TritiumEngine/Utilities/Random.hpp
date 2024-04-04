@@ -2,8 +2,8 @@
 
 #include <glm/glm.hpp>
 
-#include <random>
 #include <numbers>
+#include <random>
 
 namespace TritiumEngine::Utilities
 {
@@ -24,4 +24,12 @@ namespace TritiumEngine::Utilities
 
     return {randX, randY, 0.f};
   }
-}
+
+  static glm::vec3 randCubePosition(float size) {
+    float x = size * (rand(mt) - 0.5f);
+    float y = size * (rand(mt) - 0.5f);
+    float z = size * (rand(mt) - 0.5f);
+
+    return {x, y, z};
+  }
+} // namespace TritiumEngine::Utilities

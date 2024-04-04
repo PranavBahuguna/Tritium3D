@@ -22,8 +22,8 @@ static void setup(Application *app) {
   app->window.setCloseCallback([app]() { app->stop(); });
 
   // Add scenes
-  app->sceneManager.addScene(std::move(std::make_unique<ParticlesBoxScene>()));
-  app->sceneManager.addScene(std::move(std::make_unique<CubeScene>()));
+  app->sceneManager.addScene(std::make_unique<ParticlesBoxScene>());
+  app->sceneManager.addScene(std::make_unique<CubeScene>());
 }
 
 int main() {

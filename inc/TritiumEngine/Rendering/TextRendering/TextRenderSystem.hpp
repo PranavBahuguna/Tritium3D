@@ -24,7 +24,9 @@ namespace TritiumEngine::Rendering::TextRendering
       registry.view<Text, Transform, Shader, Color>().each(
           [&](auto entity, Text &text, Transform &transform, Shader &shader, Color &color) {
             // Apply properties to shader
-            shaderManager.use(shader.id);
+            if (shader.id != shaderManager.getCurrentShader())
+              shaderManager.use(shader.id);
+
             shaderManager.setMatrix4("mvp", transform.getModelMatrix() *
                                                 camera.calcProjectionViewMatrix());
             shaderManager.setVector4("color", ColorUtils::ToNormalizedVec4(color));

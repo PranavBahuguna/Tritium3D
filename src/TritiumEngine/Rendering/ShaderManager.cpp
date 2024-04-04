@@ -83,10 +83,8 @@ namespace TritiumEngine::Rendering
    * @param id The id of the shader program to activate.
    */
   void ShaderManager::use(ShaderId id) {
-    if (id != m_currentShaderId) {
-      glUseProgram(id);
-      m_currentShaderId = id;
-    }
+    glUseProgram(id);
+    m_currentShaderId = id;
   }
 
   void ShaderManager::setBool(const std::string &name, bool value) const {

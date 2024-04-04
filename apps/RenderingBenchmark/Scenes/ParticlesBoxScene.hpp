@@ -28,7 +28,7 @@ namespace RenderingBenchmark::Scenes
     void setupControls();
     void setupCamera();
     void setupContainer();
-    void setupUI();
+    void initUI();
     void setupParticles();
     entt::entity addText(const std::string &text, const glm::vec2 &position, float scale,
                          Text::Alignment alignment);
@@ -41,12 +41,10 @@ namespace RenderingBenchmark::Scenes
     void generateParticlesInstanced();
     void generateParticlesGeometry();
 
-    void toggleFpsDisplay();
-
     RenderType m_renderType;
     int m_nParticles;
-    std::array<CallbackId, 11> m_callbacks;
-    entt::entity m_titleText{};
-    bool m_fpsDisplayOn;
+    CallbackId m_callbacks[11];
+    entt::entity m_titleText  = entt::null;
+    entt::entity m_fpsStatsUI = entt::null;
   };
 } // namespace RenderingBenchmark::Scenes

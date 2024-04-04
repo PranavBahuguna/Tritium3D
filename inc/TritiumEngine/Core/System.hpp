@@ -6,12 +6,11 @@ namespace TritiumEngine::Core
 
   class System {
   public:
-    virtual void init() {}
-    virtual void dispose() {}
     virtual void update(float dt) {}
 
     void setup(Application &app) { m_app = &app; }
 
+  protected:
     Application *m_app;
   };
 } // namespace TritiumEngine::Core

@@ -12,7 +12,7 @@ namespace TritiumEngine::Rendering::Primitives
    * @brief Point generator helper method, vertices only
    */
   static RenderData createPoint(float x, float y) {
-    std::vector<float> vertices {x, y};
+    std::vector<float> vertices{x, y};
     return RenderData{2, vertices};
   }
 
@@ -113,17 +113,31 @@ namespace TritiumEngine::Rendering::Primitives
    */
   static RenderData createCube() {
     std::vector<float> vertices{
-        0.5f,  0.5f,  // top right
-        0.5f,  -0.5f, // bottom right
-        -0.5f, -0.5f, // bottom left
-        -0.5f, 0.5f   // top left
+        -0.5f, -0.5f, -0.5f, // 1
+        0.5f,  -0.5f, -0.5f, // 2
+        0.5f,  0.5f,  -0.5f, // 3
+        -0.5f, 0.5f,  -0.5f, // 4
+        -0.5f, -0.5f, 0.5f,  // 5
+        0.5f,  -0.5f, 0.5f,  // 6
+        0.5f,  0.5f,  0.5f,  // 7
+        -0.5f, 0.5f,  0.5f   // 8
     };
 
     std::vector<unsigned int> indices{
-        0, 2, 1, // first triangle
-        0, 3, 2  // second triangle
+        0, 1, 3, // 1
+        3, 1, 2, // 2
+        1, 5, 2, // 3
+        2, 5, 6, // 4
+        5, 4, 6, // 5
+        6, 4, 7, // 6
+        4, 0, 7, // 7
+        7, 0, 3, // 8
+        3, 2, 7, // 9
+        7, 2, 6, // 10
+        4, 5, 0, // 11
+        0, 5, 1  // 12
     };
 
-    return RenderData{2, vertices, indices};
+    return RenderData{3, vertices, indices};
   }
 } // namespace TritiumEngine::Rendering::Primitives

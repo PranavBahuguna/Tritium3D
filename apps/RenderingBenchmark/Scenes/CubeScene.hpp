@@ -4,7 +4,7 @@
 #include <TritiumEngine/Rendering/Window.hpp>
 #include <TritiumEngine/Utilities/CameraController.hpp>
 
-#include <entt/entity/entity.hpp>
+#include <entt/entt.hpp>
 
 using namespace TritiumEngine::Core;
 using namespace TritiumEngine::Rendering;
@@ -23,10 +23,15 @@ namespace RenderingBenchmark::Scenes
 
   private:
     void setupSystems();
+    void setupUI();
     void setupCameras();
+    void setupCameraController();
     void setupControls();
+    void generateCubes(int nCubes);
 
-    entt::entity m_sceneCamera{};
     CameraController m_cameraController;
+    entt::entity m_fpsStatsUI    = entt::null;
+    entt::entity m_cameraStatsUI = entt::null;
+    CallbackId m_callbacks[2];
   };
 } // namespace RenderingBenchmark::Scenes
