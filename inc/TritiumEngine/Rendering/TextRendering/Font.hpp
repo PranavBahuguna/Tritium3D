@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-namespace TritiumEngine::Rendering::TextRendering
+namespace TritiumEngine::Rendering
 {
   struct Font {
     constexpr static size_t CHAR_ARRAY_SIZE = 128;
@@ -16,4 +16,4 @@ namespace TritiumEngine::Rendering::TextRendering
 
     Character characters[CHAR_ARRAY_SIZE];
   };
-} // namespace TritiumEngine::Rendering::TextRendering
+} // namespace TritiumEngine::Rendering

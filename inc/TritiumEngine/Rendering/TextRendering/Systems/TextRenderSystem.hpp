@@ -1,17 +1,15 @@
 #pragma once
 
-#include <TritiumEngine/Rendering/Camera.hpp>
-#include <TritiumEngine/Rendering/RenderSystem.hpp>
-#include <TritiumEngine/Rendering/Shader.hpp>
+#include <TritiumEngine/Rendering/Components/Camera.hpp>
+#include <TritiumEngine/Rendering/Components/Shader.hpp>
+#include <TritiumEngine/Rendering/Systems/RenderSystem.hpp>
+#include <TritiumEngine/Rendering/TextRendering/Components/Text.hpp>
 #include <TritiumEngine/Rendering/TextRendering/Font.hpp>
-#include <TritiumEngine/Rendering/TextRendering/Text.hpp>
 #include <TritiumEngine/Utilities/ColorUtils.hpp>
 
 #include <glm/gtc/matrix_transform.hpp>
 
-using namespace TritiumEngine::Rendering;
-
-namespace TritiumEngine::Rendering::TextRendering
+namespace TritiumEngine::Rendering
 {
   template <uint32_t CameraTag> class TextRenderSystem : public RenderSystem<CameraTag> {
   public:
@@ -103,4 +101,4 @@ namespace TritiumEngine::Rendering::TextRendering
       return startPos;
     }
   };
-} // namespace TritiumEngine::Rendering::TextRendering
+} // namespace TritiumEngine::Rendering

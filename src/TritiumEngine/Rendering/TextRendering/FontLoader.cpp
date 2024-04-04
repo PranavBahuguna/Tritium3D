@@ -5,7 +5,7 @@
 
 using namespace TritiumEngine::Utilities;
 
-namespace TritiumEngine::Rendering::TextRendering
+namespace TritiumEngine::Rendering
 {
   FontLoader::FontLoader(const std::string &defaultFilePath) : m_defaultFilePath(defaultFilePath) {}
 
@@ -96,4 +96,4 @@ namespace TritiumEngine::Rendering::TextRendering
 
     Logger::error("[FontLoader] FreeType error: {}", errMsg);
   }
-}; // namespace TritiumEngine::Rendering::TextRendering
+}; // namespace TritiumEngine::Rendering

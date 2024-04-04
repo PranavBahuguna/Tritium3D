@@ -1,18 +1,13 @@
 #pragma once
 
-#include "Components/Scripts/FpsStatsUI.hpp"
-#include "Components/Tags.hpp"
-
 #include <TritiumEngine/Core/Application.hpp>
-#include <TritiumEngine/Core/Transform.hpp>
-#include <TritiumEngine/Rendering/Shader.hpp>
-#include <TritiumEngine/Rendering/TextRendering/Text.hpp>
+#include <TritiumEngine/Core/Components/Transform.hpp>
+#include <TritiumEngine/Rendering/Components/Shader.hpp>
+#include <TritiumEngine/Rendering/TextRendering/Components/Text.hpp>
 #include <TritiumEngine/Utilities/ColorUtils.hpp>
+#include <TritiumEngine/Utilities/Scripts/FpsStatsUI.hpp>
 
-using namespace TritiumEngine::Rendering::TextRendering;
-using namespace TritiumEngine::Utilities;
-
-namespace RenderingBenchmark::Scripts
+namespace TritiumEngine::Utilities
 {
   FpsStatsUI::FpsStatsUI(Application &app) : Scriptable(app) { initUI(); }
 
@@ -63,4 +58,4 @@ namespace RenderingBenchmark::Scripts
     registry.emplace<Shader>(entity, shaderManager.get("text"));
     registry.emplace<Color>(entity, COLOR_GREEN);
   }
-} // namespace RenderingBenchmark::Scripts
+} // namespace TritiumEngine::Utilities

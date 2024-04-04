@@ -1,5 +1,5 @@
 #include <TritiumEngine/Core/Application.hpp>
-#include <TritiumEngine/Core/NativeScript.hpp>
+#include <TritiumEngine/Core/Components/NativeScript.hpp>
 #include <TritiumEngine/Core/Scene.hpp>
 #include <TritiumEngine/Core/Scriptable.hpp>
 #include <TritiumEngine/Core/System.hpp>

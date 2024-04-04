@@ -4,7 +4,7 @@ using namespace TritiumEngine::Rendering;
 
 namespace
 {
-  constexpr static float MOVE_SPEED             = 5.0f;
+  constexpr static float MOVE_SPEED             = 12.0f;
   constexpr static float TURN_SPEED             = 1.0f;
   constexpr static float ZOOM_SPEED             = 0.5f;
   constexpr static float MOUSE_TURN_SENSITIVITY = 0.33f;

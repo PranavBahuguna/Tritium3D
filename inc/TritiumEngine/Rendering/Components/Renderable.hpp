@@ -7,7 +7,7 @@ namespace TritiumEngine::Rendering
   class Renderable {
   public:
     Renderable(unsigned int renderMode, const RenderData &renderData);
-    virtual ~Renderable();
+    ~Renderable();
 
     unsigned int getVao() const { return m_vao; }
     int getVertexStride() const { return m_vertexStride; }

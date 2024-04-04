@@ -9,7 +9,7 @@
 
 using namespace TritiumEngine::Core;
 
-namespace RenderingBenchmark::Scripts
+namespace TritiumEngine::Utilities
 {
   class FpsStatsUI : public Scriptable {
   public:
@@ -33,4 +33,4 @@ namespace RenderingBenchmark::Scripts
     inline static int m_nFrames = 0;
     inline static float m_sumDt = 0.f;
   };
-} // namespace RenderingBenchmark::Scripts
+} // namespace TritiumEngine::Utilities

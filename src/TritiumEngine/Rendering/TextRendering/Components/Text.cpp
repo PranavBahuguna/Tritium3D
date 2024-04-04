@@ -1,10 +1,10 @@
 #include <TritiumEngine/Core/ResourceManager.hpp>
+#include <TritiumEngine/Rendering/TextRendering/Components/Text.hpp>
 #include <TritiumEngine/Rendering/TextRendering/FontLoader.hpp>
-#include <TritiumEngine/Rendering/TextRendering/Text.hpp>
 
 #include <GL/glew.h>
 
-namespace TritiumEngine::Rendering::TextRendering
+namespace TritiumEngine::Rendering
 {
   Text::Text(const std::string &text, const std::string &font, float scale, Alignment alignment)
       : text(text), scale(scale), align(alignment),
@@ -44,4 +44,4 @@ namespace TritiumEngine::Rendering::TextRendering
 
     return maxHeight * scale;
   }
-} // namespace TritiumEngine::Rendering::TextRendering
+} // namespace TritiumEngine::Rendering

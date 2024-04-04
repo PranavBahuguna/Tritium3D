@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TritiumEngine/Rendering/Color.hpp>
+#include <TritiumEngine/Rendering/Components/Color.hpp>
 
 #include <glm/glm.hpp>
 

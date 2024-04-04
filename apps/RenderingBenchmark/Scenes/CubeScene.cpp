@@ -1,25 +1,23 @@
 #pragma once
 
 #include "Scenes/CubeScene.hpp"
-#include "Components/Rigidbody.hpp"
-#include "Components/Scripts/CameraStatsUI.hpp"
-#include "Components/Scripts/FpsStatsUI.hpp"
 #include "Components/Tags.hpp"
 
 #include <TritiumEngine/Core/Application.hpp>
-#include <TritiumEngine/Core/NativeScript.hpp>
-#include <TritiumEngine/Rendering/InstancedRenderSystem.hpp>
+#include <TritiumEngine/Core/Components/NativeScript.hpp>
+#include <TritiumEngine/Core/Components/Rigidbody.hpp>
 #include <TritiumEngine/Rendering/Primitives.hpp>
-#include <TritiumEngine/Rendering/StandardRenderSystem.hpp>
-#include <TritiumEngine/Rendering/TextRendering/TextRenderSystem.hpp>
+#include <TritiumEngine/Rendering/Systems/InstancedRenderSystem.hpp>
+#include <TritiumEngine/Rendering/Systems/StandardRenderSystem.hpp>
+#include <TritiumEngine/Rendering/TextRendering/Systems/TextRenderSystem.hpp>
 #include <TritiumEngine/Utilities/Random.hpp>
+#include <TritiumEngine/Utilities/Scripts/CameraStatsUI.hpp>
+#include <TritiumEngine/Utilities/Scripts/FpsStatsUI.hpp>
 
 #include <glm/gtc/constants.hpp>
 
 using namespace RenderingBenchmark::Components;
-using namespace RenderingBenchmark::Scripts;
 using namespace TritiumEngine::Rendering;
-using namespace TritiumEngine::Rendering::TextRendering;
 using namespace TritiumEngine::Utilities;
 
 namespace
@@ -36,8 +34,8 @@ namespace RenderingBenchmark::Scenes
 
   void CubeScene::init() {
     setupSystems();
-    setupUI();
     setupCameras();
+    setupUI();
     setupControls();
     generateCubes(1000);
   }
@@ -63,9 +61,10 @@ namespace RenderingBenchmark::Scenes
         registry.emplace<NativeScript>(m_fpsStatsUI, std::make_unique<FpsStatsUI>(*m_app));
     fpsScript.getInstance().setEnabled(false);
 
-    m_cameraStatsUI = registry.create();
-    auto &cameraScript =
-        registry.emplace<NativeScript>(m_cameraStatsUI, std::make_unique<CameraStatsUI>(*m_app));
+    m_cameraStatsUI    = registry.create();
+    auto &sceneCamera  = registry.get<Camera>(m_sceneCamera);
+    auto &cameraScript = registry.emplace<NativeScript>(
+        m_cameraStatsUI, std::make_unique<CameraStatsUI>(*m_app, sceneCamera));
     cameraScript.getInstance().setEnabled(false);
   }
 
@@ -76,11 +75,11 @@ namespace RenderingBenchmark::Scenes
     float aspect       = screenWidth / screenHeight;
 
     // Scene camera
-    entt::entity sceneCamera   = registry.create();
+    m_sceneCamera              = registry.create();
     auto &sceneCameraComponent = registry.emplace<Camera>(
-        sceneCamera, Camera::ProjectionType::PERSPECTIVE, SCREEN_UNITS * aspect, SCREEN_UNITS, 0.1f,
-        1000.0f, Transform(CAMERA_POSITION));
-    registry.emplace<MainCameraTag>(sceneCamera);
+        m_sceneCamera, Camera::ProjectionType::PERSPECTIVE, SCREEN_UNITS * aspect, SCREEN_UNITS,
+        0.1f, 1000.0f, Transform(CAMERA_POSITION));
+    registry.emplace<MainCameraTag>(m_sceneCamera);
     m_cameraController.init(sceneCameraComponent);
 
     // UI overlay camera

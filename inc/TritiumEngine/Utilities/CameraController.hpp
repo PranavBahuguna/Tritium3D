@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TritiumEngine/Rendering/Camera.hpp>
+#include <TritiumEngine/Rendering/Components/Camera.hpp>
 #include <TritiumEngine/Rendering/Window.hpp>
 
 #include <unordered_map>

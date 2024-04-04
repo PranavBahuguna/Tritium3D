@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-namespace TritiumEngine::Rendering::TextRendering
+namespace TritiumEngine::Rendering
 {
   struct Font;
 
@@ -40,4 +40,4 @@ namespace TritiumEngine::Rendering::TextRendering
     unsigned int m_vao;
     unsigned int m_vbo;
   };
-} // namespace TritiumEngine::Rendering::TextRendering
+} // namespace TritiumEngine::Rendering

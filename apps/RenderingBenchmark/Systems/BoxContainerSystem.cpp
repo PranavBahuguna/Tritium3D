@@ -1,16 +1,15 @@
 #pragma once
 
 #include "Systems/BoxContainerSystem.hpp"
-#include "Components/Rigidbody.hpp"
 
 #include <TritiumEngine/Core/Application.hpp>
+#include <TritiumEngine/Core/Components/Rigidbody.hpp>
+#include <TritiumEngine/Core/Components/Transform.hpp>
 #include <TritiumEngine/Core/System.hpp>
-#include <TritiumEngine/Core/Transform.hpp>
 #include <TritiumEngine/Utilities/ColorUtils.hpp>
 
 using namespace TritiumEngine::Core;
 using namespace TritiumEngine::Utilities;
-using namespace RenderingBenchmark::Components;
 
 namespace RenderingBenchmark::Systems
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <TritiumEngine/Core/Scene.hpp>
-#include <TritiumEngine/Rendering/TextRendering/Text.hpp>
+#include <TritiumEngine/Rendering/TextRendering/Components/Text.hpp>
 #include <TritiumEngine/Rendering/Window.hpp>
 
 #include <entt/entity/entity.hpp>
@@ -9,7 +9,6 @@
 
 using namespace TritiumEngine::Core;
 using namespace TritiumEngine::Rendering;
-using namespace TritiumEngine::Rendering::TextRendering;
 
 namespace RenderingBenchmark::Scenes
 {

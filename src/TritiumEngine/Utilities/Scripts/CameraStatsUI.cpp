@@ -1,21 +1,17 @@
 #pragma once
 
-#include "Components/Scripts/CameraStatsUI.hpp"
-#include "Components/Tags.hpp"
-
 #include <TritiumEngine/Core/Application.hpp>
-#include <TritiumEngine/Rendering/Camera.hpp>
-#include <TritiumEngine/Rendering/Shader.hpp>
-#include <TritiumEngine/Rendering/TextRendering/Text.hpp>
+#include <TritiumEngine/Rendering/Components/Shader.hpp>
+#include <TritiumEngine/Rendering/TextRendering/Components/Text.hpp>
 #include <TritiumEngine/Utilities/ColorUtils.hpp>
+#include <TritiumEngine/Utilities/Scripts/CameraStatsUI.hpp>
 
-using namespace RenderingBenchmark::Components;
-using namespace TritiumEngine::Rendering::TextRendering;
-using namespace TritiumEngine::Utilities;
-
-namespace RenderingBenchmark::Scripts
+namespace TritiumEngine::Utilities
 {
-  CameraStatsUI::CameraStatsUI(Application &app) : Scriptable(app) { initUI(); }
+  CameraStatsUI::CameraStatsUI(Application &app, const Camera &camera)
+      : Scriptable(app), m_camera(camera) {
+    initUI();
+  }
 
   void CameraStatsUI::update(float dt) {
     // Elements are updated after a specified delay
@@ -26,12 +22,10 @@ namespace RenderingBenchmark::Scripts
     m_sumDt = 0.f;
 
     auto &registry          = m_app->registry;
-    auto cameraEntity       = registry.view<Camera, MainCameraTag>().front();
-    Camera &camera          = registry.get<Camera>(cameraEntity);
-    glm::vec3 position      = camera.transform.getPosition();
-    glm::vec3 eulerRotation = glm::eulerAngles(camera.transform.getRotation());
+    glm::vec3 position      = m_camera.transform.getPosition();
+    glm::vec3 eulerRotation = glm::eulerAngles(m_camera.transform.getRotation());
     glm::vec3 eulerDegrees  = glm::degrees(eulerRotation);
-    float fov               = glm::degrees(camera.fov);
+    float fov               = glm::degrees(m_camera.fov);
 
     registry.get<Text>(m_posXText).text  = std::format("x:     {:3.1f}", position.x);
     registry.get<Text>(m_posYText).text  = std::format("y:     {:3.1f}", position.y);
@@ -79,4 +73,4 @@ namespace RenderingBenchmark::Scripts
     registry.emplace<Shader>(entity, shaderManager.get("text"));
     registry.emplace<Color>(entity, COLOR_GREEN);
   }
-} // namespace RenderingBenchmark::Scripts
+} // namespace TritiumEngine::Utilities

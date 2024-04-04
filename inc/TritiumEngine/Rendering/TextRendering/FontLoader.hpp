@@ -8,7 +8,7 @@
 
 using namespace TritiumEngine::Core;
 
-namespace TritiumEngine::Rendering::TextRendering
+namespace TritiumEngine::Rendering
 {
   class FontLoader : public ResourceLoader<Font> {
   public:
@@ -21,4 +21,4 @@ namespace TritiumEngine::Rendering::TextRendering
 
     const std::string &m_defaultFilePath;
   };
-} // namespace TritiumEngine::Rendering::TextRendering
+} // namespace TritiumEngine::Rendering

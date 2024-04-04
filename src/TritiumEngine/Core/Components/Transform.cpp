@@ -1,4 +1,4 @@
-#include <TritiumEngine/Core/Transform.hpp>
+#include <TritiumEngine/Core/Components/Transform.hpp>
 
 #include <glm/gtc/matrix_transform.hpp>
 

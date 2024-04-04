@@ -1,9 +1,9 @@
 #pragma once
 
-#include <TritiumEngine/Rendering/Camera.hpp>
-#include <TritiumEngine/Rendering/InstancedRenderable.hpp>
-#include <TritiumEngine/Rendering/RenderSystem.hpp>
-#include <TritiumEngine/Rendering/Shader.hpp>
+#include <TritiumEngine/Rendering/Components/Camera.hpp>
+#include <TritiumEngine/Rendering/Components/InstancedRenderable.hpp>
+#include <TritiumEngine/Rendering/Components/Shader.hpp>
+#include <TritiumEngine/Rendering/Systems/RenderSystem.hpp>
 #include <TritiumEngine/Utilities/ColorUtils.hpp>
 
 using namespace TritiumEngine::Core;

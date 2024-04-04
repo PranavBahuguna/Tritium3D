@@ -1,4 +1,4 @@
-#include <TritiumEngine/Rendering/Renderable.hpp>
+#include <TritiumEngine/Rendering/Components/Renderable.hpp>
 
 #include <GL/glew.h>
 

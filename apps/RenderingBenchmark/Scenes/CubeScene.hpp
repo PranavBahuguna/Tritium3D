@@ -30,6 +30,7 @@ namespace RenderingBenchmark::Scenes
     void generateCubes(int nCubes);
 
     CameraController m_cameraController;
+    entt::entity m_sceneCamera   = entt::null;
     entt::entity m_fpsStatsUI    = entt::null;
     entt::entity m_cameraStatsUI = entt::null;
     CallbackId m_callbacks[2];

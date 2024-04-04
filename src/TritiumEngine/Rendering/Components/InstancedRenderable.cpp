@@ -1,4 +1,4 @@
-#include <TritiumEngine/Rendering/InstancedRenderable.hpp>
+#include <TritiumEngine/Rendering/Components/InstancedRenderable.hpp>
 #include <TritiumEngine/Utilities/Logger.hpp>
 
 #include <GL/glew.h>

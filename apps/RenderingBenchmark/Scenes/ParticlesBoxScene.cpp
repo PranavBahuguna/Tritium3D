@@ -1,25 +1,24 @@
 #pragma once
 
 #include "Scenes/ParticlesBoxScene.hpp"
-#include "Components/Rigidbody.hpp"
-#include "Components/Scripts/FpsStatsUI.hpp"
 #include "Components/Tags.hpp"
 #include "Systems/BoxContainerSystem.hpp"
 
 #include <TritiumEngine/Core/Application.hpp>
-#include <TritiumEngine/Core/NativeScript.hpp>
-#include <TritiumEngine/Rendering/InstancedRenderSystem.hpp>
+#include <TritiumEngine/Core/Components/NativeScript.hpp>
+#include <TritiumEngine/Core/Components/Rigidbody.hpp>
 #include <TritiumEngine/Rendering/Primitives.hpp>
-#include <TritiumEngine/Rendering/StandardRenderSystem.hpp>
-#include <TritiumEngine/Rendering/TextRendering/TextRenderSystem.hpp>
+#include <TritiumEngine/Rendering/Systems/InstancedRenderSystem.hpp>
+#include <TritiumEngine/Rendering/Systems/StandardRenderSystem.hpp>
+#include <TritiumEngine/Rendering/TextRendering/Systems/TextRenderSystem.hpp>
 #include <TritiumEngine/Utilities/Random.hpp>
+#include <TritiumEngine/Utilities/Scripts/FpsStatsUI.hpp>
 
 using namespace RenderingBenchmark::Components;
 using namespace RenderingBenchmark::Scenes;
 using namespace RenderingBenchmark::Systems;
-using namespace RenderingBenchmark::Scripts;
 using namespace TritiumEngine::Core;
-using namespace TritiumEngine::Rendering::TextRendering;
+using namespace TritiumEngine::Utilities;
 
 namespace
 {

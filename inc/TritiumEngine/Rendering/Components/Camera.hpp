@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TritiumEngine/Core/Transform.hpp>
+#include <TritiumEngine/Core/Components/Transform.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -13,8 +13,7 @@ namespace TritiumEngine::Rendering
     enum class ProjectionType { ORTHOGRAPHIC, PERSPECTIVE };
 
     Camera(ProjectionType projection, float frameWidth, float frameHeight, float nearPlane,
-           float farPlane, const Transform &transform = Transform(),
-           float fov = glm::radians(60.f))
+           float farPlane, const Transform &transform = Transform(), float fov = glm::radians(60.f))
         : projection(projection), width(frameWidth), height(frameHeight), nearPlane(nearPlane),
           farPlane(farPlane), transform(transform), fov(fov) {}
 

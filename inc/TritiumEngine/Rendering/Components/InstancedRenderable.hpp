@@ -18,7 +18,7 @@ namespace TritiumEngine::Rendering
   class InstancedRenderable {
   public:
     InstancedRenderable(unsigned int renderMode, const RenderData &renderData, int count);
-    virtual ~InstancedRenderable();
+    ~InstancedRenderable();
 
     void setInstanceData(size_t index, const InstanceData &data);
     void resizeInstanceDataBuffer(size_t newSize);

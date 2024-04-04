@@ -1,7 +1,7 @@
 #pragma once
 
 #include <TritiumEngine/Core/System.hpp>
-#include <TritiumEngine/Rendering/Color.hpp>
+#include <TritiumEngine/Rendering/Components/Color.hpp>
 
 using namespace TritiumEngine::Core;
 using namespace TritiumEngine::Rendering;
