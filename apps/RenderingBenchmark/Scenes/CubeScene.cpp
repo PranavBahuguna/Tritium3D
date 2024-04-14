@@ -2,13 +2,11 @@
 
 #include "Scenes/CubeScene.hpp"
 #include "Components/Tags.hpp"
+#include "Systems/CubeRenderSystem.hpp"
 
 #include <TritiumEngine/Core/Application.hpp>
 #include <TritiumEngine/Core/Components/NativeScript.hpp>
-#include <TritiumEngine/Core/Components/Rigidbody.hpp>
 #include <TritiumEngine/Rendering/Primitives.hpp>
-#include <TritiumEngine/Rendering/Systems/InstancedRenderSystem.hpp>
-#include <TritiumEngine/Rendering/Systems/StandardRenderSystem.hpp>
 #include <TritiumEngine/Rendering/TextRendering/Systems/TextRenderSystem.hpp>
 #include <TritiumEngine/Utilities/Random.hpp>
 #include <TritiumEngine/Utilities/Scripts/CameraStatsUI.hpp>
@@ -17,6 +15,7 @@
 #include <glm/gtc/constants.hpp>
 
 using namespace RenderingBenchmark::Components;
+using namespace RenderingBenchmark::Systems;
 using namespace TritiumEngine::Rendering;
 using namespace TritiumEngine::Utilities;
 
@@ -24,8 +23,8 @@ namespace
 {
   constexpr static float SCREEN_UNITS        = 100.f;
   constexpr static BlendOptions TEXT_BLEND   = {true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
-  constexpr static BlendOptions ENTITY_BLEND = {true, GL_SRC_COLOR, GL_DST_COLOR};
   constexpr static glm::vec3 CAMERA_POSITION = {0.f, 0.f, 200.f};
+  constexpr static float CUBE_SIZE           = 100.f;
 } // namespace
 
 namespace RenderingBenchmark::Scenes
@@ -33,11 +32,13 @@ namespace RenderingBenchmark::Scenes
   CubeScene::CubeScene() : Scene("Cube"), m_callbacks() {}
 
   void CubeScene::init() {
+    glEnable(GL_DEPTH_TEST);
+
     setupSystems();
     setupCameras();
     setupUI();
     setupControls();
-    generateCubes(1000);
+    generateParticles(2500000);
   }
 
   void CubeScene::onRegister() { setupCameraController(); }
@@ -48,8 +49,7 @@ namespace RenderingBenchmark::Scenes
   }
 
   void CubeScene::setupSystems() {
-    addSystem<StandardRenderSystem<MainCameraTag::value>>(ENTITY_BLEND);
-    addSystem<InstancedRenderSystem<MainCameraTag::value>>(ENTITY_BLEND);
+    addSystem<CubeRenderSystem<MainCameraTag::value>>();
     addSystem<TextRenderSystem<UiCameraTag::value>>(TEXT_BLEND);
   }
 
@@ -78,7 +78,7 @@ namespace RenderingBenchmark::Scenes
     m_sceneCamera              = registry.create();
     auto &sceneCameraComponent = registry.emplace<Camera>(
         m_sceneCamera, Camera::ProjectionType::PERSPECTIVE, SCREEN_UNITS * aspect, SCREEN_UNITS,
-        0.1f, 1000.0f, Transform(CAMERA_POSITION));
+        0.1f, 500.0f, Transform(CAMERA_POSITION));
     registry.emplace<MainCameraTag>(m_sceneCamera);
     m_cameraController.init(sceneCameraComponent);
 
@@ -117,19 +117,24 @@ namespace RenderingBenchmark::Scenes
     });
   }
 
-  void CubeScene::generateCubes(int nCubes) {
-    entt::entity entity = m_app->registry.create();
-    auto &renderable    = m_app->registry.emplace<InstancedRenderable>(
-        entity, GL_TRIANGLES, Primitives::createCube(), nCubes);
-    m_app->registry.emplace<Shader>(entity, m_app->shaderManager.get("instanced"));
+  void CubeScene::generateParticles(int nParticles) {
+    auto &registry      = m_app->registry;
+    auto &shaderManager = m_app->shaderManager;
 
-    // Add instances
-    for (int i = 0; i < nCubes; ++i) {
-      entt::entity instancedEntity = m_app->registry.create();
-      m_app->registry.emplace<InstanceTag>(instancedEntity, renderable.getInstanceId());
-      m_app->registry.emplace<Transform>(instancedEntity, randCubePosition(100.f));
-      m_app->registry.emplace<Color>(instancedEntity, 0xFF0000FF);
-      m_app->registry.emplace<Rigidbody>(instancedEntity);
+    entt::entity entity = registry.create();
+    auto &renderable    = registry.emplace<InstancedRenderable>(
+        entity, GL_POINTS, Primitives::createPoint(0.f, 0.f, 0.f), nParticles);
+    registry.emplace<Shader>(entity, shaderManager.get("instanced"));
+
+    // Set instance data
+    for (int i = 0; i < nParticles; ++i) {
+      const auto &pos = RandomUtils::CubePosition(CUBE_SIZE);
+      float dist      = glm::length(pos);
+      float maxDist   = glm::length(glm::vec3(CUBE_SIZE * 0.5f));
+      Color color     = ColorUtils::RainbowGradient(dist / maxDist);
+
+      renderable.setInstanceData(i, {Transform{pos}.getModelMatrix(), color.value});
     }
+    renderable.updateInstanceDataBuffer();
   }
 } // namespace RenderingBenchmark::Scenes

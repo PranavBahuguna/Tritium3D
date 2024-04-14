@@ -27,7 +27,7 @@ namespace RenderingBenchmark::Scenes
     void setupCameras();
     void setupCameraController();
     void setupControls();
-    void generateCubes(int nCubes);
+    void generateParticles(int nParticles);
 
     CameraController m_cameraController;
     entt::entity m_sceneCamera   = entt::null;

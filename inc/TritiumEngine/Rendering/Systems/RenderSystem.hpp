@@ -1,5 +1,6 @@
 #pragma once
 
+#include <TritiumEngine/Core/Application.hpp>
 #include <TritiumEngine/Core/System.hpp>
 #include <TritiumEngine/Rendering/BlendOptions.hpp>
 

@@ -32,8 +32,8 @@ namespace TritiumEngine::Core
 
   glm::mat4 Transform::getModelMatrix() const {
     // Calculate model from position, rotation and scale
-    glm::mat4 model = glm::mat4();
-    model           = glm::translate(glm::mat4(1.0f), m_position);
+    glm::mat4 model = glm::mat4(1.0f);
+    model           = glm::translate(model, m_position);
     model *= glm::mat4_cast(m_rotation);
     model = glm::scale(model, m_scale);
     return model;

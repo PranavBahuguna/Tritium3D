@@ -25,7 +25,6 @@ namespace
   constexpr static float CONTAINER_SIZE      = 75.f;
   constexpr static float SCREEN_UNITS        = 100.f;
   constexpr static glm::vec3 SHAPE_VELOCITY  = {10.f, 10.f, 0.f};
-  constexpr static glm::vec3 START_POSITION  = {0.f, 0.f, 0.f};
   constexpr static float DISPLACEMENT_RADIUS = 10.f;
   constexpr static BlendOptions ENTITY_BLEND = {true, GL_SRC_COLOR, GL_DST_COLOR};
   constexpr static BlendOptions TEXT_BLEND   = {true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
@@ -187,8 +186,8 @@ namespace RenderingBenchmark::Scenes
   void ParticlesBoxScene::generateParticlesDefault() {
     for (int i = 0; i < m_nParticles; ++i) {
       entt::entity entity = m_app->registry.create();
-      m_app->registry.emplace<Transform>(entity, START_POSITION +
-                                                     randRadialPosition(DISPLACEMENT_RADIUS, true));
+      m_app->registry.emplace<Transform>(entity,
+                                         RandomUtils::RadialPosition(DISPLACEMENT_RADIUS, true));
       m_app->registry.emplace<Renderable>(entity, GL_TRIANGLES, Primitives::createSquare());
       m_app->registry.emplace<Shader>(entity, m_app->shaderManager.get("default"));
       m_app->registry.emplace<Color>(entity, 0xFF0000FF);
@@ -207,8 +206,8 @@ namespace RenderingBenchmark::Scenes
     for (int i = 0; i < m_nParticles; ++i) {
       entt::entity instancedEntity = m_app->registry.create();
       m_app->registry.emplace<InstanceTag>(instancedEntity, renderable.getInstanceId());
-      m_app->registry.emplace<Transform>(
-          instancedEntity, START_POSITION + randRadialPosition(DISPLACEMENT_RADIUS, true));
+      m_app->registry.emplace<Transform>(instancedEntity,
+                                         RandomUtils::RadialPosition(DISPLACEMENT_RADIUS, true));
       m_app->registry.emplace<Color>(instancedEntity, 0xFF0000FF);
       m_app->registry.emplace<Rigidbody>(instancedEntity, SHAPE_VELOCITY);
     }
@@ -219,14 +218,14 @@ namespace RenderingBenchmark::Scenes
     entt::entity entity = m_app->registry.create();
     auto &renderable    = m_app->registry.emplace<InstancedRenderable>(
         entity, GL_POINTS, Primitives::createPoint(0.f, 0.f), m_nParticles);
-    m_app->registry.emplace<Shader>(entity, m_app->shaderManager.get("geometry"));
+    m_app->registry.emplace<Shader>(entity, m_app->shaderManager.get("instanced"));
 
     // Add instances
     for (int i = 0; i < m_nParticles; ++i) {
       entt::entity instancedEntity = m_app->registry.create();
       m_app->registry.emplace<InstanceTag>(instancedEntity, renderable.getInstanceId());
-      m_app->registry.emplace<Transform>(
-          instancedEntity, START_POSITION + randRadialPosition(DISPLACEMENT_RADIUS, true));
+      m_app->registry.emplace<Transform>(instancedEntity,
+                                         RandomUtils::RadialPosition(DISPLACEMENT_RADIUS, true));
       m_app->registry.emplace<Color>(instancedEntity, 0xFF0000FF);
       m_app->registry.emplace<Rigidbody>(instancedEntity, SHAPE_VELOCITY);
     }

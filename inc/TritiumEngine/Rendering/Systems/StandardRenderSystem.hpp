@@ -15,7 +15,6 @@ namespace TritiumEngine::Rendering
     StandardRenderSystem(BlendOptions blendOptions = {}) : RenderSystem<CameraTag>(blendOptions) {}
 
     void draw(const Camera &camera) const override {
-      bool newDrawCycleStarted = true;
       auto &shaderManager      = RenderSystem<CameraTag>::m_app->shaderManager;
       auto &registry           = RenderSystem<CameraTag>::m_app->registry;
 
@@ -23,8 +22,7 @@ namespace TritiumEngine::Rendering
           [&](auto entity, Renderable &renderable, Transform &transform, Shader &shader,
               Color &color) {
             // Apply properties to shader
-            if (shader.id != shaderManager.getCurrentShader() || newDrawCycleStarted) {
-              newDrawCycleStarted = false;
+            if (shader.id != shaderManager.getCurrentShader()) {
               shaderManager.use(shader.id);
               shaderManager.setMatrix4("projectionView", camera.calcProjectionViewMatrix());
             }
@@ -44,6 +42,7 @@ namespace TritiumEngine::Rendering
             else
               glDrawArrays(renderMode, 0, nVertices / vertexStride);
           });
+      shaderManager.use(0);
     }
   };
 } // namespace TritiumEngine::Rendering

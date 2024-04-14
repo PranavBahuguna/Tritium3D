@@ -63,6 +63,7 @@ namespace TritiumEngine::Rendering
               startPos.x += (ch.advance >> 6) * scale;
             }
           });
+      shaderManager.use(0);
     }
 
   private:

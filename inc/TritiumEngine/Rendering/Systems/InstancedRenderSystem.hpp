@@ -6,8 +6,6 @@
 #include <TritiumEngine/Rendering/Systems/RenderSystem.hpp>
 #include <TritiumEngine/Utilities/ColorUtils.hpp>
 
-using namespace TritiumEngine::Core;
-
 namespace TritiumEngine::Rendering
 {
   template <uint32_t CameraTag> class InstancedRenderSystem : public RenderSystem<CameraTag> {
@@ -15,7 +13,6 @@ namespace TritiumEngine::Rendering
     InstancedRenderSystem(BlendOptions blendOptions = {}) : RenderSystem<CameraTag>(blendOptions) {}
 
     void draw(const Camera &camera) const override {
-      bool newDrawCycleStarted = true;
       auto &shaderManager      = RenderSystem<CameraTag>::m_app->shaderManager;
       auto &registry           = RenderSystem<CameraTag>::m_app->registry;
 
@@ -29,8 +26,7 @@ namespace TritiumEngine::Rendering
             unsigned int renderMode = renderable.getRenderMode();
             uint32_t instanceId     = renderable.getInstanceId();
 
-            if (shader.id != shaderManager.getCurrentShader() || newDrawCycleStarted) {
-              newDrawCycleStarted = false;
+            if (shader.id != shaderManager.getCurrentShader()) {
               shaderManager.use(shader.id);
               shaderManager.setMatrix4("projectionView", camera.calcProjectionViewMatrix());
             }
@@ -51,6 +47,7 @@ namespace TritiumEngine::Rendering
             else
               glDrawArraysInstanced(renderMode, 0, nVertices / vertexStride, nInstances);
           });
+      shaderManager.use(0);
     }
   };
 } // namespace TritiumEngine::Rendering

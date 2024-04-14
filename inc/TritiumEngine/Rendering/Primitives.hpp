@@ -9,7 +9,7 @@
 namespace TritiumEngine::Rendering::Primitives
 {
   /**
-   * @brief Point generator helper method, vertices only
+   * @brief 2D Point generator helper method, vertices only
    */
   static RenderData createPoint(float x, float y) {
     std::vector<float> vertices{x, y};
@@ -17,12 +17,32 @@ namespace TritiumEngine::Rendering::Primitives
   }
 
   /**
-   * @brief Line generator helper method, vertices only
+   * @brief 3D Point generator helper method, vertices only
+   */
+  static RenderData createPoint(float x, float y, float z) {
+    std::vector<float> vertices{x, y, z};
+    return RenderData{3, vertices};
+  }
+
+  /**
+   * @brief 2D Line generator helper method, vertices only
    */
   static RenderData createLine(float aX, float aY, float bX, float bY) {
     std::vector<float> vertices{
         aX, aY, // line start
         bX, bY  // line end
+    };
+
+    return RenderData{2, vertices};
+  }
+
+  /**
+   * @brief 3D Line generator helper method, vertices only
+   */
+  static RenderData createLine(float aX, float aY, float aZ, float bX, float bY, float bZ) {
+    std::vector<float> vertices{
+        aX, aY, aZ, // line start
+        bX, bY, bZ  // line end
     };
 
     return RenderData{2, vertices};

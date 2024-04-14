@@ -22,9 +22,9 @@ namespace TritiumEngine::Core
   /** @brief Initialises the scene and all constituent systems */
   void Scene::load() {
     Logger::info("[Scene] Loading scene '{}'...", name);
+    init();
     m_app->registry.view<NativeScript>().each(
         [&](auto entity, NativeScript &script) { script.getInstance().init(); });
-    init();
   }
 
   /** @brief Clears the ECS registry, dispatcher and any registered systems */
