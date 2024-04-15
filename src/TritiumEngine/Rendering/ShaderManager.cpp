@@ -22,23 +22,31 @@ namespace TritiumEngine::Rendering
    * @param vertexData The code string for the vertex shader program
    * @param fragmentData The code string for the fragment shader program
    * @param geometryData The code string for the geometry shader program, optional
+   * @param computeData The code string for the compute shader program, optional
    * @returns Id of the new shader program
    */
   ShaderId ShaderManager::create(const std::string &name, const std::string &vertexData,
                                  const std::string &fragmentData,
-                                 const std::string &geometryData = "") {
+                                 const std::string &geometryData = "",
+                                 const std::string &computeData  = "") {
     ShaderId programId = 0;
     // Compile vertex and fragment shaders
     ShaderId vertexId   = compile(vertexData.c_str(), GL_VERTEX_SHADER);
     ShaderId fragmentId = compile(fragmentData.c_str(), GL_FRAGMENT_SHADER);
+    std::vector<ShaderId> shaderPrograms{vertexId, fragmentId};
+
+    // Additionally compile geometry and compute shaders if provided
     if (!geometryData.empty()) {
       ShaderId geometryId = compile(geometryData.c_str(), GL_GEOMETRY_SHADER);
-      programId           = link({vertexId, fragmentId, geometryId});
-    } else {
-      programId = link({vertexId, fragmentId});
+      shaderPrograms.push_back(geometryId);
+    }
+    if (!computeData.empty()) {
+      ShaderId computeId = compile(computeData.c_str(), GL_COMPUTE_SHADER);
+      shaderPrograms.push_back(computeId);
     }
 
-    // Add shader program to storage
+    // Link and add shader program to storage
+    programId = link(shaderPrograms);
     if (programId != 0)
       m_nameToIdMap[name] = programId;
 
@@ -49,33 +57,32 @@ namespace TritiumEngine::Rendering
    * @brief Loads a shader from file or cache using its base name
    * @param name The base name of the shader to load. The constituent shaders are loaded using the
    * base name + a specific extension.
-   * @param forceReload If true, will force a reload of the vertex/fragment files and overwrite any
+   * @param reload If true, will force a reload of the vertex/fragment files and overwrite any
    * existing shader of the same name
    * @returns Id of the new shader program
    */
-  ShaderId ShaderManager::get(const std::string &name, bool forceReload) {
-    if (!forceReload) {
+  ShaderId ShaderManager::get(const std::string &name, bool reload) {
+    if (!reload) {
       // Check if the shader program has already been loaded
       auto it = m_nameToIdMap.find(name);
       if (it != m_nameToIdMap.end())
         return it->second;
     }
 
-    const auto &vertexShader   = ResourceManager<ShaderCode>::get(name + ".vert", forceReload);
-    const auto &fragmentShader = ResourceManager<ShaderCode>::get(name + ".frag", forceReload);
+    const auto &vertexShader   = ResourceManager<ShaderCode>::get(name + ".vert", reload);
+    const auto &fragmentShader = ResourceManager<ShaderCode>::get(name + ".frag", reload);
+    const auto &geometryShader = ResourceManager<ShaderCode>::get(name + ".geom", reload, true);
+    const auto &computeShader  = ResourceManager<ShaderCode>::get(name + ".comp", reload, true);
 
     if (vertexShader == nullptr || fragmentShader == nullptr)
       return 0;
 
-    if (!ResourceManager<ShaderCode>::fileExists(name + ".geom"))
-      return create(name, vertexShader->data, fragmentShader->data);
+    const std::string &vertexData   = vertexShader->data;
+    const std::string &fragmentData = fragmentShader->data;
+    const std::string &geometryData = geometryShader ? geometryShader->data : "";
+    const std::string &computeData  = computeShader ? computeShader->data : "";
 
-    // Add the geometry shader if one can be found
-    const auto &geometryShader = ResourceManager<ShaderCode>::get(name + ".geom", forceReload);
-    if (geometryShader == nullptr)
-      return 0;
-
-    return create(name, vertexShader->data, fragmentShader->data, geometryShader->data);
+    return create(name, vertexData, fragmentData, geometryData, computeData);
   }
 
   /**

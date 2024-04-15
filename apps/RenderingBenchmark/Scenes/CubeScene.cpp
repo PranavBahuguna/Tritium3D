@@ -29,11 +29,17 @@ namespace
 
 namespace RenderingBenchmark::Scenes
 {
-  CubeScene::CubeScene() : Scene("Cube"), m_callbacks() {}
+  CubeScene::CubeScene() : Scene("Cube"), m_callbacks(), m_gradient() {
+    m_gradient.addColorPoint({COLOR_RED, 0.f});
+    m_gradient.addColorPoint({COLOR_YELLOW, 0.2f});
+    m_gradient.addColorPoint({COLOR_GREEN, 0.4f});
+    m_gradient.addColorPoint({COLOR_CYAN, 0.6f});
+    m_gradient.addColorPoint({COLOR_BLUE, 0.8f});
+    m_gradient.addColorPoint({COLOR_MAGENTA, 1.f});
+  }
 
   void CubeScene::init() {
     glEnable(GL_DEPTH_TEST);
-
     setupSystems();
     setupCameras();
     setupUI();
@@ -44,6 +50,7 @@ namespace RenderingBenchmark::Scenes
   void CubeScene::onRegister() { setupCameraController(); }
 
   void CubeScene::dispose() {
+    glDisable(GL_DEPTH_TEST);
     m_cameraController.dispose();
     m_app->window.removeCallbacks(m_callbacks);
   }
@@ -131,7 +138,7 @@ namespace RenderingBenchmark::Scenes
       const auto &pos = RandomUtils::CubePosition(CUBE_SIZE);
       float dist      = glm::length(pos);
       float maxDist   = glm::length(glm::vec3(CUBE_SIZE * 0.5f));
-      Color color     = ColorUtils::RainbowGradient(dist / maxDist);
+      Color color     = m_gradient.getColor(dist / maxDist);
 
       renderable.setInstanceData(i, {Transform{pos}.getModelMatrix(), color.value});
     }

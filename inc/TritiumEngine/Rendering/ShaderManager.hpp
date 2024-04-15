@@ -2,8 +2,8 @@
 
 #include <glm/glm.hpp>
 
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
 namespace TritiumEngine::Rendering
 {
@@ -14,8 +14,9 @@ namespace TritiumEngine::Rendering
     ~ShaderManager();
 
     ShaderId create(const std::string &name, const std::string &vertexData,
-                    const std::string &fragmentData, const std::string &geometryData);
-    ShaderId get(const std::string &name, bool forceReload = false);
+                    const std::string &fragmentData, const std::string &geometryData,
+                    const std::string &computeData);
+    ShaderId get(const std::string &name, bool reload = false);
     void use(ShaderId id);
 
     ShaderId getCurrentShader() const { return m_currentShaderId; }

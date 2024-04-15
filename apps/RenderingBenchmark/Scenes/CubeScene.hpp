@@ -1,6 +1,7 @@
 #pragma once
 
 #include <TritiumEngine/Core/Scene.hpp>
+#include <TritiumEngine/Rendering/ColorGradient.hpp>
 #include <TritiumEngine/Rendering/Window.hpp>
 #include <TritiumEngine/Utilities/CameraController.hpp>
 
@@ -30,9 +31,11 @@ namespace RenderingBenchmark::Scenes
     void generateParticles(int nParticles);
 
     CameraController m_cameraController;
+    CallbackId m_callbacks[2];
+    ColorGradient m_gradient;
+
     entt::entity m_sceneCamera   = entt::null;
     entt::entity m_fpsStatsUI    = entt::null;
     entt::entity m_cameraStatsUI = entt::null;
-    CallbackId m_callbacks[2];
   };
 } // namespace RenderingBenchmark::Scenes

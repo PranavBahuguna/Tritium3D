@@ -44,9 +44,12 @@ namespace TritiumEngine::Core
      * @param filePath The file path of the resource to load
      * @param forceReload If true, will forcibly load the resource again and overwrite an existing
      * resource
+     * @param optional If true, will suppress any warnings or errors when attempting to obtain
+     * resource
      * @return Shared pointer to resource of given type, nullptr if resource file path isn't found
      */
-    static std::shared_ptr<T> get(const std::string &filePath, bool forceReload = false) {
+    static std::shared_ptr<T> get(const std::string &filePath, bool forceReload = false,
+                                  bool optional = false) {
       if (!checkIfRegistered() || filePath.empty())
         return nullptr;
 
@@ -54,18 +57,26 @@ namespace TritiumEngine::Core
       auto &foundItem               = m_resourceMap[totalFilePath];
       std::shared_ptr<T> returnItem = nullptr;
 
+      // Supress warnings if optional
+      LogType loggerLevel = Logger::Settings::levelMask;
+      if (optional)
+        Logger::Settings::levelMask &= ~(LogType::ERROR | LogType::WARNING);
+
       if (foundItem.expired() || forceReload) {
-        // Check if file exists
-        if (!std::filesystem::exists(totalFilePath)) {
+        if (std::filesystem::exists(totalFilePath)) {
+          // Load from file path
+          returnItem = std::shared_ptr<T>(m_loader->load(totalFilePath));
+          foundItem  = returnItem;
+        } else {
           Logger::error("[ResourceManager] File {} not found", totalFilePath);
-          return nullptr;
         }
-        // Load from file path
-        returnItem = std::shared_ptr<T>(m_loader->load(totalFilePath));
-        foundItem  = returnItem;
       } else {
         returnItem = foundItem.lock();
       }
+
+      // Restore original logger settings
+      if (optional)
+        Logger::Settings::levelMask = loggerLevel;
 
       return returnItem;
     }
