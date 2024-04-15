@@ -1,8 +1,9 @@
 # TritiumEngine
 Graphics rendering engine built with C++ and OpenGL. I intend to eventually turn this into a physics simulation library.
 
-# Screenshot (05/03/2024)
-![RenderingBenchmark](https://github.com/PranavBahuguna/TritiumEngine/assets/10980962/ab87ecbe-d669-440a-b81c-ee5c8be66a20)
+# Screenshots
+![ParticlesBox](https://github.com/PranavBahuguna/TritiumEngine/assets/10980962/ab87ecbe-d669-440a-b81c-ee5c8be66a20)
+![Cube](https://github.com/PranavBahuguna/TritiumEngine/assets/10980962/c85f2bf0-2532-4959-b1cc-d766915637fe)
 
 # Cloning the repo
 There are several third-party submodules that are included in this project. That said, the CMakeLists.txt file will automatically
@@ -18,20 +19,13 @@ You can then use CMake with Visual Studio to generate and build the project file
 
 This is an example application that makes use of TritiumEngine. It registers the performance of drawing many particles bouncing
 inside a box, and provides controls for changing particle count and rendering method. It also incorporates use of
-[EnTT](https://github.com/skypjack/entt) ECS framework for handling game entites, components and systems. It provides the following
-key controls:
+[EnTT](https://github.com/skypjack/entt) ECS framework for handling game entites, components and systems.
 
-- **D** - Default rendering mode
-- **I** - Instanced rendering mode
-- **G** - Instanced + geometry shader rendering mode
-- **1** - Simulate 1 entity
-- **2** - Simulate 10 entities
-- **3** - Simulate 100 entities
-- **4** - Simulate 1000 entities
-- **5** - Simulate 10000 entities
-- **6** - Simulate 100000 entities
-- **7** - Simulate 1000000 entities
+There are two scenes currently available in the app. The first shows a collection of particles arranged in a ball bouncing in a
+box. It provides controls for changing the number of particles shown and the rendering method. The second scene draws 2.5
+million particles in a 3D cube and colours them with a gradient dependent on their distanced from the center. It also provides
+camera controls for navigating around the space. You can switch between scenes withthe **Enter** key, reload with the **R** key
+and exit the app by closing the window or using the **Esc** key.
 
-I have found instancing to provide a significant speedup over default rendering (draw call for each entity), while using a geometry
-shader in conjunction with instancing provides another small boost in performance. I plan on adding additional scenes and
-implementing more techniques to improve performance over time. 
+Future plans for this application will likely focus on implementing physics systems and eventually building versions running on
+compute shaders for larger simulations.
