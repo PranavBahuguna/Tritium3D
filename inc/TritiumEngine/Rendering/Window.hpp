@@ -108,7 +108,9 @@ namespace TritiumEngine::Rendering
     void removeCallback(CallbackId id);
     void removeCallbacks(const std::span<CallbackId> &ids);
 
-    void refresh() const;
+    void update() const;
+    void clear() const;
+    void swapBuffers() const;
     void setCursorState(CursorState state) const;
     int getWidth() const;
     int getHeight() const;

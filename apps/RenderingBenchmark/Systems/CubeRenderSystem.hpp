@@ -12,8 +12,8 @@ namespace RenderingBenchmark::Systems
     CubeRenderSystem() : RenderSystem<CameraTag>({}) {}
 
     void draw(const Camera &camera) const override {
-      auto &registry           = RenderSystem<CameraTag>::m_app->registry;
-      auto &shaderManager      = RenderSystem<CameraTag>::m_app->shaderManager;
+      auto &registry      = RenderSystem<CameraTag>::m_app->registry;
+      auto &shaderManager = RenderSystem<CameraTag>::m_app->shaderManager;
 
       registry.view<InstancedRenderable, Shader>().each(
           [&](auto entity, InstancedRenderable &renderable, Shader &shader) {

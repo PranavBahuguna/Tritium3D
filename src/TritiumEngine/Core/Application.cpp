@@ -36,12 +36,15 @@ namespace TritiumEngine::Core
       float deltaTime = std::chrono::duration<float>(m_currentTime - m_prevFrameTime).count();
       m_prevFrameTime = m_currentTime;
 
-      // Update window
-      window.update(deltaTime);
-      window.refresh();
+      // Clear window
+      window.clear();
 
       // Update scene
+      window.update(deltaTime);
       sceneManager.update(deltaTime);
+
+      // Swap buffers
+      window.swapBuffers();
     }
 
     Logger::info("[Application] App '{}' stopped.", name);

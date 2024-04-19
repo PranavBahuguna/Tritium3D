@@ -29,8 +29,7 @@ namespace TritiumEngine::Rendering
   }
 
   void ColorGradient::removeAtIndex(size_t index) {
-    auto it = m_colorPoints.begin();
-    std::advance(it, index);
+    auto it = std::next(m_colorPoints.begin(), index);
     m_colorPoints.erase(it);
   }
 
@@ -64,17 +63,12 @@ namespace TritiumEngine::Rendering
     ColorPoint y;
 
     // If looping, interval will be calculated between last color point and first
-    bool loopingInterval = false;
     if (lessThanAll || greaterThanAll) {
-      x               = last;
-      y               = first;
-      loopingInterval = true;
+      x = last;
+      y = first;
     } else {
       // Iterate over the color points to find the interval the value falls into
-      auto it = m_colorPoints.begin();
-      ++it;
-
-      for (; it != m_colorPoints.end(); ++it) {
+      for (auto it = std::next(m_colorPoints.begin()); it != m_colorPoints.end(); ++it) {
         if (it->value == value)
           return it->color; // if value matches exactly, return its color
 
@@ -89,26 +83,18 @@ namespace TritiumEngine::Rendering
     }
 
     // Obtain colors as a vector of 8 bit RGBA components
-    auto aColor = ColorUtils::ToVec4(x.color);
-    auto bColor = ColorUtils::ToVec4(y.color);
+    auto xColor = ColorUtils::ToVec4(x.color);
+    auto yColor = ColorUtils::ToVec4(y.color);
 
     // Calculate a normalized value for the interval
-    float normalizedValue;
-    float intervalWidth;
+    float diff            = y.value - x.value;
+    float intervalWidth   = diff <= 0.f ? diff + 1.f : diff;
+    float normalizedValue = fmodf(value - x.value, 1.f) / intervalWidth;
 
-    if (!loopingInterval) {
-      intervalWidth   = y.value - x.value;
-      normalizedValue = (value - x.value) / intervalWidth;
-    } else {
-      intervalWidth   = y.value - x.value + 1.f;
-      normalizedValue = (value > 0.5f) ? (value - x.value) / intervalWidth
-                                       : ((value - y.value) / intervalWidth) + 1.f;
-    }
-
-    uint8_t r = (uint8_t)((1.f - normalizedValue) * aColor.r + normalizedValue * bColor.r);
-    uint8_t g = (uint8_t)((1.f - normalizedValue) * aColor.g + normalizedValue * bColor.g);
-    uint8_t b = (uint8_t)((1.f - normalizedValue) * aColor.b + normalizedValue * bColor.b);
-    uint8_t a = (uint8_t)((1.f - normalizedValue) * aColor.a + normalizedValue * bColor.a);
+    uint8_t r = (uint8_t)((1.f - normalizedValue) * xColor.r + normalizedValue * yColor.r);
+    uint8_t g = (uint8_t)((1.f - normalizedValue) * xColor.g + normalizedValue * yColor.g);
+    uint8_t b = (uint8_t)((1.f - normalizedValue) * xColor.b + normalizedValue * yColor.b);
+    uint8_t a = (uint8_t)((1.f - normalizedValue) * xColor.a + normalizedValue * yColor.a);
 
     return ColorUtils::FromRGBAComponents(r, g, b, a);
   }

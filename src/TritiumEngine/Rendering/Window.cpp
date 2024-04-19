@@ -1,4 +1,5 @@
 #include <TritiumEngine/Rendering/Window.hpp>
+#include <TritiumEngine/Utilities/ColorUtils.hpp>
 #include <TritiumEngine/Utilities/Logger.hpp>
 
 #include <array>
@@ -63,6 +64,10 @@ namespace TritiumEngine::Rendering
     glfwGetWindowSize(m_windowHandle, &m_width, &m_height);
     glViewport(0, 0, m_width, m_height);
 
+    // Set clear color
+    auto color = ColorUtils::ToNormalizedVec4(0xFF323232); // dark grey
+    glClearColor(color.r, color.g, color.b, color.a);
+
     ++s_nWindows;
     Logger::info("[Window] Opened window '{}'.", m_name);
   }
@@ -82,7 +87,6 @@ namespace TritiumEngine::Rendering
 
   /** @brief Updates the windows status and input events, should be called every frame */
   void Window::update(float dt) {
-    glfwSwapBuffers(m_windowHandle);
     glfwPollEvents();
     m_lastDt = dt;
 
@@ -100,6 +104,9 @@ namespace TritiumEngine::Rendering
       }
     }
   }
+
+  /** @brief Swaps render buffers for this window */
+  void Window::swapBuffers() const { glfwSwapBuffers(m_windowHandle); }
 
   /**
    * @brief Adds a callback action for keyboard input
@@ -348,10 +355,7 @@ namespace TritiumEngine::Rendering
   }
 
   /** @brief Clears the window and any buffer bits */
-  void Window::refresh() const {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-  }
+  void Window::clear() const { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 
   /**
    * @brief Sets the current state of the cursor
