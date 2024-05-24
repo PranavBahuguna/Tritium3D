@@ -10,17 +10,17 @@ using namespace TritiumEngine::Core;
 namespace TritiumEngine::Rendering
 {
   struct Camera {
-    enum class ProjectionType { ORTHOGRAPHIC, PERSPECTIVE };
+    enum class Projection { ORTHOGRAPHIC, PERSPECTIVE };
 
-    Camera(ProjectionType projection, float frameWidth, float frameHeight, float nearPlane,
-           float farPlane, const Transform &transform = Transform(), float fov = glm::radians(60.f))
+    Camera(Projection projection, float frameWidth, float frameHeight, float nearPlane,
+           float farPlane, const Transform &transform = {}, float fov = glm::radians(60.f))
         : projection(projection), width(frameWidth), height(frameHeight), nearPlane(nearPlane),
           farPlane(farPlane), transform(transform), fov(fov) {}
 
     float getAspectRatio() const { return width / height; }
 
     glm::mat4 calcProjectionMatrix() const {
-      return projection == ProjectionType::ORTHOGRAPHIC
+      return projection == Projection::ORTHOGRAPHIC
                  ? glm::ortho(-width * 0.5f, width * 0.5f, -height * 0.5f, height * 0.5f)
                  : glm::perspective(fov, getAspectRatio(), nearPlane, farPlane);
     }
@@ -29,7 +29,7 @@ namespace TritiumEngine::Rendering
       return calcProjectionMatrix() * transform.getViewMatrix();
     }
 
-    ProjectionType projection;
+    Projection projection;
     float width;
     float height;
     float nearPlane;

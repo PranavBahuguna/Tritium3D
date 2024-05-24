@@ -6,8 +6,8 @@
 
 namespace TritiumEngine::Rendering
 {
-  Text::Text(const std::string &text, const std::string &font, float scale, Alignment alignment)
-      : text(text), scale(scale), align(alignment),
+  Text::Text(const std::string &text, const std::string &font, float scaleFactor, Alignment alignment)
+      : text(text), scaleFactor(scaleFactor), align(alignment),
         m_font(ResourceManager<Font>::get(font + ".ttf")) {
     // Bind vertex array object
     glGenVertexArrays(1, &m_vao);
@@ -33,7 +33,7 @@ namespace TritiumEngine::Rendering
     for (const char &c : text)
       width += m_font->characters[c].advance >> 6;
 
-    return width * scale;
+    return width * scaleFactor;
   }
 
   float Text::getPixelHeight() const {
@@ -42,6 +42,6 @@ namespace TritiumEngine::Rendering
     for (const char &c : text)
       maxHeight = std::max(m_font->characters[c].bearing.y, maxHeight);
 
-    return maxHeight * scale;
+    return maxHeight * scaleFactor;
   }
 } // namespace TritiumEngine::Rendering

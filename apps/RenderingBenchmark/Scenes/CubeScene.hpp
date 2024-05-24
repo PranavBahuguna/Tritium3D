@@ -15,27 +15,17 @@ namespace RenderingBenchmark::Scenes
 {
   class CubeScene : public Scene {
   public:
-    CubeScene();
+    CubeScene(const std::string &name, Application &app);
 
   protected:
     void init() override;
-    void onRegister() override;
     void dispose() override;
 
   private:
-    void setupSystems();
-    void setupUI();
-    void setupCameras();
-    void setupCameraController();
-    void setupControls();
     void generateParticles(int nParticles);
 
     CameraController m_cameraController;
     CallbackId m_callbacks[2];
     ColorGradient m_gradient;
-
-    entt::entity m_sceneCamera   = entt::null;
-    entt::entity m_fpsStatsUI    = entt::null;
-    entt::entity m_cameraStatsUI = entt::null;
   };
 } // namespace RenderingBenchmark::Scenes

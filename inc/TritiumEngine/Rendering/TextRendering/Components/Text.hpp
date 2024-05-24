@@ -21,7 +21,7 @@ namespace TritiumEngine::Rendering
       BOTTOM_RIGHT
     };
 
-    Text(const std::string &text, const std::string &font, float scale = 1.f,
+    Text(const std::string &text, const std::string &font, float scaleFactor = 1.f,
          Alignment alignment = Alignment::BOTTOM_LEFT);
     virtual ~Text();
 
@@ -32,7 +32,7 @@ namespace TritiumEngine::Rendering
     unsigned int getVbo() const { return m_vbo; }
 
     std::string text;
-    float scale;
+    float scaleFactor;
     Alignment align;
 
   private:

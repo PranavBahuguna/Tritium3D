@@ -8,7 +8,7 @@ using namespace TritiumEngine::Utilities;
 namespace TritiumEngine::Core
 {
   Application::Application(const std::string &name, const WindowSettings &settings)
-      : name(name), window(settings), sceneManager(this) {
+      : name(name), window(settings), sceneManager(*this) {
     initGLEW();
   }
 

@@ -2,20 +2,20 @@
 
 #include <TritiumEngine/Core/Scriptable.hpp>
 #include <TritiumEngine/Rendering/Components/Camera.hpp>
+#include <TritiumEngine/Utilities/CameraController.hpp>
 
 #include <entt/entity/entity.hpp>
 #include <glm/glm.hpp>
 
-#include <string>
-
 using namespace TritiumEngine::Core;
 using namespace TritiumEngine::Rendering;
+using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Utilities
 {
   class CameraStatsUI : public Scriptable {
   public:
-    CameraStatsUI(Application &app, const Camera &camera);
+    CameraStatsUI(Application &app, const Camera &camera, const CameraController &cameraController);
 
     void init() override{};
     void dispose() override{};
@@ -37,6 +37,7 @@ namespace TritiumEngine::Utilities
     entt::entity m_fovText   = entt::null;
 
     const Camera &m_camera;
+    const CameraController &m_cameraController;
 
     inline static float m_sumDt = 0.f;
   };

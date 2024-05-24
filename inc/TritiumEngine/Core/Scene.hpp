@@ -14,10 +14,9 @@ namespace TritiumEngine::Core
 
   class Scene {
   public:
-    Scene(const std::string &name);
+    Scene(const std::string &name, Application &app);
     ~Scene();
 
-    void registerWithApplication(Application &app);
     void load();
     void unload();
     void update(float dt);
@@ -28,19 +27,13 @@ namespace TritiumEngine::Core
      * @param Args Additional parameters required to construct the system
      */
     template <class T, typename... Args, IsSystemType<T> = true> void addSystem(Args &&...args) {
-      if (m_app == nullptr) {
-        Logger::error("[Scene] Cannot add system {} before scene is registered with application.",
-                      typeid(T).name());
-        return;
-      }
-
       if (hasSystem<T>()) {
         Logger::warn("[Scene] System {} is already registered with this scene.", typeid(T).name());
         return;
       }
 
       m_systems.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
-      m_systems.back()->setup(*m_app);
+      m_systems.back()->setup(m_app);
     }
 
     /**
@@ -88,12 +81,11 @@ namespace TritiumEngine::Core
     const std::string name;
 
   protected:
-    virtual void onRegister() {}
-    virtual void onUpdate(float dt) {}
     virtual void init() {}
     virtual void dispose() {}
+    virtual void onUpdate(float dt) {}
 
-    Application *m_app = nullptr;
+    Application &m_app;
 
   private:
     std::vector<std::unique_ptr<System>> m_systems;

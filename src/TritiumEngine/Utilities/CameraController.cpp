@@ -19,78 +19,77 @@ namespace
 
 namespace TritiumEngine::Utilities
 {
-  CameraController::CameraController() : m_callbacks(), m_yaw(0.f), m_pitch(0.f) {}
-
-  void CameraController::registerWindow(Window &window) { m_window = &window; }
+  CameraController::CameraController(Window &window)
+      : m_window(window), m_callbacks(), m_yaw(0.f), m_pitch(0.f) {}
 
   void CameraController::mapKey(Key key, CameraAction action) { m_actionKey[action] = key; }
 
   void CameraController::init(Camera &camera) {
     Transform &transform = camera.transform;
 
-    m_callbacks[0] = m_window->addKeyCallback(
+    m_callbacks[0] = m_window.addKeyCallback(
         m_actionKey[CameraAction::MOVE_FORWARD], KeyState::PRESSED,
-        [&transform](float dt) { transform.translate(transform.getFront() * MOVE_SPEED * dt); });
-    m_callbacks[1] = m_window->addKeyCallback(
+        [&transform](float dt) { transform.position += transform.getFront() * MOVE_SPEED * dt; });
+    m_callbacks[1] = m_window.addKeyCallback(
         m_actionKey[CameraAction::MOVE_BACKWARD], KeyState::PRESSED,
-        [&transform](float dt) { transform.translate(transform.getFront() * -MOVE_SPEED * dt); });
-    m_callbacks[2] = m_window->addKeyCallback(
-        m_actionKey[CameraAction::MOVE_LEFT], KeyState::PRESSED,
-        [&transform](float dt) { transform.translate(transform.getRight() * -MOVE_SPEED * dt); });
-    m_callbacks[3] = m_window->addKeyCallback(
+        [&transform](float dt) { transform.position += transform.getFront() * -MOVE_SPEED * dt; });
+    m_callbacks[2] = m_window.addKeyCallback(
         m_actionKey[CameraAction::MOVE_RIGHT], KeyState::PRESSED,
-        [&transform](float dt) { transform.translate(transform.getRight() * MOVE_SPEED * dt); });
-    m_callbacks[4] = m_window->addKeyCallback(
+        [&transform](float dt) { transform.position += transform.getRight() * MOVE_SPEED * dt; });
+    m_callbacks[3] = m_window.addKeyCallback(
+        m_actionKey[CameraAction::MOVE_LEFT], KeyState::PRESSED,
+        [&transform](float dt) { transform.position += transform.getRight() * -MOVE_SPEED * dt; });
+    m_callbacks[4] = m_window.addKeyCallback(
         m_actionKey[CameraAction::MOVE_UP], KeyState::PRESSED,
-        [&transform](float dt) { transform.translate(transform.getUp() * MOVE_SPEED * dt); });
-    m_callbacks[5] = m_window->addKeyCallback(
+        [&transform](float dt) { transform.position += Transform::UP * MOVE_SPEED * dt; });
+    m_callbacks[5] = m_window.addKeyCallback(
         m_actionKey[CameraAction::MOVE_DOWN], KeyState::PRESSED,
-        [&transform](float dt) { transform.translate(transform.getUp() * -MOVE_SPEED * dt); });
-    m_callbacks[6] = m_window->addKeyCallback(m_actionKey[CameraAction::TURN_LEFT],
-                                              KeyState::PRESSED, [this, &transform](float dt) {
-                                                addYaw(-TURN_SPEED * dt);
-                                                transform.setRotation(m_pitch, m_yaw);
-                                              });
-    m_callbacks[7] = m_window->addKeyCallback(m_actionKey[CameraAction::TURN_RIGHT],
-                                              KeyState::PRESSED, [this, &transform](float dt) {
-                                                addYaw(TURN_SPEED * dt);
-                                                transform.setRotation(m_pitch, m_yaw);
-                                              });
-    m_callbacks[8] = m_window->addKeyCallback(m_actionKey[CameraAction::TURN_UP], KeyState::PRESSED,
-                                              [this, &transform](float dt) {
-                                                addPitch(-TURN_SPEED * dt);
-                                                transform.setRotation(m_pitch, m_yaw);
-                                              });
-    m_callbacks[9] = m_window->addKeyCallback(m_actionKey[CameraAction::TURN_DOWN],
-                                              KeyState::PRESSED, [this, &transform](float dt) {
-                                                addPitch(TURN_SPEED * dt);
-                                                transform.setRotation(m_pitch, m_yaw);
-                                              });
+        [&transform](float dt) { transform.position += Transform::UP * -MOVE_SPEED * dt; });
+    m_callbacks[6] = m_window.addKeyCallback(m_actionKey[CameraAction::TURN_LEFT],
+                                             KeyState::PRESSED, [this, &transform](float dt) {
+                                               addYaw(-TURN_SPEED * dt);
+                                               transform.setRotation(m_pitch, m_yaw, 0.f);
+                                             });
+    m_callbacks[7] = m_window.addKeyCallback(m_actionKey[CameraAction::TURN_RIGHT],
+                                             KeyState::PRESSED, [this, &transform](float dt) {
+                                               addYaw(TURN_SPEED * dt);
+                                               transform.setRotation(m_pitch, m_yaw, 0.f);
+                                             });
+    m_callbacks[8] = m_window.addKeyCallback(m_actionKey[CameraAction::TURN_UP], KeyState::PRESSED,
+                                             [this, &transform](float dt) {
+                                               addPitch(TURN_SPEED * dt);
+                                               transform.setRotation(m_pitch, m_yaw, 0.f);
+                                             });
+    m_callbacks[9] = m_window.addKeyCallback(m_actionKey[CameraAction::TURN_DOWN],
+                                             KeyState::PRESSED, [this, &transform](float dt) {
+                                               addPitch(-TURN_SPEED * dt);
+                                               transform.setRotation(m_pitch, m_yaw, 0.f);
+                                             });
     m_callbacks[10] =
-        m_window->addMouseMoveCallback([this, &transform](float dt, double deltaX, double deltaY) {
-          addPitch(static_cast<float>(deltaY) * TURN_SPEED * MOUSE_TURN_SENSITIVITY * dt);
+        m_window.addMouseMoveCallback([this, &transform](float dt, double deltaX, double deltaY) {
+          addPitch(-static_cast<float>(deltaY) * TURN_SPEED * MOUSE_TURN_SENSITIVITY * dt);
           addYaw(static_cast<float>(deltaX) * TURN_SPEED * MOUSE_TURN_SENSITIVITY * dt);
-          transform.setRotation(m_pitch, m_yaw);
+          transform.setRotation(m_pitch, m_yaw, 0.f);
         });
     m_callbacks[11] =
-        m_window->addMouseScrollCallback([this, &camera](float dt, double xOffset, double yOffset) {
+        m_window.addMouseScrollCallback([this, &camera](float dt, double xOffset, double yOffset) {
           addZoom(camera, static_cast<float>(yOffset) * ZOOM_SPEED * MOUSE_ZOOM_SENSITIVITY * dt);
         });
     m_callbacks[12] =
-        m_window->addKeyCallback(m_actionKey[CameraAction::ZOOM_IN], KeyState::PRESSED,
-                                 [this, &camera](float dt) { addZoom(camera, -ZOOM_SPEED * dt); });
+        m_window.addKeyCallback(m_actionKey[CameraAction::ZOOM_IN], KeyState::PRESSED,
+                                [this, &camera](float dt) { addZoom(camera, -ZOOM_SPEED * dt); });
     m_callbacks[13] =
-        m_window->addKeyCallback(m_actionKey[CameraAction::ZOOM_OUT], KeyState::PRESSED,
-                                 [this, &camera](float dt) { addZoom(camera, ZOOM_SPEED * dt); });
-    m_callbacks[14] = m_window->addKeyCallback(m_actionKey[CameraAction::CENTER],
-                                               KeyState::START_PRESS, [this, &transform]() {
-                                                 m_pitch = 0.f;
-                                                 transform.setRotation(m_pitch, m_yaw);
-                                               });
+        m_window.addKeyCallback(m_actionKey[CameraAction::ZOOM_OUT], KeyState::PRESSED,
+                                [this, &camera](float dt) { addZoom(camera, ZOOM_SPEED * dt); });
+    m_callbacks[14] = m_window.addKeyCallback(m_actionKey[CameraAction::CENTER],
+                                              KeyState::START_PRESS, [this, &transform]() {
+                                                m_pitch = 0.f;
+                                                transform.setRotation(m_pitch, m_yaw, 0.f);
+                                              });
   }
 
   void CameraController::dispose() {
-    m_window->removeCallbacks(m_callbacks);
+    m_window.removeCallbacks(m_callbacks);
     m_pitch = 0.f;
     m_yaw   = 0.f;
   }

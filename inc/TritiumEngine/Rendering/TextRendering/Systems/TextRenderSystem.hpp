@@ -40,11 +40,11 @@ namespace TritiumEngine::Rendering
               const auto &ch = text.getFont()->characters[c];
 
               // Calculate position and size for the given character
-              float scale = text.scale;
-              float xPos  = startPos.x + ch.bearing.x * scale;
-              float yPos  = startPos.y - (ch.size.y - ch.bearing.y) * scale;
-              float w     = ch.size.x * scale;
-              float h     = ch.size.y * scale;
+              float scaleFactor = text.scaleFactor;
+              float xPos  = startPos.x + ch.bearing.x * scaleFactor;
+              float yPos  = startPos.y - (ch.size.y - ch.bearing.y) * scaleFactor;
+              float w     = ch.size.x * scaleFactor;
+              float h     = ch.size.y * scaleFactor;
 
               // Add vertex data and texture coordinates
               float vertices[4][4] = {
@@ -60,7 +60,7 @@ namespace TritiumEngine::Rendering
               glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
               // Advance x-position for next glyph
-              startPos.x += (ch.advance >> 6) * scale;
+              startPos.x += (ch.advance >> 6) * scaleFactor;
             }
           });
       shaderManager.use(0);

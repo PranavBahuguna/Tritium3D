@@ -371,6 +371,9 @@ namespace TritiumEngine::Rendering
   /** @brief Obtains window height in pixels */
   int Window::getHeight() const { return m_height; }
 
+  /** @brief Obtains window aspect ratio (width / height) */
+  float Window::getAspect() const { return (float)m_width / (float)m_height; }
+
   /**
    * @brief Obtains a pointer to a window given its handle
    * @param windowHandle The handle to the required window

@@ -19,6 +19,8 @@ using namespace RenderingBenchmark::Systems;
 using namespace TritiumEngine::Rendering;
 using namespace TritiumEngine::Utilities;
 
+using Projection = Camera::Projection;
+
 namespace
 {
   constexpr static float SCREEN_UNITS        = 100.f;
@@ -29,75 +31,17 @@ namespace
 
 namespace RenderingBenchmark::Scenes
 {
-  CubeScene::CubeScene() : Scene("Cube"), m_callbacks(), m_gradient() {
+  CubeScene::CubeScene(const std::string &name, Application &app)
+      : Scene(name, app), m_cameraController(m_app.window), m_callbacks(), m_gradient() {
+    // Setup color gradient
     m_gradient.addColorPoint({COLOR_RED, 0.f});
     m_gradient.addColorPoint({COLOR_YELLOW, 0.2f});
     m_gradient.addColorPoint({COLOR_GREEN, 0.4f});
     m_gradient.addColorPoint({COLOR_CYAN, 0.6f});
     m_gradient.addColorPoint({COLOR_BLUE, 0.8f});
     m_gradient.addColorPoint({COLOR_MAGENTA, 1.f});
-  }
 
-  void CubeScene::init() {
-    glEnable(GL_DEPTH_TEST);
-    setupSystems();
-    setupCameras();
-    setupUI();
-    setupControls();
-    generateParticles(2500000);
-  }
-
-  void CubeScene::onRegister() { setupCameraController(); }
-
-  void CubeScene::dispose() {
-    glDisable(GL_DEPTH_TEST);
-    m_cameraController.dispose();
-    m_app->window.removeCallbacks(m_callbacks);
-  }
-
-  void CubeScene::setupSystems() {
-    addSystem<CubeRenderSystem<MainCameraTag::value>>();
-    addSystem<TextRenderSystem<UiCameraTag::value>>(TEXT_BLEND);
-  }
-
-  void CubeScene::setupUI() {
-    auto &registry = m_app->registry;
-
-    m_fpsStatsUI = registry.create();
-    auto &fpsScript =
-        registry.emplace<NativeScript>(m_fpsStatsUI, std::make_unique<FpsStatsUI>(*m_app));
-    fpsScript.getInstance().setEnabled(false);
-
-    m_cameraStatsUI    = registry.create();
-    auto &sceneCamera  = registry.get<Camera>(m_sceneCamera);
-    auto &cameraScript = registry.emplace<NativeScript>(
-        m_cameraStatsUI, std::make_unique<CameraStatsUI>(*m_app, sceneCamera));
-    cameraScript.getInstance().setEnabled(false);
-  }
-
-  void CubeScene::setupCameras() {
-    auto &registry     = m_app->registry;
-    float screenWidth  = (float)m_app->window.getWidth();
-    float screenHeight = (float)m_app->window.getHeight();
-    float aspect       = screenWidth / screenHeight;
-
-    // Scene camera
-    m_sceneCamera              = registry.create();
-    auto &sceneCameraComponent = registry.emplace<Camera>(
-        m_sceneCamera, Camera::ProjectionType::PERSPECTIVE, SCREEN_UNITS * aspect, SCREEN_UNITS,
-        0.1f, 500.0f, Transform(CAMERA_POSITION));
-    registry.emplace<MainCameraTag>(m_sceneCamera);
-    m_cameraController.init(sceneCameraComponent);
-
-    // UI overlay camera
-    entt::entity uiCamera = registry.create();
-    registry.emplace<Camera>(uiCamera, Camera::ProjectionType::ORTHOGRAPHIC, SCREEN_UNITS * aspect,
-                             SCREEN_UNITS, 0.1f, 100.0f);
-    registry.emplace<UiCameraTag>(uiCamera);
-  }
-
-  void CubeScene::setupCameraController() {
-    m_cameraController.registerWindow(m_app->window);
+    // Setup camera controller mappings
     m_cameraController.mapKey(Key::W, CameraAction::MOVE_FORWARD);
     m_cameraController.mapKey(Key::A, CameraAction::MOVE_LEFT);
     m_cameraController.mapKey(Key::S, CameraAction::MOVE_BACKWARD);
@@ -113,23 +57,67 @@ namespace RenderingBenchmark::Scenes
     m_cameraController.mapKey(Key::C, CameraAction::CENTER);
   }
 
-  void CubeScene::setupControls() {
-    // FPS/camera stats display toggles
-    auto &window   = m_app->window;
-    m_callbacks[0] = window.addKeyCallback(Key::F, KeyState::RELEASED, [this]() {
-      m_app->registry.get<NativeScript>(m_fpsStatsUI).getInstance().toggleEnabled();
+  void CubeScene::init() {
+    // Set OpenGL options
+    glEnable(GL_DEPTH_TEST);
+
+    // Setup systems
+    addSystem<CubeRenderSystem<MainCameraTag::value>>();
+    addSystem<TextRenderSystem<UiCameraTag::value>>(TEXT_BLEND);
+
+    // Setup scene camera
+    auto &registry = m_app.registry;
+    auto &window   = m_app.window;
+
+    auto sceneCamera = registry.create();
+    float aspect     = window.getAspect();
+    auto &sceneCameraComponent =
+        m_app.registry.emplace<Camera>(sceneCamera, Projection::PERSPECTIVE, aspect, 1.f, 0.1f,
+                                       500.0f, Transform{CAMERA_POSITION});
+    m_app.registry.emplace<MainCameraTag>(sceneCamera);
+    m_cameraController.init(sceneCameraComponent);
+
+    // Setup UI overlay camera
+    auto uiCamera = m_app.registry.create();
+    registry.emplace<Camera>(uiCamera, Projection::ORTHOGRAPHIC, SCREEN_UNITS * aspect,
+                             SCREEN_UNITS, 0.1f, 100.0f);
+    registry.emplace<UiCameraTag>(uiCamera);
+
+    // Setup UI
+    auto fpsStatsUI = registry.create();
+    auto &fpsScript =
+        registry.emplace<NativeScript>(fpsStatsUI, std::make_unique<FpsStatsUI>(m_app));
+    fpsScript.getInstance().setEnabled(false);
+
+    auto camStatsUI    = registry.create();
+    auto &cameraScript = registry.emplace<NativeScript>(
+        camStatsUI,
+        std::make_unique<CameraStatsUI>(m_app, sceneCameraComponent, m_cameraController));
+    cameraScript.getInstance().setEnabled(false);
+
+    // Setup controls
+    m_callbacks[0] = window.addKeyCallback(Key::F, KeyState::RELEASED, [&registry, fpsStatsUI]() {
+      registry.get<NativeScript>(fpsStatsUI).getInstance().toggleEnabled();
     });
-    m_callbacks[1] = window.addKeyCallback(Key::M, KeyState::RELEASED, [this]() {
-      m_app->registry.get<NativeScript>(m_cameraStatsUI).getInstance().toggleEnabled();
+    m_callbacks[1] = window.addKeyCallback(Key::M, KeyState::RELEASED, [&registry, camStatsUI]() {
+      registry.get<NativeScript>(camStatsUI).getInstance().toggleEnabled();
     });
+
+    generateParticles(2500000);
+  }
+
+  void CubeScene::dispose() {
+    glDisable(GL_DEPTH_TEST);
+    m_cameraController.dispose();
+    m_app.window.removeCallbacks(m_callbacks);
   }
 
   void CubeScene::generateParticles(int nParticles) {
-    auto &registry      = m_app->registry;
-    auto &shaderManager = m_app->shaderManager;
+    auto &registry      = m_app.registry;
+    auto &shaderManager = m_app.shaderManager;
 
-    entt::entity entity = registry.create();
-    auto &renderable    = registry.emplace<InstancedRenderable>(
+    auto entity      = registry.create();
+    auto &renderable = registry.emplace<InstancedRenderable>(
         entity, GL_POINTS, Primitives::createPoint(0.f, 0.f, 0.f), nParticles);
     registry.emplace<Shader>(entity, shaderManager.get("instanced"));
 

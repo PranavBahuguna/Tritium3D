@@ -4,7 +4,6 @@
 #include "Components/Tags.hpp"
 #include "Systems/BoxContainerSystem.hpp"
 
-#include <TritiumEngine/Core/Application.hpp>
 #include <TritiumEngine/Core/Components/NativeScript.hpp>
 #include <TritiumEngine/Core/Components/Rigidbody.hpp>
 #include <TritiumEngine/Rendering/Primitives.hpp>
@@ -20,6 +19,8 @@ using namespace RenderingBenchmark::Systems;
 using namespace TritiumEngine::Core;
 using namespace TritiumEngine::Utilities;
 
+using Projection = Camera::Projection;
+
 namespace
 {
   constexpr static float CONTAINER_SIZE      = 75.f;
@@ -32,86 +33,26 @@ namespace
 
 namespace RenderingBenchmark::Scenes
 {
-  ParticlesBoxScene::ParticlesBoxScene()
-      : Scene("ParticlesBox"), m_renderType(RenderType::Default), m_nParticles(1000),
-        m_callbacks() {}
+  ParticlesBoxScene::ParticlesBoxScene(const std::string &name, Application &app)
+      : Scene(name, app), m_renderType(RenderType::Default), m_nParticles(1000), m_callbacks() {}
 
   void ParticlesBoxScene::init() {
-    setupSystems();
-    initUI();
-    setupControls();
-    setupCamera();
-    setupContainer();
-    setupParticles();
-  }
-
-  void ParticlesBoxScene::dispose() { m_app->window.removeCallbacks(m_callbacks); }
-
-  void ParticlesBoxScene::setupSystems() {
+    // Setup systems
     addSystem<StandardRenderSystem<MainCameraTag::value>>(ENTITY_BLEND);
     addSystem<InstancedRenderSystem<MainCameraTag::value>>(ENTITY_BLEND);
     addSystem<TextRenderSystem<MainCameraTag::value>>(TEXT_BLEND);
     addSystem<BoxContainerSystem>(CONTAINER_SIZE);
-  }
 
-  void ParticlesBoxScene::setupControls() {
-    auto &window = m_app->window;
+    // Setup camera
+    auto &registry = m_app.registry;
+    auto &window   = m_app.window;
 
-    // Render types
-    m_callbacks[0] = window.addKeyCallback(Key::D, KeyState::RELEASED,
-                                           [this]() { setRenderType(RenderType::Default); });
-    m_callbacks[1] = window.addKeyCallback(Key::I, KeyState::RELEASED,
-                                           [this]() { setRenderType(RenderType::Instanced); });
-    m_callbacks[2] = window.addKeyCallback(Key::G, KeyState::RELEASED,
-                                           [this]() { setRenderType(RenderType::Geometry); });
+    auto camera = registry.create();
+    registry.emplace<Camera>(camera, Projection::ORTHOGRAPHIC, SCREEN_UNITS * window.getAspect(),
+                             SCREEN_UNITS, 0.1f, 100.0f);
+    registry.emplace<MainCameraTag>(camera);
 
-    // Particle counts
-    m_callbacks[3] =
-        window.addKeyCallback(Key::NUM_1, KeyState::RELEASED, [this]() { setParticleCount(1); });
-    m_callbacks[4] =
-        window.addKeyCallback(Key::NUM_2, KeyState::RELEASED, [this]() { setParticleCount(10); });
-    m_callbacks[5] =
-        window.addKeyCallback(Key::NUM_3, KeyState::RELEASED, [this]() { setParticleCount(100); });
-    m_callbacks[6] =
-        window.addKeyCallback(Key::NUM_4, KeyState::RELEASED, [this]() { setParticleCount(1000); });
-    m_callbacks[7] = window.addKeyCallback(Key::NUM_5, KeyState::RELEASED,
-                                           [this]() { setParticleCount(10000); });
-    m_callbacks[8] = window.addKeyCallback(Key::NUM_6, KeyState::RELEASED,
-                                           [this]() { setParticleCount(100000); });
-    m_callbacks[9] = window.addKeyCallback(Key::NUM_7, KeyState::RELEASED,
-                                           [this]() { setParticleCount(1000000); });
-
-    // FPS display toggle
-    m_callbacks[10] = window.addKeyCallback(Key::F, KeyState::RELEASED, [this]() {
-      m_app->registry.get<NativeScript>(m_fpsStatsUI).getInstance().toggleEnabled();
-    });
-  }
-
-  void ParticlesBoxScene::setupCamera() {
-    float screenWidth  = (float)m_app->window.getWidth();
-    float screenHeight = (float)m_app->window.getHeight();
-    float aspect       = screenWidth / screenHeight;
-
-    entt::entity entity = m_app->registry.create();
-    m_app->registry.emplace<Camera>(entity, Camera::ProjectionType::ORTHOGRAPHIC,
-                                    SCREEN_UNITS * aspect, SCREEN_UNITS, 0.1f, 100.0f);
-    m_app->registry.emplace<MainCameraTag>(entity);
-  }
-
-  void ParticlesBoxScene::setupContainer() {
-    float halfSize = (CONTAINER_SIZE + 1.f) * 0.5f;
-    float right    = halfSize;
-    float left     = -halfSize;
-    float top      = halfSize;
-    float bottom   = -halfSize;
-
-    createWall(left, top, left, bottom);     // left
-    createWall(right, top, right, bottom);   // right
-    createWall(left, top, right, top);       // top
-    createWall(left, bottom, right, bottom); // bottom
-  }
-
-  void ParticlesBoxScene::initUI() {
+    // Setup UI
     m_titleText = addText("", {0.f, 0.82f}, 0.055f, Text::Alignment::BOTTOM_CENTER);
 
     // Help panel
@@ -128,106 +69,165 @@ namespace RenderingBenchmark::Scenes
     addText("7: 1000000 particles ", {-0.95f, -0.35f}, 0.045f, Text::Alignment::TOP_LEFT);
     addText("F: Toggle FPS display", {-0.95f, -0.5f}, 0.045f, Text::Alignment::TOP_LEFT);
 
-    auto &registry = m_app->registry;
-    m_fpsStatsUI   = registry.create();
-    auto &script =
-        registry.emplace<NativeScript>(m_fpsStatsUI, std::make_unique<FpsStatsUI>(*m_app));
-    // script.getInstance().setEnabled(false);
+    // Fps stats
+    auto fpsStatsUI = registry.create();
+    auto &script = registry.emplace<NativeScript>(fpsStatsUI, std::make_unique<FpsStatsUI>(m_app));
+    script.getInstance().setEnabled(false);
+
+    // Controls - render types
+    m_callbacks[0] = window.addKeyCallback(Key::D, KeyState::RELEASED,
+                                           [this]() { setRenderType(RenderType::Default); });
+    m_callbacks[1] = window.addKeyCallback(Key::I, KeyState::RELEASED,
+                                           [this]() { setRenderType(RenderType::Instanced); });
+    m_callbacks[2] = window.addKeyCallback(Key::G, KeyState::RELEASED,
+                                           [this]() { setRenderType(RenderType::Geometry); });
+
+    // Controls - particle counts
+    m_callbacks[3] =
+        window.addKeyCallback(Key::NUM_1, KeyState::RELEASED, [this]() { setParticleCount(1); });
+    m_callbacks[4] =
+        window.addKeyCallback(Key::NUM_2, KeyState::RELEASED, [this]() { setParticleCount(10); });
+    m_callbacks[5] =
+        window.addKeyCallback(Key::NUM_3, KeyState::RELEASED, [this]() { setParticleCount(100); });
+    m_callbacks[6] =
+        window.addKeyCallback(Key::NUM_4, KeyState::RELEASED, [this]() { setParticleCount(1000); });
+    m_callbacks[7] = window.addKeyCallback(Key::NUM_5, KeyState::RELEASED,
+                                           [this]() { setParticleCount(10000); });
+    m_callbacks[8] = window.addKeyCallback(Key::NUM_6, KeyState::RELEASED,
+                                           [this]() { setParticleCount(100000); });
+    m_callbacks[9] = window.addKeyCallback(Key::NUM_7, KeyState::RELEASED,
+                                           [this]() { setParticleCount(1000000); });
+
+    // FPS display toggle
+    m_callbacks[10] = window.addKeyCallback(Key::F, KeyState::RELEASED, [&registry, fpsStatsUI]() {
+      registry.get<NativeScript>(fpsStatsUI).getInstance().toggleEnabled();
+    });
+
+    // Setup environment
+    setupContainer();
+    setupParticles();
+  }
+
+  void ParticlesBoxScene::dispose() { m_app.window.removeCallbacks(m_callbacks); }
+
+  void ParticlesBoxScene::setupContainer() {
+    float halfSize = (CONTAINER_SIZE + 1.f) * 0.5f;
+    float right    = halfSize;
+    float left     = -halfSize;
+    float top      = halfSize;
+    float bottom   = -halfSize;
+
+    createWall(left, top, left, bottom);     // left
+    createWall(right, top, right, bottom);   // right
+    createWall(left, top, right, top);       // top
+    createWall(left, bottom, right, bottom); // bottom
   }
 
   void ParticlesBoxScene::setupParticles() {
+    auto &registry = m_app.registry;
     switch (m_renderType) {
     case RenderType::Default:
-      m_app->registry.get<Text>(m_titleText).text =
-          std::format("Default, {} particles", m_nParticles);
+      registry.get<Text>(m_titleText).text = std::format("Default, {} particles", m_nParticles);
       generateParticlesDefault();
       break;
     case RenderType::Instanced:
-      m_app->registry.get<Text>(m_titleText).text =
-          std::format("Instanced, {} particles", m_nParticles);
+      registry.get<Text>(m_titleText).text = std::format("Instanced, {} particles", m_nParticles);
       generateParticlesInstanced();
       break;
     case RenderType::Geometry:
-      m_app->registry.get<Text>(m_titleText).text =
-          std::format("Geometry Shader, {} particles", m_nParticles);
+      registry.get<Text>(m_titleText).text = std::format("Geometry, {} particles", m_nParticles);
       generateParticlesGeometry();
       break;
     }
   }
 
-  entt::entity ParticlesBoxScene::addText(const std::string &text, const glm::vec2 &position,
-                                          float scale, Text::Alignment alignment) {
-    entt::entity entity = m_app->registry.create();
-    m_app->registry.emplace<Text>(entity, text, "Hack-Regular", scale, alignment);
-    m_app->registry.emplace<Transform>(entity, glm::vec3{position.x, position.y, 0.f});
-    m_app->registry.emplace<Shader>(entity, m_app->shaderManager.get("text"));
-    m_app->registry.emplace<Color>(entity, COLOR_GREEN);
-    return entity;
-  }
-
   void ParticlesBoxScene::setRenderType(RenderType renderType) {
     m_renderType = renderType;
-    m_app->sceneManager.reloadCurrentScene();
+    m_app.sceneManager.reloadCurrentScene();
   }
 
   void ParticlesBoxScene::setParticleCount(int nParticles) {
     m_nParticles = nParticles;
-    m_app->sceneManager.reloadCurrentScene();
+    m_app.sceneManager.reloadCurrentScene();
+  }
+
+  entt::entity ParticlesBoxScene::addText(const std::string &text, const glm::vec2 &position,
+                                          float scaleFactor, Text::Alignment alignment) {
+    auto &registry      = m_app.registry;
+    auto &shaderManager = m_app.shaderManager;
+
+    auto entity = registry.create();
+    registry.emplace<Text>(entity, text, "Hack-Regular", scaleFactor, alignment);
+    registry.emplace<Transform>(entity, glm::vec3{position.x, position.y, 0.f});
+    registry.emplace<Shader>(entity, shaderManager.get("text"));
+    registry.emplace<Color>(entity, COLOR_GREEN);
+    return entity;
   }
 
   void ParticlesBoxScene::createWall(float aX, float aY, float bX, float bY) {
-    entt::entity entity = m_app->registry.create();
-    m_app->registry.emplace<Transform>(entity);
-    m_app->registry.emplace<Renderable>(entity, GL_LINES, Primitives::createLine(aX, aY, bX, bY));
-    m_app->registry.emplace<Shader>(entity, m_app->shaderManager.get("default"));
-    m_app->registry.emplace<Color>(entity, 0xFFFFFFFF);
+    auto &registry      = m_app.registry;
+    auto &shaderManager = m_app.shaderManager;
+
+    auto entity = registry.create();
+    registry.emplace<Transform>(entity);
+    registry.emplace<Renderable>(entity, GL_LINES, Primitives::createLine(aX, aY, bX, bY));
+    registry.emplace<Shader>(entity, shaderManager.get("default"));
+    registry.emplace<Color>(entity, 0xFFFFFFFF);
   }
 
   void ParticlesBoxScene::generateParticlesDefault() {
+    auto &registry      = m_app.registry;
+    auto &shaderManager = m_app.shaderManager;
+
     for (int i = 0; i < m_nParticles; ++i) {
-      entt::entity entity = m_app->registry.create();
-      m_app->registry.emplace<Transform>(entity,
-                                         RandomUtils::RadialPosition(DISPLACEMENT_RADIUS, true));
-      m_app->registry.emplace<Renderable>(entity, GL_TRIANGLES, Primitives::createSquare());
-      m_app->registry.emplace<Shader>(entity, m_app->shaderManager.get("default"));
-      m_app->registry.emplace<Color>(entity, 0xFF0000FF);
-      m_app->registry.emplace<Rigidbody>(entity, SHAPE_VELOCITY);
+      auto entity = registry.create();
+      registry.emplace<Transform>(entity, RandomUtils::RadialPosition(DISPLACEMENT_RADIUS, true));
+      registry.emplace<Renderable>(entity, GL_TRIANGLES, Primitives::createSquare());
+      registry.emplace<Shader>(entity, shaderManager.get("default"));
+      registry.emplace<Color>(entity, 0xFF0000FF);
+      registry.emplace<Rigidbody>(entity, SHAPE_VELOCITY);
     }
   }
 
   void ParticlesBoxScene::generateParticlesInstanced() {
+    auto &registry      = m_app.registry;
+    auto &shaderManager = m_app.shaderManager;
+
     // Create instanced renderable template
-    entt::entity entity = m_app->registry.create();
-    auto &renderable    = m_app->registry.emplace<InstancedRenderable>(
+    auto entity      = registry.create();
+    auto &renderable = registry.emplace<InstancedRenderable>(
         entity, GL_TRIANGLES, Primitives::createSquare(), m_nParticles);
-    m_app->registry.emplace<Shader>(entity, m_app->shaderManager.get("instanced"));
+    registry.emplace<Shader>(entity, shaderManager.get("instanced"));
 
     // Add instances
     for (int i = 0; i < m_nParticles; ++i) {
-      entt::entity instancedEntity = m_app->registry.create();
-      m_app->registry.emplace<InstanceTag>(instancedEntity, renderable.getInstanceId());
-      m_app->registry.emplace<Transform>(instancedEntity,
-                                         RandomUtils::RadialPosition(DISPLACEMENT_RADIUS, true));
-      m_app->registry.emplace<Color>(instancedEntity, 0xFF0000FF);
-      m_app->registry.emplace<Rigidbody>(instancedEntity, SHAPE_VELOCITY);
+      auto instancedEntity = registry.create();
+      registry.emplace<InstanceTag>(instancedEntity, renderable.getInstanceId());
+      registry.emplace<Transform>(instancedEntity,
+                                  RandomUtils::RadialPosition(DISPLACEMENT_RADIUS, true));
+      registry.emplace<Color>(instancedEntity, 0xFF0000FF);
+      registry.emplace<Rigidbody>(instancedEntity, SHAPE_VELOCITY);
     }
   }
 
   void ParticlesBoxScene::generateParticlesGeometry() {
+    auto &registry      = m_app.registry;
+    auto &shaderManager = m_app.shaderManager;
+
     // Create instanced renderable template
-    entt::entity entity = m_app->registry.create();
-    auto &renderable    = m_app->registry.emplace<InstancedRenderable>(
+    auto entity      = registry.create();
+    auto &renderable = registry.emplace<InstancedRenderable>(
         entity, GL_POINTS, Primitives::createPoint(0.f, 0.f), m_nParticles);
-    m_app->registry.emplace<Shader>(entity, m_app->shaderManager.get("instanced"));
+    registry.emplace<Shader>(entity, shaderManager.get("instanced"));
 
     // Add instances
     for (int i = 0; i < m_nParticles; ++i) {
-      entt::entity instancedEntity = m_app->registry.create();
-      m_app->registry.emplace<InstanceTag>(instancedEntity, renderable.getInstanceId());
-      m_app->registry.emplace<Transform>(instancedEntity,
-                                         RandomUtils::RadialPosition(DISPLACEMENT_RADIUS, true));
-      m_app->registry.emplace<Color>(instancedEntity, 0xFF0000FF);
-      m_app->registry.emplace<Rigidbody>(instancedEntity, SHAPE_VELOCITY);
+      auto instancedEntity = registry.create();
+      registry.emplace<InstanceTag>(instancedEntity, renderable.getInstanceId());
+      registry.emplace<Transform>(instancedEntity,
+                                  RandomUtils::RadialPosition(DISPLACEMENT_RADIUS, true));
+      registry.emplace<Color>(instancedEntity, 0xFF0000FF);
+      registry.emplace<Rigidbody>(instancedEntity, SHAPE_VELOCITY);
     }
   }
 } // namespace RenderingBenchmark::Scenes

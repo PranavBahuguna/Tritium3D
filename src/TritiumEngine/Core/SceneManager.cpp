@@ -1,5 +1,4 @@
 #include <TritiumEngine/Core/Application.hpp>
-#include <TritiumEngine/Core/Scene.hpp>
 #include <TritiumEngine/Core/SceneManager.hpp>
 #include <TritiumEngine/Utilities/Logger.hpp>
 
@@ -7,18 +6,7 @@ using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Core
 {
-  SceneManager::SceneManager(Application *app) : m_sceneIt(m_scenes.end()), m_app(app) {}
-
-  /**
-   * @brief Registers a new scene with the app
-   * @param scene Pointer to the scene to be registered
-   */
-  void SceneManager::addScene(std::unique_ptr<Scene> scene) {
-    scene->registerWithApplication(*m_app);
-    size_t currentSceneIndex = hasScenes() ? 0 : m_sceneIt - m_scenes.begin();
-    m_scenes.emplace_back(std::move(scene));
-    m_sceneIt = m_scenes.begin() + currentSceneIndex; // reset iterator
-  }
+  SceneManager::SceneManager(Application &app) : m_sceneIt(m_scenes.end()), m_app(app) {}
 
   /**
    * @brief Loads the next scene
@@ -29,7 +17,7 @@ namespace TritiumEngine::Core
     auto it = m_sceneIt + 1;
     if (it == m_scenes.end()) {
       if (!rotate) {
-        m_app->stop();
+        m_app.stop();
         return;
       } else {
         it = m_scenes.begin();

@@ -114,6 +114,7 @@ namespace TritiumEngine::Rendering
     void setCursorState(CursorState state) const;
     int getWidth() const;
     int getHeight() const;
+    float getAspect() const;
 
   private:
     static Window *getUserPointer(GLFWwindow *windowHandle);

@@ -8,8 +8,9 @@
 
 namespace TritiumEngine::Utilities
 {
-  CameraStatsUI::CameraStatsUI(Application &app, const Camera &camera)
-      : Scriptable(app), m_camera(camera) {
+  CameraStatsUI::CameraStatsUI(Application &app, const Camera &camera,
+                               const CameraController &cameraController)
+      : Scriptable(app), m_camera(camera), m_cameraController(cameraController) {
     initUI();
   }
 
@@ -21,17 +22,17 @@ namespace TritiumEngine::Utilities
     }
     m_sumDt = 0.f;
 
-    auto &registry          = m_app->registry;
-    glm::vec3 position      = m_camera.transform.getPosition();
-    glm::vec3 eulerRotation = glm::eulerAngles(m_camera.transform.getRotation());
-    glm::vec3 eulerDegrees  = glm::degrees(eulerRotation);
-    float fov               = glm::degrees(m_camera.fov);
+    auto &registry       = m_app->registry;
+    const auto &position = m_camera.transform.position;
+    float pitch          = glm::degrees(m_cameraController.getPitch());
+    float yaw            = glm::degrees(m_cameraController.getYaw());
+    float fov            = glm::degrees(m_camera.fov);
 
     registry.get<Text>(m_posXText).text  = std::format("x:     {:3.1f}", position.x);
     registry.get<Text>(m_posYText).text  = std::format("y:     {:3.1f}", position.y);
     registry.get<Text>(m_posZText).text  = std::format("z:     {:3.1f}", position.z);
-    registry.get<Text>(m_pitchText).text = std::format("pitch: {:3.1f}", eulerDegrees.x);
-    registry.get<Text>(m_yawText).text   = std::format("yaw:   {:3.1f}", eulerDegrees.y);
+    registry.get<Text>(m_pitchText).text = std::format("pitch: {:3.1f}", pitch);
+    registry.get<Text>(m_yawText).text   = std::format("yaw:   {:3.1f}", yaw);
     registry.get<Text>(m_fovText).text   = std::format("fov:   {:3.1f}", fov);
   }
 

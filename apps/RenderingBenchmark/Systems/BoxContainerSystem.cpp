@@ -20,7 +20,7 @@ namespace RenderingBenchmark::Systems
         [&](auto entity, Rigidbody &rigidbody, Transform &transform, Color &color) {
           bool hasCollided  = false;
           float halfBoxSize = m_boxSize / 2.f;
-          auto nextPos      = transform.getPosition() + rigidbody.velocity * dt;
+          auto nextPos      = transform.position + rigidbody.velocity * dt;
 
           if (nextPos.x > halfBoxSize) {
             rigidbody.velocity.x *= -1;
@@ -50,7 +50,7 @@ namespace RenderingBenchmark::Systems
             updateColor(rigidbody.velocity, color);
           }
 
-          transform.setPosition(nextPos);
+          transform.position = nextPos;
         });
   }
 

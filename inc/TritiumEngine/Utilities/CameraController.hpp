@@ -27,19 +27,21 @@ namespace TritiumEngine::Utilities
 
   class CameraController {
   public:
-    CameraController();
+    CameraController(Window &window);
 
-    void registerWindow(Window &window);
-    void mapKey(Key key, CameraAction action);
     void init(Camera &camera);
     void dispose();
+    void mapKey(Key key, CameraAction action);
+
+    float getPitch() const { return m_pitch; }
+    float getYaw() const { return m_yaw; }
 
   private:
     void addPitch(float pitch);
     void addYaw(float yaw);
     void addZoom(Camera &camera, float zoom);
 
-    Window *m_window = nullptr;
+    Window &m_window;
     std::unordered_map<CameraAction, Key> m_actionKey;
     CallbackId m_callbacks[15];
     float m_yaw;
