@@ -57,8 +57,8 @@ namespace TritiumEngine::Rendering
    * @brief Loads a shader from file or cache using its base name
    * @param name The base name of the shader to load. The constituent shaders are loaded using the
    * base name + a specific extension.
-   * @param reload If true, will force a reload of the vertex/fragment files and overwrite any
-   * existing shader of the same name
+   * @param reload If true, will force a reload of the shader files and overwrite any shader of the
+   * same name
    * @returns Id of the new shader program
    */
   ShaderId ShaderManager::get(const std::string &name, bool reload) {
@@ -86,12 +86,22 @@ namespace TritiumEngine::Rendering
   }
 
   /**
-   * @brief Activates this shader program.
-   * @param id The id of the shader program to activate.
+   * @brief Activates this shader program
+   * @param id The id of the shader program to activate
    */
   void ShaderManager::use(ShaderId id) {
     glUseProgram(id);
     m_currentShaderId = id;
+  }
+
+  /**
+   * @brief Activates a shader program given its name
+   * @param name The name of the shader program to activate
+   * @param reload If true, forces a reload of the shader
+   */
+  void ShaderManager::use(const std::string &name, bool reload) {
+    ShaderId id = get(name, reload);
+    use(id);
   }
 
   void ShaderManager::setBool(const std::string &name, bool value) const {

@@ -1,5 +1,6 @@
 #include "Scenes/CircleCollisionsScene.hpp"
 #include "Components/Tags.hpp"
+#include "Settings.hpp"
 
 #include <TritiumEngine/Core/Components/NativeScript.hpp>
 #include <TritiumEngine/Rendering/Components/Camera.hpp>
@@ -7,12 +8,14 @@
 #include <TritiumEngine/Rendering/TextRendering/Systems/TextRenderSystem.hpp>
 #include <TritiumEngine/Utilities/Scripts/FpsStatsUI.hpp>
 
+using Projection = Camera::Projection;
+
 using namespace TritiumEngine::Utilities;
 using namespace RenderingBenchmark::Components;
+using namespace RenderingBenchmark::Settings;
 
 namespace
 {
-  constexpr float SCREEN_UNITS             = 100.f;
   constexpr static BlendOptions TEXT_BLEND = {true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
 } // namespace
 
@@ -30,10 +33,11 @@ namespace RenderingBenchmark::Scenes
     auto &registry = m_app.registry;
     auto &window   = m_app.window;
 
-    auto cameraEntity = registry.create();
-    registry.emplace<Camera>(cameraEntity, Camera::Projection::ORTHOGRAPHIC,
-                             SCREEN_UNITS * window.getAspect(), SCREEN_UNITS, 0.1f, 100.0f);
-    registry.emplace<MainCameraTag>(cameraEntity);
+    auto camera  = registry.create();
+    float aspect = window.getFrameAspect();
+    registry.emplace<Camera>(camera, Projection::ORTHOGRAPHIC, VERTICAL_SCREEN_UNITS * aspect,
+                             VERTICAL_SCREEN_UNITS);
+    registry.emplace<MainCameraTag>(camera);
 
     // Setup UI
     auto fpsStatsUI = registry.create();

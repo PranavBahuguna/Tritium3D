@@ -11,7 +11,7 @@ namespace TritiumEngine::Rendering::Primitives
   /**
    * @brief 2D Point generator helper method, vertices only
    */
-  static RenderData createPoint(float x, float y) {
+  static RenderData createPoint2d(float x = 0.f, float y = 0.f) {
     std::vector<float> vertices{x, y};
     return RenderData{2, vertices};
   }
@@ -19,7 +19,7 @@ namespace TritiumEngine::Rendering::Primitives
   /**
    * @brief 3D Point generator helper method, vertices only
    */
-  static RenderData createPoint(float x, float y, float z) {
+  static RenderData createPoint3d(float x = 0.f, float y = 0.f, float z = 0.f) {
     std::vector<float> vertices{x, y, z};
     return RenderData{3, vertices};
   }
@@ -62,14 +62,14 @@ namespace TritiumEngine::Rendering::Primitives
   }
 
   /**
-   * @brief Square generator helper method, uses vertices and indices
+   * @brief Quad generator helper method, uses vertices and indices
    */
-  static RenderData createSquare() {
+  static RenderData createQuad(float width = 1.f, float height = 1.f) {
     std::vector<float> vertices{
-        0.5f,  0.5f,  // top right
-        0.5f,  -0.5f, // bottom right
-        -0.5f, -0.5f, // bottom left
-        -0.5f, 0.5f   // top left
+        0.5f * width,  0.5f * height,  // top right
+        0.5f * width,  -0.5f * height, // bottom right
+        -0.5f * width, -0.5f * height, // bottom left
+        -0.5f * width, 0.5f * height   // top left
     };
 
     std::vector<unsigned int> indices{

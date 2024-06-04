@@ -18,7 +18,7 @@ namespace TritiumEngine::Rendering
                     const std::string &computeData);
     ShaderId get(const std::string &name, bool reload = false);
     void use(ShaderId id);
-
+    void use(const std::string &name, bool reload = false);
     ShaderId getCurrentShader() const { return m_currentShaderId; }
 
     // Shader parameter setter methods

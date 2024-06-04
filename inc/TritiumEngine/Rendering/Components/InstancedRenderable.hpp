@@ -18,6 +18,8 @@ namespace TritiumEngine::Rendering
   class InstancedRenderable {
   public:
     InstancedRenderable(unsigned int renderMode, const RenderData &renderData, int count);
+    InstancedRenderable(const InstancedRenderable &)            = delete;
+    InstancedRenderable &operator=(const InstancedRenderable &) = delete;
     ~InstancedRenderable();
 
     void setInstanceData(size_t index, const InstanceData &data);

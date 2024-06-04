@@ -19,6 +19,7 @@ namespace TritiumEngine::Core
     init();
     m_app.registry.view<NativeScript>().each(
         [&](auto entity, NativeScript &script) { script.getInstance().init(); });
+    Logger::info("[Scene] Scene '{}' loaded.", name);
   }
 
   /** @brief Clears the ECS registry, dispatcher and any registered systems */
@@ -31,6 +32,7 @@ namespace TritiumEngine::Core
     m_systems.clear();
     m_app.registry.clear();
     m_app.dispatcher.clear();
+    Logger::info("[Scene] Scene '{}' unloaded.", name);
   }
 
   /**

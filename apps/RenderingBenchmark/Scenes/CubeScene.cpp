@@ -2,6 +2,7 @@
 
 #include "Scenes/CubeScene.hpp"
 #include "Components/Tags.hpp"
+#include "Settings.hpp"
 #include "Systems/CubeRenderSystem.hpp"
 
 #include <TritiumEngine/Core/Application.hpp>
@@ -16,6 +17,7 @@
 
 using namespace RenderingBenchmark::Components;
 using namespace RenderingBenchmark::Systems;
+using namespace RenderingBenchmark::Settings;
 using namespace TritiumEngine::Rendering;
 using namespace TritiumEngine::Utilities;
 
@@ -23,10 +25,10 @@ using Projection = Camera::Projection;
 
 namespace
 {
-  constexpr static float SCREEN_UNITS        = 100.f;
   constexpr static BlendOptions TEXT_BLEND   = {true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
-  constexpr static glm::vec3 CAMERA_POSITION = {0.f, 0.f, 200.f};
-  constexpr static float CUBE_SIZE           = 100.f;
+  constexpr static glm::vec3 CAMERA_POSITION = {0.f, 0.f, 120.f};
+  constexpr static float CUBE_SIZE           = 10.f;
+  constexpr static int N_PARTICLES           = 2500000;
 } // namespace
 
 namespace RenderingBenchmark::Scenes
@@ -68,9 +70,9 @@ namespace RenderingBenchmark::Scenes
     // Setup scene camera
     auto &registry = m_app.registry;
     auto &window   = m_app.window;
+    float aspect   = window.getFrameAspect();
 
     auto sceneCamera = registry.create();
-    float aspect     = window.getAspect();
     auto &sceneCameraComponent =
         m_app.registry.emplace<Camera>(sceneCamera, Projection::PERSPECTIVE, aspect, 1.f, 0.1f,
                                        500.0f, Transform{CAMERA_POSITION});
@@ -79,8 +81,8 @@ namespace RenderingBenchmark::Scenes
 
     // Setup UI overlay camera
     auto uiCamera = m_app.registry.create();
-    registry.emplace<Camera>(uiCamera, Projection::ORTHOGRAPHIC, SCREEN_UNITS * aspect,
-                             SCREEN_UNITS, 0.1f, 100.0f);
+    registry.emplace<Camera>(uiCamera, Projection::ORTHOGRAPHIC, VERTICAL_SCREEN_UNITS * aspect,
+                             VERTICAL_SCREEN_UNITS);
     registry.emplace<UiCameraTag>(uiCamera);
 
     // Setup UI
@@ -103,7 +105,7 @@ namespace RenderingBenchmark::Scenes
       registry.get<NativeScript>(camStatsUI).getInstance().toggleEnabled();
     });
 
-    generateParticles(2500000);
+    generateParticles();
   }
 
   void CubeScene::dispose() {
@@ -112,17 +114,17 @@ namespace RenderingBenchmark::Scenes
     m_app.window.removeCallbacks(m_callbacks);
   }
 
-  void CubeScene::generateParticles(int nParticles) {
+  void CubeScene::generateParticles() {
     auto &registry      = m_app.registry;
     auto &shaderManager = m_app.shaderManager;
 
     auto entity      = registry.create();
     auto &renderable = registry.emplace<InstancedRenderable>(
-        entity, GL_POINTS, Primitives::createPoint(0.f, 0.f, 0.f), nParticles);
+        entity, GL_POINTS, Primitives::createPoint3d(), N_PARTICLES);
     registry.emplace<Shader>(entity, shaderManager.get("instanced"));
 
     // Set instance data
-    for (int i = 0; i < nParticles; ++i) {
+    for (int i = 0; i < N_PARTICLES; ++i) {
       const auto &pos = RandomUtils::CubePosition(CUBE_SIZE);
       float dist      = glm::length(pos);
       float maxDist   = glm::length(glm::vec3(CUBE_SIZE * 0.5f));

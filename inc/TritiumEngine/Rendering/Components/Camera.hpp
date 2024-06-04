@@ -12,8 +12,8 @@ namespace TritiumEngine::Rendering
   struct Camera {
     enum class Projection { ORTHOGRAPHIC, PERSPECTIVE };
 
-    Camera(Projection projection, float frameWidth, float frameHeight, float nearPlane,
-           float farPlane, const Transform &transform = {}, float fov = glm::radians(60.f))
+    Camera(Projection projection, float frameWidth, float frameHeight, float nearPlane = 0.1f,
+           float farPlane = 100.f, const Transform &transform = {}, float fov = glm::radians(60.f))
         : projection(projection), width(frameWidth), height(frameHeight), nearPlane(nearPlane),
           farPlane(farPlane), transform(transform), fov(fov) {}
 

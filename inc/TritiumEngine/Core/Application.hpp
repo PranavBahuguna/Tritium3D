@@ -1,14 +1,12 @@
 #pragma once
 
 #include <TritiumEngine/Core/SceneManager.hpp>
-#include <TritiumEngine/Rendering/ShaderManager.hpp>
 #include <TritiumEngine/Rendering/Window.hpp>
 
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
 
 #include <chrono>
-#include <memory>
 
 using namespace TritiumEngine::Rendering;
 

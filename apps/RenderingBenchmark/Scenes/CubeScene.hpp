@@ -22,7 +22,7 @@ namespace RenderingBenchmark::Scenes
     void dispose() override;
 
   private:
-    void generateParticles(int nParticles);
+    void generateParticles();
 
     CameraController m_cameraController;
     CallbackId m_callbacks[2];

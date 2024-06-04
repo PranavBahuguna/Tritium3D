@@ -1,19 +1,20 @@
 #include <TritiumEngine/Core/Application.hpp>
 #include <TritiumEngine/Core/Scene.hpp>
 #include <TritiumEngine/Rendering/Window.hpp>
-#include <TritiumEngine/Utilities/Logger.hpp>
 
 using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Core
 {
   Application::Application(const std::string &name, const WindowSettings &settings)
-      : name(name), window(settings), sceneManager(*this) {
+      : name(name), window(shaderManager, settings), sceneManager(*this) {
     initGLEW();
   }
 
   /** @brief Starts running the application */
   void Application::run() {
+    window.init();
+
     if (!sceneManager.hasScenes()) {
       Logger::error("[Application] App '{}' has no registered scenes!", name);
       throw std::runtime_error("An error ocurred while running the application.");
@@ -36,12 +37,11 @@ namespace TritiumEngine::Core
       float deltaTime = std::chrono::duration<float>(m_currentTime - m_prevFrameTime).count();
       m_prevFrameTime = m_currentTime;
 
-      // Clear window
-      window.clear();
-
       // Update scene
+      window.beginDraw();
       window.update(deltaTime);
       sceneManager.update(deltaTime);
+      window.endDraw();
 
       // Swap buffers
       window.swapBuffers();
@@ -60,8 +60,9 @@ namespace TritiumEngine::Core
   bool Application::isRunning() const { return m_isRunning; }
 
   void Application::initGLEW() const {
+    // Initialise GLEW library
     glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK)
-      throw std::runtime_error("GLEW could not be initialised!");
+      throw std::runtime_error("Error: GLEW could not be initialised!");
   }
 } // namespace TritiumEngine::Core

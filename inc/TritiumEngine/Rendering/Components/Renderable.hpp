@@ -7,6 +7,8 @@ namespace TritiumEngine::Rendering
   class Renderable {
   public:
     Renderable(unsigned int renderMode, const RenderData &renderData);
+    Renderable(const Renderable &)            = delete;
+    Renderable &operator=(const Renderable &) = delete;
     ~Renderable();
 
     unsigned int getVao() const { return m_vao; }

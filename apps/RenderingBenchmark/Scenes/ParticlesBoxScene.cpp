@@ -2,6 +2,7 @@
 
 #include "Scenes/ParticlesBoxScene.hpp"
 #include "Components/Tags.hpp"
+#include "Settings.hpp"
 #include "Systems/BoxContainerSystem.hpp"
 
 #include <TritiumEngine/Core/Components/NativeScript.hpp>
@@ -16,6 +17,7 @@
 using namespace RenderingBenchmark::Components;
 using namespace RenderingBenchmark::Scenes;
 using namespace RenderingBenchmark::Systems;
+using namespace RenderingBenchmark::Settings;
 using namespace TritiumEngine::Core;
 using namespace TritiumEngine::Utilities;
 
@@ -23,10 +25,12 @@ using Projection = Camera::Projection;
 
 namespace
 {
-  constexpr static float CONTAINER_SIZE      = 75.f;
-  constexpr static float SCREEN_UNITS        = 100.f;
-  constexpr static glm::vec3 SHAPE_VELOCITY  = {10.f, 10.f, 0.f};
-  constexpr static float DISPLACEMENT_RADIUS = 10.f;
+  constexpr static float CONTAINER_SIZE      = 750.f;
+  constexpr static float SCREEN_UNITS        = 1080.f;
+  constexpr static glm::vec3 SHAPE_VELOCITY  = {100.f, 100.f, 0.f};
+  constexpr static glm::quat SHAPE_ROTATION  = {1.0f, 0.f, 0.f, 0.f};
+  constexpr static glm::vec3 SHAPE_SCALE     = {10.f, 10.f, 1.f};
+  constexpr static float DISPLACEMENT_RADIUS = 100.f;
   constexpr static BlendOptions ENTITY_BLEND = {true, GL_SRC_COLOR, GL_DST_COLOR};
   constexpr static BlendOptions TEXT_BLEND   = {true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
 } // namespace
@@ -46,28 +50,29 @@ namespace RenderingBenchmark::Scenes
     // Setup camera
     auto &registry = m_app.registry;
     auto &window   = m_app.window;
+    float aspect   = window.getFrameAspect();
 
     auto camera = registry.create();
-    registry.emplace<Camera>(camera, Projection::ORTHOGRAPHIC, SCREEN_UNITS * window.getAspect(),
-                             SCREEN_UNITS, 0.1f, 100.0f);
+    registry.emplace<Camera>(camera, Projection::ORTHOGRAPHIC, VERTICAL_SCREEN_UNITS * aspect,
+                             VERTICAL_SCREEN_UNITS);
     registry.emplace<MainCameraTag>(camera);
 
     // Setup UI
-    m_titleText = addText("", {0.f, 0.82f}, 0.055f, Text::Alignment::BOTTOM_CENTER);
+    m_titleText = addText("", {0.f, 0.82f}, 0.6f, Text::Alignment::BOTTOM_CENTER);
 
     // Help panel
-    addText("Controls:            ", {-0.97f, 0.75f}, 0.055f, Text::Alignment::TOP_LEFT);
-    addText("D: Default rendering ", {-0.95f, 0.6f}, 0.045f, Text::Alignment::TOP_LEFT);
-    addText("I: Instancing        ", {-0.95f, 0.5f}, 0.045f, Text::Alignment::TOP_LEFT);
-    addText("G: Geometry shader   ", {-0.95f, 0.4f}, 0.045f, Text::Alignment::TOP_LEFT);
-    addText("1: 1 particle        ", {-0.95f, 0.25f}, 0.045f, Text::Alignment::TOP_LEFT);
-    addText("2: 10 particles      ", {-0.95f, 0.15f}, 0.045f, Text::Alignment::TOP_LEFT);
-    addText("3: 100 particles     ", {-0.95f, 0.05f}, 0.045f, Text::Alignment::TOP_LEFT);
-    addText("4: 1000 particles    ", {-0.95f, -0.05f}, 0.045f, Text::Alignment::TOP_LEFT);
-    addText("5: 10000 particles   ", {-0.95f, -0.15f}, 0.045f, Text::Alignment::TOP_LEFT);
-    addText("6: 100000 particles  ", {-0.95f, -0.25f}, 0.045f, Text::Alignment::TOP_LEFT);
-    addText("7: 1000000 particles ", {-0.95f, -0.35f}, 0.045f, Text::Alignment::TOP_LEFT);
-    addText("F: Toggle FPS display", {-0.95f, -0.5f}, 0.045f, Text::Alignment::TOP_LEFT);
+    addText("Controls:            ", {-0.97f, 0.75f}, 0.6f, Text::Alignment::TOP_LEFT);
+    addText("D: Default rendering ", {-0.95f, 0.6f}, 0.5f, Text::Alignment::TOP_LEFT);
+    addText("I: Instancing        ", {-0.95f, 0.5f}, 0.5f, Text::Alignment::TOP_LEFT);
+    addText("G: Geometry shader   ", {-0.95f, 0.4f}, 0.5f, Text::Alignment::TOP_LEFT);
+    addText("1: 1 particle        ", {-0.95f, 0.25f}, 0.5f, Text::Alignment::TOP_LEFT);
+    addText("2: 10 particles      ", {-0.95f, 0.15f}, 0.5f, Text::Alignment::TOP_LEFT);
+    addText("3: 100 particles     ", {-0.95f, 0.05f}, 0.5f, Text::Alignment::TOP_LEFT);
+    addText("4: 1000 particles    ", {-0.95f, -0.05f}, 0.5f, Text::Alignment::TOP_LEFT);
+    addText("5: 10000 particles   ", {-0.95f, -0.15f}, 0.5f, Text::Alignment::TOP_LEFT);
+    addText("6: 100000 particles  ", {-0.95f, -0.25f}, 0.5f, Text::Alignment::TOP_LEFT);
+    addText("7: 1000000 particles ", {-0.95f, -0.35f}, 0.5f, Text::Alignment::TOP_LEFT);
+    addText("F: Toggle FPS display", {-0.95f, -0.5f}, 0.5f, Text::Alignment::TOP_LEFT);
 
     // Fps stats
     auto fpsStatsUI = registry.create();
@@ -172,7 +177,7 @@ namespace RenderingBenchmark::Scenes
     registry.emplace<Transform>(entity);
     registry.emplace<Renderable>(entity, GL_LINES, Primitives::createLine(aX, aY, bX, bY));
     registry.emplace<Shader>(entity, shaderManager.get("default"));
-    registry.emplace<Color>(entity, 0xFFFFFFFF);
+    registry.emplace<Color>(entity, COLOR_WHITE);
   }
 
   void ParticlesBoxScene::generateParticlesDefault() {
@@ -181,10 +186,11 @@ namespace RenderingBenchmark::Scenes
 
     for (int i = 0; i < m_nParticles; ++i) {
       auto entity = registry.create();
-      registry.emplace<Transform>(entity, RandomUtils::RadialPosition(DISPLACEMENT_RADIUS, true));
-      registry.emplace<Renderable>(entity, GL_TRIANGLES, Primitives::createSquare());
+      registry.emplace<Transform>(entity, RandomUtils::RadialPosition(DISPLACEMENT_RADIUS, true),
+                                  SHAPE_ROTATION, SHAPE_SCALE);
+      registry.emplace<Renderable>(entity, GL_TRIANGLES, Primitives::createQuad());
       registry.emplace<Shader>(entity, shaderManager.get("default"));
-      registry.emplace<Color>(entity, 0xFF0000FF);
+      registry.emplace<Color>(entity, COLOR_RED);
       registry.emplace<Rigidbody>(entity, SHAPE_VELOCITY);
     }
   }
@@ -196,7 +202,7 @@ namespace RenderingBenchmark::Scenes
     // Create instanced renderable template
     auto entity      = registry.create();
     auto &renderable = registry.emplace<InstancedRenderable>(
-        entity, GL_TRIANGLES, Primitives::createSquare(), m_nParticles);
+        entity, GL_TRIANGLES, Primitives::createQuad(), m_nParticles);
     registry.emplace<Shader>(entity, shaderManager.get("instanced"));
 
     // Add instances
@@ -204,8 +210,9 @@ namespace RenderingBenchmark::Scenes
       auto instancedEntity = registry.create();
       registry.emplace<InstanceTag>(instancedEntity, renderable.getInstanceId());
       registry.emplace<Transform>(instancedEntity,
-                                  RandomUtils::RadialPosition(DISPLACEMENT_RADIUS, true));
-      registry.emplace<Color>(instancedEntity, 0xFF0000FF);
+                                  RandomUtils::RadialPosition(DISPLACEMENT_RADIUS, true),
+                                  SHAPE_ROTATION, SHAPE_SCALE);
+      registry.emplace<Color>(instancedEntity, COLOR_RED);
       registry.emplace<Rigidbody>(instancedEntity, SHAPE_VELOCITY);
     }
   }
@@ -217,16 +224,17 @@ namespace RenderingBenchmark::Scenes
     // Create instanced renderable template
     auto entity      = registry.create();
     auto &renderable = registry.emplace<InstancedRenderable>(
-        entity, GL_POINTS, Primitives::createPoint(0.f, 0.f), m_nParticles);
-    registry.emplace<Shader>(entity, shaderManager.get("instanced"));
+        entity, GL_POINTS, Primitives::createPoint2d(), m_nParticles);
+    registry.emplace<Shader>(entity, shaderManager.get("geometry"));
 
     // Add instances
     for (int i = 0; i < m_nParticles; ++i) {
       auto instancedEntity = registry.create();
       registry.emplace<InstanceTag>(instancedEntity, renderable.getInstanceId());
       registry.emplace<Transform>(instancedEntity,
-                                  RandomUtils::RadialPosition(DISPLACEMENT_RADIUS, true));
-      registry.emplace<Color>(instancedEntity, 0xFF0000FF);
+                                  RandomUtils::RadialPosition(DISPLACEMENT_RADIUS, true),
+                                  SHAPE_ROTATION, SHAPE_SCALE);
+      registry.emplace<Color>(instancedEntity, COLOR_RED);
       registry.emplace<Rigidbody>(instancedEntity, SHAPE_VELOCITY);
     }
   }

@@ -69,7 +69,7 @@ namespace TritiumEngine::Utilities
     auto &shaderManager = m_app->shaderManager;
 
     entity = registry.create();
-    registry.emplace<Text>(entity, text, "Hack-Regular", 0.04f, Text::Alignment::TOP_LEFT);
+    registry.emplace<Text>(entity, text, "Hack-Regular", 0.43f, Text::Alignment::TOP_LEFT);
     registry.emplace<Transform>(entity, position);
     registry.emplace<Shader>(entity, shaderManager.get("text"));
     registry.emplace<Color>(entity, COLOR_GREEN);

@@ -22,7 +22,7 @@ namespace TritiumEngine::Core
      * @tparam U Type of resource loader, must provide resources of type T
      * @param loader The resource loader class to be registered
      * @param rootDir The root directory where all objects to construct of the given type are
-     * @param Args Additional parameters required to construct the system stored
+     * @param args Additional parameters required to construct the system stored
      */
     template <class U, typename... Args, IsResourceLoaderType<T, U> = true>
     static void registerLoader(const std::string &rootDir, Args &&...args) {
