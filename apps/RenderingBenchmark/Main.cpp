@@ -32,11 +32,11 @@ static void setup(Application *app) {
 }
 
 int main() {
-#ifdef _DEBUG
   WindowSettings windowSettings{"main"};
-#else
+#ifndef _DEBUG
   Logger::Settings::levelMask = LogType::NODEBUG;
-  WindowSettings windowSettings{"main", WindowHints::FULLSCREEN | WindowHints::AUTO_MINIMIZE};
+  windowSettings.hints        = WindowHints::FULLSCREEN | WindowHints::AUTO_MINIMIZE;
+  windowSettings.fullscreen   = true;
 #endif // _DEBUG
 
   try {

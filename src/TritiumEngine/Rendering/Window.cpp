@@ -12,10 +12,11 @@ namespace TritiumEngine::Rendering
   using BufferAttachment  = FrameBuffer::BufferAttachment;
 
   Window::Window(ShaderManager &shaderManager, WindowSettings settings)
-      : m_name(settings.name), m_width(settings.width), m_height(settings.height),
-        m_clearColor(settings.clearColor), m_borderColor(settings.borderColor),
-        m_frameAspect((float)settings.aspectX / settings.aspectY), m_lastDt(0.f),
-        m_shaderManager(shaderManager) {
+      : m_name(settings.name), m_fullscreen(settings.fullscreen), m_width(settings.width),
+        m_height(settings.height), m_clearColor(settings.clearColor),
+        m_borderColor(settings.borderColor), m_frameWidth(settings.width),
+        m_frameHeight(settings.height), m_frameAspectX(settings.aspectX),
+        m_frameAspectY(settings.aspectY), m_lastDt(0.f), m_shaderManager(shaderManager) {
     // Init GLFW library if not already done so
     if (s_nWindows == 0) {
       if (glfwInit() == GLFW_FALSE)
@@ -46,12 +47,23 @@ namespace TritiumEngine::Rendering
     static constexpr std::array<std::pair<int, int>, 8> glVersions = {
         {{4, 6}, {4, 5}, {4, 4}, {4, 3}, {4, 2}, {4, 1}, {4, 0}, {3, 3}}};
 
+    // Get settings for fullscreen mode
+    GLFWmonitor *monitor = nullptr;
+    if (m_fullscreen) {
+      monitor                      = glfwGetPrimaryMonitor();
+      const GLFWvidmode *videoMode = glfwGetVideoMode(monitor);
+      m_width                      = videoMode->width;
+      m_height                     = videoMode->height;
+      m_frameWidth                 = m_width;
+      m_frameHeight                = m_height;
+    }
+
     for (auto &[major, minor] : glVersions) {
       glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
       glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
 
       m_windowHandle =
-          glfwCreateWindow(m_width, m_height, m_name.c_str(), nullptr, glfwGetCurrentContext());
+          glfwCreateWindow(m_width, m_height, m_name.c_str(), monitor, glfwGetCurrentContext());
       if (m_windowHandle != nullptr) {
         Logger::info("[Window] OpenGL version {}.{} found.", major, minor);
         break;
@@ -64,16 +76,20 @@ namespace TritiumEngine::Rendering
     glfwSetWindowUserPointer(m_windowHandle, this);
     glfwMakeContextCurrent(m_windowHandle);
 
-    // Window sizing settings
-    glfwSetWindowSizeCallback(m_windowHandle, [](GLFWwindow *windowHandle, int width, int height) {
-      const auto &window = getUserPointer(windowHandle);
-      window->resize(width, height);
-    });
-    if (settings.fixWindowSizeToAspect)
-      glfwSetWindowAspectRatio(m_windowHandle, settings.aspectX, settings.aspectY);
+    if (!m_fullscreen) {
+      // Obtain actual window / frame dimensions
+      glfwGetFramebufferSize(m_windowHandle, &m_width, &m_height);
+      calcFrameDimensions();
 
-    // Re-obtain window width/height from actual dimensions
-    glfwGetWindowSize(m_windowHandle, &m_width, &m_height);
+      if (settings.fixWindowAspect)
+        glfwSetWindowAspectRatio(m_windowHandle, settings.aspectX, settings.aspectY);
+
+      glfwSetFramebufferSizeCallback(m_windowHandle,
+                                     [](GLFWwindow *windowHandle, int width, int height) {
+                                       const auto &window = getUserPointer(windowHandle);
+                                       window->resize(width, height);
+                                     });
+    }
 
     ++s_nWindows;
     Logger::info("[Window] Opened window '{}'.", m_name);
@@ -97,7 +113,14 @@ namespace TritiumEngine::Rendering
   }
 
   /** @brief Performs additional initialization for the window once application is ready */
-  void Window::init() { resize(m_width, m_height); }
+  void Window::init() {
+    if (m_fullscreen) {
+      glViewport(0, 0, m_width, m_height);
+      createScreenFramebuffer();
+    } else {
+      resize(m_width, m_height);
+    }
+  }
 
   /** @brief Updates the windows status and input events, should be called every frame */
   void Window::update(float dt) {
@@ -127,66 +150,15 @@ namespace TritiumEngine::Rendering
   void Window::resize(int width, int height) {
     m_width  = width;
     m_height = height;
+    calcFrameDimensions();
+
+    float left   = (float)-m_frameWidth / m_width;
+    float right  = (float)m_frameWidth / m_width;
+    float bottom = (float)-m_frameHeight / m_height;
+    float top    = (float)m_frameHeight / m_height;
+
     glViewport(0, 0, m_width, m_height);
-
-    float windowAspect    = getAspect();
-    float horizontalRatio = std::min(m_frameAspect / windowAspect, 1.f);
-    float verticalRatio   = std::min(windowAspect / m_frameAspect, 1.f);
-
-    float left    = -horizontalRatio;
-    float right   = horizontalRatio;
-    float bottom  = -verticalRatio;
-    float top     = verticalRatio;
-    m_frameWidth  = int(horizontalRatio * width);
-    m_frameHeight = int(verticalRatio * height);
-
-    // Vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates
-    float screenQuadData[] = {
-        // positions   // texCoords
-        left,  top,    0.0f, 1.0f, // T1 - 1
-        left,  bottom, 0.0f, 0.0f, // T1 - 2
-        right, bottom, 1.0f, 0.0f, // T1 - 3
-        left,  top,    0.0f, 1.0f, // T2 - 1
-        right, bottom, 1.0f, 0.0f, // T2 - 2
-        right, top,    1.0f, 1.0f  // T2 - 3
-    };
-
-    // Delete old screen quad vao/vbo if previously created
-    glDeleteVertexArrays(1, &m_screenQuadVao);
-    glDeleteBuffers(1, &m_screenQuadVbo);
-
-    // Create screen quad
-    glGenVertexArrays(1, &m_screenQuadVao);
-    glBindVertexArray(m_screenQuadVao);
-
-    glGenBuffers(1, &m_screenQuadVbo);
-    glBindBuffer(GL_ARRAY_BUFFER, m_screenQuadVbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(screenQuadData), &screenQuadData, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
-
-    // Create framebuffer color texture
-    auto colorTexture = std::make_unique<Texture>(m_width, m_height, GL_TEXTURE_2D, GL_RGB, GL_RGB,
-                                                  GL_UNSIGNED_BYTE);
-    colorTexture->bind();
-    colorTexture->setParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    colorTexture->setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    colorTexture->setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    colorTexture->setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    colorTexture->unbind();
-
-    // Create framebuffer with color and depth/stencil attachments
-    m_frameBuffer = std::make_unique<FrameBuffer>(m_width, m_height);
-    m_frameBuffer->attachTexture(TextureAttachment::COLOR, std::move(colorTexture));
-    m_frameBuffer->attachRenderBuffer(BufferAttachment::DEPTH_STENCIL);
-    if (!m_frameBuffer->isComplete())
-      throw std::runtime_error("Error: Window framebuffer is not complete.");
-
-    // Set screen texture
-    m_shaderManager.use("screen");
-    m_shaderManager.setInt("screenTexture", 0);
+    createScreenFramebuffer(left, right, bottom, top);
   }
 
   /**
@@ -471,11 +443,72 @@ namespace TritiumEngine::Rendering
     glfwSetInputMode(m_windowHandle, GLFW_CURSOR, innerType(state));
   }
 
-  /**
-   * @brief Obtains a pointer to a window given its handle
-   * @param windowHandle The handle to the required window
-   */
   Window *Window::getUserPointer(GLFWwindow *windowHandle) {
     return static_cast<Window *>(glfwGetWindowUserPointer(windowHandle));
   }
+
+  void Window::calcFrameDimensions() {
+    // Obtain frame width / height for a given frame aspect ratio for non-fullscreen windows
+    float windowAspect = getAspect();
+    float frameAspect  = getFrameAspect();
+
+    if (windowAspect > frameAspect) {
+      m_frameHeight = m_height - (m_height % m_frameAspectY);
+      m_frameWidth  = (m_frameHeight / m_frameAspectY) * m_frameAspectX;
+    } else {
+      m_frameWidth  = m_width - (m_width % m_frameAspectX);
+      m_frameHeight = (m_frameWidth / m_frameAspectX) * m_frameAspectY;
+    }
+  }
+
+  void Window::createScreenFramebuffer(float left, float right, float bottom, float top) {
+    // Vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates
+    float screenQuadData[] = {
+        // positions   // texCoords
+        left,  top,    0.0f, 1.0f, // T1 - 1
+        left,  bottom, 0.0f, 0.0f, // T1 - 2
+        right, bottom, 1.0f, 0.0f, // T1 - 3
+        left,  top,    0.0f, 1.0f, // T2 - 1
+        right, bottom, 1.0f, 0.0f, // T2 - 2
+        right, top,    1.0f, 1.0f  // T2 - 3
+    };
+
+    // Delete old screen quad vao/vbo if previously created
+    glDeleteVertexArrays(1, &m_screenQuadVao);
+    glDeleteBuffers(1, &m_screenQuadVbo);
+
+    // Create screen quad
+    glGenVertexArrays(1, &m_screenQuadVao);
+    glBindVertexArray(m_screenQuadVao);
+
+    glGenBuffers(1, &m_screenQuadVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, m_screenQuadVbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(screenQuadData), &screenQuadData, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
+
+    // Create framebuffer color texture
+    auto colorTexture = std::make_unique<Texture>(m_width, m_height, GL_TEXTURE_2D, GL_RGB, GL_RGB,
+                                                  GL_UNSIGNED_BYTE);
+    colorTexture->bind();
+    colorTexture->setParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    colorTexture->setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    colorTexture->setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    colorTexture->setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    colorTexture->unbind();
+
+    // Create framebuffer with color and depth/stencil attachments
+    m_frameBuffer = std::make_unique<FrameBuffer>(m_width, m_height);
+    m_frameBuffer->attachTexture(TextureAttachment::COLOR, std::move(colorTexture));
+    m_frameBuffer->attachRenderBuffer(BufferAttachment::DEPTH_STENCIL);
+    if (!m_frameBuffer->isComplete())
+      throw std::runtime_error("Error: Window framebuffer is not complete.");
+
+    // Set screen texture
+    m_shaderManager.use("screen");
+    m_shaderManager.setInt("screenTexture", 0);
+  }
+
 } // namespace TritiumEngine::Rendering

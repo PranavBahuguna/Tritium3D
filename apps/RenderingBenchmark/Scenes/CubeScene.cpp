@@ -26,8 +26,8 @@ using Projection = Camera::Projection;
 namespace
 {
   constexpr static BlendOptions TEXT_BLEND   = {true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
-  constexpr static glm::vec3 CAMERA_POSITION = {0.f, 0.f, 120.f};
-  constexpr static float CUBE_SIZE           = 10.f;
+  constexpr static glm::vec3 CAMERA_POSITION = {0.f, 0.f, 180.f};
+  constexpr static float CUBE_SIZE           = 100.f;
   constexpr static int N_PARTICLES           = 2500000;
 } // namespace
 

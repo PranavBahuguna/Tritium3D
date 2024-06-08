@@ -74,21 +74,22 @@ namespace TritiumEngine::Rendering
 
     NONE                = 0,                                         // Invisible window
     DEFAULT             = FOCUSED | RESIZABLE | VISIBLE | DECORATED, // Default settings
-    FULLSCREEN          = FOCUSED | RESIZABLE | VISIBLE | MAXIMIZED, // Borderless fullscreen
+    FULLSCREEN          = FOCUSED | VISIBLE | MAXIMIZED,             // Borderless fullscreen
     FULLSCREEN_WINDOWED = DEFAULT | MAXIMIZED                        // Windowed fullscreen
   };
   ENABLE_ENUM_FLAGS(WindowHints)
 
   struct WindowSettings {
     std::string name;
-    WindowHints hints = WindowHints::DEFAULT;
-    int width         = 2280;
-    int height        = 720;
-    int aspectX       = 16;
-    int aspectY       = 9;
-    bool fixWindowSizeToAspect;
-    Color clearColor  = 0xFF252525; // dark grey
-    Color borderColor = COLOR_BLACK;
+    bool fullscreen      = false;
+    WindowHints hints    = WindowHints::DEFAULT;
+    int width            = 1280;
+    int height           = 720;
+    int aspectX          = 16;
+    int aspectY          = 9;
+    bool fixWindowAspect = false;
+    Color clearColor     = 0xFF252525; // dark grey
+    Color borderColor    = COLOR_BLACK;
   };
 
   class Window {
@@ -127,10 +128,14 @@ namespace TritiumEngine::Rendering
     float getAspect() const { return (float)m_width / m_height; }
     int getFrameWidth() const { return m_frameWidth; }
     int getFrameHeight() const { return m_frameHeight; }
-    float getFrameAspect() const { return m_frameAspect; }
+    float getFrameAspect() const { return (float)m_frameAspectX / m_frameAspectY; }
 
   private:
     static Window *getUserPointer(GLFWwindow *windowHandle);
+
+    void calcFrameDimensions();
+    void createScreenFramebuffer(float left = -1.f, float right = 1.f, float bottom = -1.f,
+                                 float top = 1.f);
 
     constexpr static CallbackId CLOSE_CALLBACK_ID = 0;
 
@@ -138,12 +143,15 @@ namespace TritiumEngine::Rendering
     static inline CallbackId s_lastCallbackId = 0;
 
     GLFWwindow *m_windowHandle = nullptr;
+
     std::string m_name;
+    bool m_fullscreen;
     int m_width;
     int m_height;
     int m_frameWidth;
     int m_frameHeight;
-    float m_frameAspect;
+    int m_frameAspectX;
+    int m_frameAspectY;
     Color m_clearColor;
     Color m_borderColor;
     float m_lastDt;
