@@ -9,13 +9,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Build options
 option(GIT_SUBMODULE "Check submodules during build" ON)
 option(TRITIUM_BUILD_APPS "Build example applications" ON)
-option(TRITIUM_BUILD_DOCS "Generate documentation" ON)
 
 # Directories
 set(TRITIUM_INC_DIR ${PROJECT_SOURCE_DIR}/inc)
 set(TRITIUM_SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 set(APPS_DIR ${PROJECT_SOURCE_DIR}/apps)
-set(DOCS_DIR ${PROJECT_SOURCE_DIR}/docs)
 set(THIRDPARTY_DIR ${PROJECT_SOURCE_DIR}/thirdparty)
 
 # Automatically updates submodules during a build
@@ -62,12 +60,6 @@ add_subdirectory(${THIRDPARTY_DIR}/glfw)
 add_subdirectory(${THIRDPARTY_DIR}/glm)
 add_subdirectory(${THIRDPARTY_DIR}/entt)
 add_subdirectory(${THIRDPARTY_DIR}/freetype)
-
-# Add generation of documentation
-if (TRITIUM_BUILD_DOCS)
-    find_package(Doxygen)
-    add_subdirectory(${DOCS_DIR})
-endif()
 
 # Setup TritiumEngine project library
 file(GLOB_RECURSE TRITIUM_INC_FILES "${TRITIUM_INC_DIR}/*.hpp")
