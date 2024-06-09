@@ -10,7 +10,7 @@
 using namespace RenderingBenchmark::Scenes;
 
 static void setup(Application *app) {
-  auto &window       = app->window;
+  auto &input        = app->inputManager;
   auto &sceneManager = app->sceneManager;
 
   // Setup resource paths
@@ -18,12 +18,12 @@ static void setup(Application *app) {
   ResourceManager<Font>::registerLoader<FontLoader>("Resources/Fonts/", "Hack-Regular");
 
   // Add window controls callbacks
-  window.addKeyCallback(Key::ESCAPE, KeyState::START_PRESS, [app]() { app->stop(); });
-  window.addKeyCallback(Key::R, KeyState::RELEASED,
-                        [&sceneManager]() { sceneManager.reloadCurrentScene(); });
-  window.addKeyCallback(Key::ENTER, KeyState::RELEASED,
-                        [&sceneManager]() { sceneManager.nextScene(true); });
-  window.setCloseCallback([app]() { app->stop(); });
+  input.addKeyCallback(Key::ESCAPE, KeyState::START_PRESS, [app]() { app->stop(); });
+  input.addKeyCallback(Key::R, KeyState::RELEASED,
+                       [&sceneManager]() { sceneManager.reloadCurrentScene(); });
+  input.addKeyCallback(Key::ENTER, KeyState::RELEASED,
+                       [&sceneManager]() { sceneManager.nextScene(true); });
+  input.setCloseCallback([app]() { app->stop(); });
 
   // Add scenes
   sceneManager.addScene<ParticlesBoxScene>();

@@ -34,7 +34,7 @@ namespace
 namespace RenderingBenchmark::Scenes
 {
   CubeScene::CubeScene(const std::string &name, Application &app)
-      : Scene(name, app), m_cameraController(m_app.window), m_callbacks(), m_gradient() {
+      : Scene(name, app), m_cameraController(m_app.inputManager), m_callbacks(), m_gradient() {
     // Setup color gradient
     m_gradient.addColorPoint({COLOR_RED, 0.f});
     m_gradient.addColorPoint({COLOR_YELLOW, 0.2f});
@@ -70,7 +70,9 @@ namespace RenderingBenchmark::Scenes
     // Setup scene camera
     auto &registry = m_app.registry;
     auto &window   = m_app.window;
-    float aspect   = window.getFrameAspect();
+    auto &input    = m_app.inputManager;
+
+    float aspect = window.getFrameAspect();
 
     auto sceneCamera = registry.create();
     auto &sceneCameraComponent =
@@ -98,10 +100,10 @@ namespace RenderingBenchmark::Scenes
     cameraScript.getInstance().setEnabled(false);
 
     // Setup controls
-    m_callbacks[0] = window.addKeyCallback(Key::F, KeyState::RELEASED, [&registry, fpsStatsUI]() {
+    m_callbacks[0] = input.addKeyCallback(Key::F, KeyState::RELEASED, [&registry, fpsStatsUI]() {
       registry.get<NativeScript>(fpsStatsUI).getInstance().toggleEnabled();
     });
-    m_callbacks[1] = window.addKeyCallback(Key::M, KeyState::RELEASED, [&registry, camStatsUI]() {
+    m_callbacks[1] = input.addKeyCallback(Key::M, KeyState::RELEASED, [&registry, camStatsUI]() {
       registry.get<NativeScript>(camStatsUI).getInstance().toggleEnabled();
     });
 
@@ -111,7 +113,7 @@ namespace RenderingBenchmark::Scenes
   void CubeScene::dispose() {
     glDisable(GL_DEPTH_TEST);
     m_cameraController.dispose();
-    m_app.window.removeCallbacks(m_callbacks);
+    m_app.inputManager.removeCallbacks(m_callbacks);
   }
 
   void CubeScene::generateParticles() {

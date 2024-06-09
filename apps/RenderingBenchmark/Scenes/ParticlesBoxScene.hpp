@@ -1,13 +1,14 @@
 #pragma once
 
 #include <TritiumEngine/Core/Scene.hpp>
+#include <TritiumEngine/Input/InputManager.hpp>
 #include <TritiumEngine/Rendering/TextRendering/Components/Text.hpp>
-#include <TritiumEngine/Rendering/Window.hpp>
 
 #include <entt/entity/entity.hpp>
 #include <glm/glm.hpp>
 
 using namespace TritiumEngine::Core;
+using namespace TritiumEngine::Input;
 using namespace TritiumEngine::Rendering;
 
 namespace TritiumEngine::Core

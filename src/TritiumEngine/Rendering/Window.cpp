@@ -16,7 +16,7 @@ namespace TritiumEngine::Rendering
         m_height(settings.height), m_clearColor(settings.clearColor),
         m_borderColor(settings.borderColor), m_frameWidth(settings.width),
         m_frameHeight(settings.height), m_frameAspectX(settings.aspectX),
-        m_frameAspectY(settings.aspectY), m_lastDt(0.f), m_shaderManager(shaderManager) {
+        m_frameAspectY(settings.aspectY), m_shaderManager(shaderManager) {
     // Init GLFW library if not already done so
     if (s_nWindows == 0) {
       if (glfwInit() == GLFW_FALSE)
@@ -50,12 +50,12 @@ namespace TritiumEngine::Rendering
     // Get settings for fullscreen mode
     GLFWmonitor *monitor = nullptr;
     if (m_fullscreen) {
-      monitor                      = glfwGetPrimaryMonitor();
-      const GLFWvidmode *videoMode = glfwGetVideoMode(monitor);
-      m_width                      = videoMode->width;
-      m_height                     = videoMode->height;
-      m_frameWidth                 = m_width;
-      m_frameHeight                = m_height;
+      monitor               = glfwGetPrimaryMonitor();
+      const auto *videoMode = glfwGetVideoMode(monitor);
+      m_width               = videoMode->width;
+      m_height              = videoMode->height;
+      m_frameWidth          = m_width;
+      m_frameHeight         = m_height;
     }
 
     for (auto &[major, minor] : glVersions) {
@@ -116,29 +116,9 @@ namespace TritiumEngine::Rendering
   void Window::init() {
     if (m_fullscreen) {
       glViewport(0, 0, m_width, m_height);
-      createScreenFramebuffer();
+      createScreenFramebuffer(-1.f, 1.f, -1.f, 1.f);
     } else {
       resize(m_width, m_height);
-    }
-  }
-
-  /** @brief Updates the windows status and input events, should be called every frame */
-  void Window::update(float dt) {
-    glfwPollEvents();
-    m_lastDt = dt;
-
-    // Run callbacks for continuously pressed keys or mouse buttons
-    for (int key : m_activeKeys) {
-      for (const auto &callbackItem : m_keyCallbacks[key]) {
-        if (innerType(callbackItem.state) == innerType(KeyState::PRESSED))
-          callbackItem.callback(dt);
-      }
-    }
-    for (int button : m_activeMouseButtons) {
-      for (const auto &callbackItem : m_mouseButtonCallbacks[button]) {
-        if (innerType(callbackItem.state) == innerType(MouseButtonState::PRESSED))
-          callbackItem.callback(dt);
-      }
     }
   }
 
@@ -159,252 +139,6 @@ namespace TritiumEngine::Rendering
 
     glViewport(0, 0, m_width, m_height);
     createScreenFramebuffer(left, right, bottom, top);
-  }
-
-  /**
-   * @brief Adds a callback action for keyboard input
-   * @param key The keyboard key to add a callback for
-   * @param state The state of the key to trigger the callback on
-   * @param callback Callback action to run
-   * @returns Id referencing this callback
-   */
-  CallbackId Window::addKeyCallback(Key key, KeyState state, KeyCallback callback) {
-    // Add action to callbacks
-    m_keyCallbacks[innerType(key)].emplace_back(state, std::move(callback), ++s_lastCallbackId);
-
-    glfwSetKeyCallback(m_windowHandle,
-                       [](GLFWwindow *windowHandle, int key, int scancode, int action, int mods) {
-                         const auto &window = getUserPointer(windowHandle);
-                         auto &activeKeys   = window->m_activeKeys;
-
-                         // Update active keys
-                         if (action == GLFW_PRESS)
-                           activeKeys.push_back(key);
-                         else if (action == GLFW_RELEASE)
-                           activeKeys.erase(std::remove(activeKeys.begin(), activeKeys.end(), key));
-
-                         // Run all callbacks for the given key
-                         for (const auto &callbackItem : window->m_keyCallbacks[key]) {
-                           if (action == innerType(callbackItem.state)) // exclude KeyState::PRESSED
-                             callbackItem.callback(window->m_lastDt);
-                         }
-                       });
-
-    return s_lastCallbackId;
-  }
-
-  /**
-   * @brief Adds a callback action for keyboard input
-   * @param key The keyboard key to add a callback for
-   * @param state The state of the key to trigger the callback on
-   * @param callback Callback action to run (without deltaTime parameter)
-   * @returns Id referencing this callback
-   */
-  CallbackId Window::addKeyCallback(Key key, KeyState state, KeyCallbackNoDt callback) {
-    // Wrap callback in an adapter
-    return addKeyCallback(key, state, [callback](float) { callback(); });
-  }
-
-  /**
-   * @brief Adds a callback action for mouse button input
-   * @param button The mouse button to add a callback for
-   * @param state The state of the button to trigger the callback on
-   * @param callback Callback action to run
-   * @returns Id referencing this callback
-   */
-  CallbackId Window::addMouseButtonCallback(MouseButton button, MouseButtonState state,
-                                            MouseButtonCallback callback) {
-    // Add action to callbacks
-    m_mouseButtonCallbacks[innerType(button)].emplace_back(state, std::move(callback),
-                                                           ++s_lastCallbackId);
-
-    glfwSetMouseButtonCallback(
-        m_windowHandle, [](GLFWwindow *windowHandle, int button, int action, int mods) {
-          const auto &window  = getUserPointer(windowHandle);
-          auto &activeButtons = window->m_activeMouseButtons;
-
-          // Update active keys
-          if (action == GLFW_PRESS)
-            activeButtons.push_back(button);
-          else if (action == GLFW_RELEASE)
-            activeButtons.erase(std::remove(activeButtons.begin(), activeButtons.end(), button));
-
-          // Run all callbacks for the given mouse button
-          for (const auto &callbackItem : window->m_mouseButtonCallbacks[button]) {
-            if (action == innerType(callbackItem.state)) // exclude MouseButtonState::PRESSED
-              callbackItem.callback(window->m_lastDt);
-          }
-        });
-
-    return s_lastCallbackId;
-  }
-
-  /**
-   * @brief Adds a callback action for mouse button input
-   * @param button The mouse button to add a callback for
-   * @param state The state of the button to trigger the callback on
-   * @param callback Callback action to run (without deltaTime parameter)
-   * @returns Id referencing this callback
-   */
-  CallbackId Window::addMouseButtonCallback(MouseButton button, MouseButtonState state,
-                                            MouseButtonCallbackNoDt callback) {
-    // Wrap callback in an adapter
-    return addMouseButtonCallback(button, state, [callback](float) { callback(); });
-  }
-
-  /**
-   * @brief Adds a callback action for mouse movement input
-   * @param callback Callback action to run
-   * @returns Id referencing this callback
-   */
-  CallbackId Window::addMouseMoveCallback(MouseMoveCallback callback) {
-    // Add action to callbacks
-    m_mouseMoveCallbacks.emplace_back(std::move(callback), 0.l, 0.l, true, ++s_lastCallbackId);
-
-    glfwSetCursorPosCallback(m_windowHandle,
-                             [](GLFWwindow *windowHandle, double xPos, double yPos) {
-                               const auto &window = getUserPointer(windowHandle);
-
-                               // Run all mouse movement callbacks
-                               for (auto &callbackItem : window->m_mouseMoveCallbacks) {
-                                 // Set prev x/y if moving mouse for first time
-                                 if (callbackItem.mouseFirstMove) {
-                                   callbackItem.prevXPos       = xPos;
-                                   callbackItem.prevYPos       = yPos;
-                                   callbackItem.mouseFirstMove = false;
-                                   continue;
-                                 }
-
-                                 // Calculate change in x/y positions
-                                 double deltaX = xPos - callbackItem.prevXPos;
-                                 double deltaY = yPos - callbackItem.prevYPos;
-                                 callbackItem.callback(window->m_lastDt, deltaX, deltaY);
-
-                                 // Update old x/y positions
-                                 callbackItem.prevXPos = xPos;
-                                 callbackItem.prevYPos = yPos;
-                               }
-                             });
-
-    return s_lastCallbackId;
-  }
-
-  /**
-   * @brief Adds a callback action for mouse movement input
-   * @param callback Callback action to run
-   * @returns Id referencing this callback
-   */
-  CallbackId Window::addMouseMoveCallback(MouseMoveCallbackNoDt callback) {
-    // Wrap callback in an adapter
-    return addMouseMoveCallback([callback](float, double x, double y) { callback(x, y); });
-  }
-
-  /**
-   * @brief Adds a callback action for mouse scroll input
-   * @param callback Callback action to run (without deltaTime parameter)
-   * @returns Id referencing this callback
-   */
-  CallbackId Window::addMouseScrollCallback(MouseScrollCallback callback) {
-    // Add action to callbacks
-    m_mouseScrollCallbacks.emplace_back(std::move(callback), ++s_lastCallbackId);
-
-    glfwSetScrollCallback(m_windowHandle,
-                          [](GLFWwindow *windowHandle, double xOffset, double yOffset) {
-                            const auto &window = getUserPointer(windowHandle);
-
-                            // Run all mouse scroll callbacks
-                            for (const auto &callbackItem : window->m_mouseScrollCallbacks)
-                              callbackItem.callback(window->m_lastDt, xOffset, yOffset);
-                          });
-
-    return s_lastCallbackId;
-  }
-
-  /**
-   * @brief Adds a callback action for mouse scroll input
-   * @param callback Callback action to run (without deltaTime parameter)
-   * @returns Id referencing this callback
-   */
-  CallbackId Window::addMouseScrollCallback(MouseScrollCallbackNoDt callback) {
-    // Wrap callback in an adapter
-    return addMouseScrollCallback([callback](float, double x, double y) { callback(x, y); });
-  }
-
-  /**
-   * @brief Adds a callback acion to trigger on window close
-   * @param callback Callback action to run
-   * @returns Id referencing this callback
-   */
-  CallbackId Window::setCloseCallback(CloseCallback callback) {
-    // Set the close callback
-    m_closeCallback = std::move(callback);
-
-    glfwSetWindowCloseCallback(m_windowHandle, [](GLFWwindow *windowHandle) {
-      // Run the close callback
-      const auto &window = getUserPointer(windowHandle);
-      window->m_closeCallback();
-    });
-
-    return CLOSE_CALLBACK_ID;
-  }
-
-  /**
-   * @brief Removes a callback given its id
-   * @param id Id referencing the callback to be removed
-   */
-  void Window::removeCallback(CallbackId id) {
-    if (id == CLOSE_CALLBACK_ID)
-      return;
-
-    // Check key callbacks
-    for (auto &callbacks : m_keyCallbacks) {
-      auto it = std::find_if(callbacks.begin(), callbacks.end(),
-                             [id](const KeyCallbackItem &record) { return id == record.id; });
-      if (it != callbacks.end()) {
-        callbacks.erase(it);
-        return;
-      }
-    }
-
-    // Check mouse button callbacks
-    for (auto &callbacks : m_mouseButtonCallbacks) {
-      auto it =
-          std::find_if(callbacks.begin(), callbacks.end(),
-                       [id](const MouseButtonCallbackItem &record) { return id == record.id; });
-      if (it != callbacks.end()) {
-        callbacks.erase(it);
-        return;
-      }
-    }
-
-    // Check mouse move callbacks
-    auto mouseMoveIt =
-        std::find_if(m_mouseMoveCallbacks.begin(), m_mouseMoveCallbacks.end(),
-                     [id](const MouseMoveCallbackItem &record) { return id == record.id; });
-    if (mouseMoveIt != m_mouseMoveCallbacks.end()) {
-      m_mouseMoveCallbacks.erase(mouseMoveIt);
-      return;
-    }
-
-    // Check mouse scroll callbacks
-    auto mouseScrollIt =
-        std::find_if(m_mouseScrollCallbacks.begin(), m_mouseScrollCallbacks.end(),
-                     [id](const MouseScrollCallbackItem &record) { return id == record.id; });
-    if (mouseScrollIt != m_mouseScrollCallbacks.end()) {
-      m_mouseScrollCallbacks.erase(mouseScrollIt);
-      return;
-    }
-
-    Logger::warn("[Window] Could not remove callback with id {}.", id);
-  }
-
-  /**
-   * @brief Removes multiple callbacks with a collection of ids
-   * @param ids Ids referencing the callbacks to be removed
-   */
-  void Window::removeCallbacks(const std::span<CallbackId> &ids) {
-    for (CallbackId id : ids)
-      removeCallback(id);
   }
 
   void Window::beginDraw() const {

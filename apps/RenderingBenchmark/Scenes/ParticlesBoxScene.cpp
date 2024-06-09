@@ -49,10 +49,10 @@ namespace RenderingBenchmark::Scenes
 
     // Setup camera
     auto &registry = m_app.registry;
-    auto &window   = m_app.window;
-    float aspect   = window.getFrameAspect();
+    auto &input    = m_app.inputManager;
 
-    auto camera = registry.create();
+    auto camera  = registry.create();
+    float aspect = m_app.window.getFrameAspect();
     registry.emplace<Camera>(camera, Projection::ORTHOGRAPHIC, VERTICAL_SCREEN_UNITS * aspect,
                              VERTICAL_SCREEN_UNITS);
     registry.emplace<MainCameraTag>(camera);
@@ -80,31 +80,31 @@ namespace RenderingBenchmark::Scenes
     script.getInstance().setEnabled(false);
 
     // Controls - render types
-    m_callbacks[0] = window.addKeyCallback(Key::D, KeyState::RELEASED,
-                                           [this]() { setRenderType(RenderType::Default); });
-    m_callbacks[1] = window.addKeyCallback(Key::I, KeyState::RELEASED,
-                                           [this]() { setRenderType(RenderType::Instanced); });
-    m_callbacks[2] = window.addKeyCallback(Key::G, KeyState::RELEASED,
-                                           [this]() { setRenderType(RenderType::Geometry); });
+    m_callbacks[0] = input.addKeyCallback(Key::D, KeyState::RELEASED,
+                                          [this]() { setRenderType(RenderType::Default); });
+    m_callbacks[1] = input.addKeyCallback(Key::I, KeyState::RELEASED,
+                                          [this]() { setRenderType(RenderType::Instanced); });
+    m_callbacks[2] = input.addKeyCallback(Key::G, KeyState::RELEASED,
+                                          [this]() { setRenderType(RenderType::Geometry); });
 
     // Controls - particle counts
     m_callbacks[3] =
-        window.addKeyCallback(Key::NUM_1, KeyState::RELEASED, [this]() { setParticleCount(1); });
+        input.addKeyCallback(Key::NUM_1, KeyState::RELEASED, [this]() { setParticleCount(1); });
     m_callbacks[4] =
-        window.addKeyCallback(Key::NUM_2, KeyState::RELEASED, [this]() { setParticleCount(10); });
+        input.addKeyCallback(Key::NUM_2, KeyState::RELEASED, [this]() { setParticleCount(10); });
     m_callbacks[5] =
-        window.addKeyCallback(Key::NUM_3, KeyState::RELEASED, [this]() { setParticleCount(100); });
+        input.addKeyCallback(Key::NUM_3, KeyState::RELEASED, [this]() { setParticleCount(100); });
     m_callbacks[6] =
-        window.addKeyCallback(Key::NUM_4, KeyState::RELEASED, [this]() { setParticleCount(1000); });
-    m_callbacks[7] = window.addKeyCallback(Key::NUM_5, KeyState::RELEASED,
-                                           [this]() { setParticleCount(10000); });
-    m_callbacks[8] = window.addKeyCallback(Key::NUM_6, KeyState::RELEASED,
-                                           [this]() { setParticleCount(100000); });
-    m_callbacks[9] = window.addKeyCallback(Key::NUM_7, KeyState::RELEASED,
-                                           [this]() { setParticleCount(1000000); });
+        input.addKeyCallback(Key::NUM_4, KeyState::RELEASED, [this]() { setParticleCount(1000); });
+    m_callbacks[7] =
+        input.addKeyCallback(Key::NUM_5, KeyState::RELEASED, [this]() { setParticleCount(10000); });
+    m_callbacks[8] = input.addKeyCallback(Key::NUM_6, KeyState::RELEASED,
+                                          [this]() { setParticleCount(100000); });
+    m_callbacks[9] = input.addKeyCallback(Key::NUM_7, KeyState::RELEASED,
+                                          [this]() { setParticleCount(1000000); });
 
     // FPS display toggle
-    m_callbacks[10] = window.addKeyCallback(Key::F, KeyState::RELEASED, [&registry, fpsStatsUI]() {
+    m_callbacks[10] = input.addKeyCallback(Key::F, KeyState::RELEASED, [&registry, fpsStatsUI]() {
       registry.get<NativeScript>(fpsStatsUI).getInstance().toggleEnabled();
     });
 
@@ -113,7 +113,7 @@ namespace RenderingBenchmark::Scenes
     setupParticles();
   }
 
-  void ParticlesBoxScene::dispose() { m_app.window.removeCallbacks(m_callbacks); }
+  void ParticlesBoxScene::dispose() { m_app.inputManager.removeCallbacks(m_callbacks); }
 
   void ParticlesBoxScene::setupContainer() {
     float halfSize = (CONTAINER_SIZE + 1.f) * 0.5f;

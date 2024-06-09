@@ -32,6 +32,7 @@ namespace RenderingBenchmark::Scenes
     // Setup camera
     auto &registry = m_app.registry;
     auto &window   = m_app.window;
+    auto &input    = m_app.inputManager;
 
     auto camera  = registry.create();
     float aspect = window.getFrameAspect();
@@ -46,12 +47,12 @@ namespace RenderingBenchmark::Scenes
     fpsStatsScript.getInstance().setEnabled(false);
 
     // Setup controls
-    m_fpsDisplayCallback = window.addKeyCallback(Key::F, KeyState::RELEASED, [&fpsStatsScript]() {
+    m_fpsDisplayCallback = input.addKeyCallback(Key::F, KeyState::RELEASED, [&fpsStatsScript]() {
       fpsStatsScript.getInstance().toggleEnabled();
     });
 
     // Setup circles (TODO)
   }
 
-  void CircleCollisionsScene::dispose() { m_app.window.removeCallback(m_fpsDisplayCallback); }
+  void CircleCollisionsScene::dispose() { m_app.inputManager.removeCallback(m_fpsDisplayCallback); }
 } // namespace RenderingBenchmark::Scenes

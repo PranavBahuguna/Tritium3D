@@ -1,10 +1,9 @@
 #pragma once
 
+#include <TritiumEngine/Input/InputManager.hpp>
 #include <TritiumEngine/Rendering/Components/Camera.hpp>
-#include <TritiumEngine/Rendering/Window.hpp>
 
-#include <unordered_map>
-
+using namespace TritiumEngine::Input;
 using namespace TritiumEngine::Rendering;
 
 namespace TritiumEngine::Utilities
@@ -27,7 +26,7 @@ namespace TritiumEngine::Utilities
 
   class CameraController {
   public:
-    CameraController(Window &window);
+    CameraController(InputManager &inputManager);
 
     void init(Camera &camera);
     void dispose();
@@ -41,7 +40,7 @@ namespace TritiumEngine::Utilities
     void addYaw(float yaw);
     void addZoom(Camera &camera, float zoom);
 
-    Window &m_window;
+    InputManager &m_input;
     std::unordered_map<CameraAction, Key> m_actionKey;
     CallbackId m_callbacks[15];
     float m_yaw;

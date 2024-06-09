@@ -1,20 +1,12 @@
 #pragma once
 
-#include <TritiumEngine/Input/Cursor.hpp>
-#include <TritiumEngine/Input/Keyboard.hpp>
-#include <TritiumEngine/Input/Mouse.hpp>
+#include <TritiumEngine/Rendering/Cursor.hpp>
 #include <TritiumEngine/Rendering/ShaderManager.hpp>
 #include <TritiumEngine/Utilities/ColorUtils.hpp>
 #include <TritiumEngine/Utilities/EnumUtils.hpp>
 
-#include <array>
-#include <functional>
 #include <memory>
-#include <span>
 
-using namespace TritiumEngine::Input::Cursor;
-using namespace TritiumEngine::Input::Keyboard;
-using namespace TritiumEngine::Input::Mouse;
 using namespace TritiumEngine::Utilities;
 
 struct GLFWwindow;
@@ -22,44 +14,6 @@ class FrameBuffer;
 
 namespace TritiumEngine::Rendering
 {
-  // clang-format off
-  using CallbackId              = uint32_t;
-  using KeyCallback             = std::function<void(float)>;                 // deltaTime
-  using KeyCallbackNoDt         = std::function<void()>;
-  using MouseButtonCallback     = std::function<void(float)>;                 // deltaTime
-  using MouseButtonCallbackNoDt = std::function<void()>;
-  using MouseMoveCallback       = std::function<void(float, double, double)>; // deltaTime, xPos, yPos
-  using MouseMoveCallbackNoDt   = std::function<void(double, double)>;        // xPos, yPos
-  using MouseScrollCallback     = std::function<void(float, double, double)>; // deltaTime, xOffset, yOffset
-  using MouseScrollCallbackNoDt = std::function<void(double, double)>;        // xOffset, yOffset
-  using CloseCallback           = std::function<void()>;
-  // clang-format on
-
-  struct KeyCallbackItem {
-    KeyState state;
-    KeyCallback callback;
-    CallbackId id;
-  };
-
-  struct MouseButtonCallbackItem {
-    MouseButtonState state;
-    MouseButtonCallback callback;
-    CallbackId id;
-  };
-
-  struct MouseMoveCallbackItem {
-    MouseMoveCallback callback;
-    double prevXPos;
-    double prevYPos;
-    bool mouseFirstMove;
-    CallbackId id;
-  };
-
-  struct MouseScrollCallbackItem {
-    MouseScrollCallback callback;
-    CallbackId id;
-  };
-
   enum class WindowHints : uint32_t {
     FOCUSED        = 1u << 0, // Window automatically takes focus
     RESIZABLE      = 1u << 1, // Allows window to be manually resized by user input
@@ -100,22 +54,7 @@ namespace TritiumEngine::Rendering
     ~Window();
 
     void init();
-    void update(float dt);
     void resize(int width, int height);
-
-    CallbackId addKeyCallback(Key key, KeyState state, KeyCallback callback);
-    CallbackId addKeyCallback(Key key, KeyState state, KeyCallbackNoDt callback);
-    CallbackId addMouseButtonCallback(MouseButton button, MouseButtonState state,
-                                      MouseButtonCallback callback);
-    CallbackId addMouseButtonCallback(MouseButton button, MouseButtonState state,
-                                      MouseButtonCallbackNoDt callback);
-    CallbackId addMouseMoveCallback(MouseMoveCallback callback);
-    CallbackId addMouseMoveCallback(MouseMoveCallbackNoDt callback);
-    CallbackId addMouseScrollCallback(MouseScrollCallback callback);
-    CallbackId addMouseScrollCallback(MouseScrollCallbackNoDt callback);
-    CallbackId setCloseCallback(CloseCallback callback);
-    void removeCallback(CallbackId id);
-    void removeCallbacks(const std::span<CallbackId> &ids);
 
     void beginDraw() const;
     void endDraw() const;
@@ -129,18 +68,15 @@ namespace TritiumEngine::Rendering
     int getFrameWidth() const { return m_frameWidth; }
     int getFrameHeight() const { return m_frameHeight; }
     float getFrameAspect() const { return (float)m_frameAspectX / m_frameAspectY; }
+    GLFWwindow *getHandle() const { return m_windowHandle; }
 
   private:
     static Window *getUserPointer(GLFWwindow *windowHandle);
 
     void calcFrameDimensions();
-    void createScreenFramebuffer(float left = -1.f, float right = 1.f, float bottom = -1.f,
-                                 float top = 1.f);
+    void createScreenFramebuffer(float left, float right, float bottom, float top);
 
-    constexpr static CallbackId CLOSE_CALLBACK_ID = 0;
-
-    static inline int s_nWindows              = 0;
-    static inline CallbackId s_lastCallbackId = 0;
+    static inline int s_nWindows = 0;
 
     GLFWwindow *m_windowHandle = nullptr;
 
@@ -154,20 +90,10 @@ namespace TritiumEngine::Rendering
     int m_frameAspectY;
     Color m_clearColor;
     Color m_borderColor;
-    float m_lastDt;
 
     ShaderManager &m_shaderManager;
     std::unique_ptr<FrameBuffer> m_frameBuffer;
     unsigned int m_screenQuadVao = 0;
     unsigned int m_screenQuadVbo = 0;
-
-    std::array<std::vector<KeyCallbackItem>, NUM_KEYS> m_keyCallbacks;
-    std::array<std::vector<MouseButtonCallbackItem>, NUM_MOUSE_BUTTONS> m_mouseButtonCallbacks;
-    std::vector<MouseMoveCallbackItem> m_mouseMoveCallbacks;
-    std::vector<MouseScrollCallbackItem> m_mouseScrollCallbacks;
-    CloseCallback m_closeCallback;
-
-    std::vector<int> m_activeKeys;
-    std::vector<int> m_activeMouseButtons;
   };
 } // namespace TritiumEngine::Rendering

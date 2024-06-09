@@ -7,7 +7,8 @@ using namespace TritiumEngine::Utilities;
 namespace TritiumEngine::Core
 {
   Application::Application(const std::string &name, const WindowSettings &settings)
-      : name(name), window(shaderManager, settings), sceneManager(*this) {
+      : name(name), window(shaderManager, settings), inputManager(window.getHandle()),
+        sceneManager(*this) {
     initGLEW();
   }
 
@@ -39,7 +40,7 @@ namespace TritiumEngine::Core
 
       // Update scene
       window.beginDraw();
-      window.update(deltaTime);
+      inputManager.update(deltaTime);
       sceneManager.update(deltaTime);
       window.endDraw();
 

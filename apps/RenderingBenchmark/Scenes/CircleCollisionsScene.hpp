@@ -1,10 +1,10 @@
 #pragma once
 
 #include <TritiumEngine/Core/Scene.hpp>
-#include <TritiumEngine/Rendering/Window.hpp>
+#include <TritiumEngine/Input/InputManager.hpp>
 
 using namespace TritiumEngine::Core;
-using namespace TritiumEngine::Rendering;
+using namespace TritiumEngine::Input;
 
 namespace TritiumEngine::Core
 {

@@ -2,7 +2,6 @@
 
 #include <TritiumEngine/Core/Scene.hpp>
 #include <TritiumEngine/Rendering/ColorGradient.hpp>
-#include <TritiumEngine/Rendering/Window.hpp>
 #include <TritiumEngine/Utilities/CameraController.hpp>
 
 #include <entt/entt.hpp>

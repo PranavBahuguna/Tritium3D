@@ -1,6 +1,7 @@
 #pragma once
 
 #include <TritiumEngine/Core/SceneManager.hpp>
+#include <TritiumEngine/Input/InputManager.hpp>
 #include <TritiumEngine/Rendering/Window.hpp>
 
 #include <entt/entity/registry.hpp>
@@ -8,6 +9,7 @@
 
 #include <chrono>
 
+using namespace TritiumEngine::Input;
 using namespace TritiumEngine::Rendering;
 
 namespace TritiumEngine::Core
@@ -29,10 +31,11 @@ namespace TritiumEngine::Core
     bool isRunning() const;
 
     Window window;
-    entt::registry registry;
-    entt::dispatcher dispatcher;
+    InputManager inputManager;
     ShaderManager shaderManager;
     SceneManager sceneManager;
+    entt::registry registry;
+    entt::dispatcher dispatcher;
 
     const std::string name;
 
