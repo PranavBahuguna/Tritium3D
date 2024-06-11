@@ -4,88 +4,112 @@ using namespace TritiumEngine::Rendering;
 
 namespace
 {
-  constexpr static float MOVE_SPEED             = 12.0f;
-  constexpr static float TURN_SPEED             = 1.0f;
-  constexpr static float ZOOM_SPEED             = 0.5f;
-  constexpr static float MOUSE_TURN_SENSITIVITY = 0.33f;
-  constexpr static float MOUSE_ZOOM_SENSITIVITY = 1.f;
-
-  constexpr static float MIN_PITCH  = glm::radians(-89.f);
-  constexpr static float MAX_PITCH  = glm::radians(89.f);
-  constexpr static float MIN_FOV    = glm::radians(20.f);
-  constexpr static float MAX_FOV    = glm::radians(90.f);
   constexpr static float PI_RADIANS = glm::pi<float>();
 } // namespace
+
+using Projection = Camera::Projection;
 
 namespace TritiumEngine::Utilities
 {
   CameraController::CameraController(InputManager &inputManager)
       : m_input(inputManager), m_callbacks(), m_yaw(0.f), m_pitch(0.f) {}
 
-  void CameraController::mapKey(Key key, CameraAction action) { m_actionKey[action] = key; }
+  void CameraController::mapKey(Key key, CameraAction action) { m_actionKeys[action].insert(key); }
 
-  void CameraController::init(Camera &camera) {
+  void CameraController::init(Camera &camera, bool enableMouseMove, bool enableMouseScroll) {
     Transform &transform = camera.transform;
 
-    m_callbacks[0] = m_input.addKeyCallback(
-        m_actionKey[CameraAction::MOVE_FORWARD], KeyState::PRESSED,
-        [&transform](float dt) { transform.position += transform.getFront() * MOVE_SPEED * dt; });
-    m_callbacks[1] = m_input.addKeyCallback(
-        m_actionKey[CameraAction::MOVE_BACKWARD], KeyState::PRESSED,
-        [&transform](float dt) { transform.position += transform.getFront() * -MOVE_SPEED * dt; });
-    m_callbacks[2] = m_input.addKeyCallback(
-        m_actionKey[CameraAction::MOVE_RIGHT], KeyState::PRESSED,
-        [&transform](float dt) { transform.position += transform.getRight() * MOVE_SPEED * dt; });
-    m_callbacks[3] = m_input.addKeyCallback(
-        m_actionKey[CameraAction::MOVE_LEFT], KeyState::PRESSED,
-        [&transform](float dt) { transform.position += transform.getRight() * -MOVE_SPEED * dt; });
-    m_callbacks[4] = m_input.addKeyCallback(
-        m_actionKey[CameraAction::MOVE_UP], KeyState::PRESSED,
-        [&transform](float dt) { transform.position += Transform::UP * MOVE_SPEED * dt; });
-    m_callbacks[5] = m_input.addKeyCallback(
-        m_actionKey[CameraAction::MOVE_DOWN], KeyState::PRESSED,
-        [&transform](float dt) { transform.position += Transform::UP * -MOVE_SPEED * dt; });
-    m_callbacks[6] = m_input.addKeyCallback(m_actionKey[CameraAction::TURN_LEFT], KeyState::PRESSED,
-                                            [this, &transform](float dt) {
-                                              addYaw(-TURN_SPEED * dt);
-                                              transform.setRotation(m_pitch, m_yaw, 0.f);
-                                            });
-    m_callbacks[7] = m_input.addKeyCallback(m_actionKey[CameraAction::TURN_RIGHT],
-                                            KeyState::PRESSED, [this, &transform](float dt) {
-                                              addYaw(TURN_SPEED * dt);
-                                              transform.setRotation(m_pitch, m_yaw, 0.f);
-                                            });
-    m_callbacks[8] = m_input.addKeyCallback(m_actionKey[CameraAction::TURN_UP], KeyState::PRESSED,
-                                            [this, &transform](float dt) {
-                                              addPitch(TURN_SPEED * dt);
-                                              transform.setRotation(m_pitch, m_yaw, 0.f);
-                                            });
-    m_callbacks[9] = m_input.addKeyCallback(m_actionKey[CameraAction::TURN_DOWN], KeyState::PRESSED,
-                                            [this, &transform](float dt) {
-                                              addPitch(-TURN_SPEED * dt);
-                                              transform.setRotation(m_pitch, m_yaw, 0.f);
-                                            });
-    m_callbacks[10] =
-        m_input.addMouseMoveCallback([this, &transform](float dt, double deltaX, double deltaY) {
-          addPitch(-static_cast<float>(deltaY) * TURN_SPEED * MOUSE_TURN_SENSITIVITY * dt);
-          addYaw(static_cast<float>(deltaX) * TURN_SPEED * MOUSE_TURN_SENSITIVITY * dt);
-          transform.setRotation(m_pitch, m_yaw, 0.f);
-        });
-    m_callbacks[11] =
-        m_input.addMouseScrollCallback([this, &camera](float dt, double xOffset, double yOffset) {
-          addZoom(camera, static_cast<float>(yOffset) * ZOOM_SPEED * MOUSE_ZOOM_SENSITIVITY * dt);
-        });
-    m_callbacks[12] =
-        m_input.addKeyCallback(m_actionKey[CameraAction::ZOOM_IN], KeyState::PRESSED,
-                               [this, &camera](float dt) { addZoom(camera, -ZOOM_SPEED * dt); });
-    m_callbacks[13] =
-        m_input.addKeyCallback(m_actionKey[CameraAction::ZOOM_OUT], KeyState::PRESSED,
-                               [this, &camera](float dt) { addZoom(camera, ZOOM_SPEED * dt); });
-    m_callbacks[14] = m_input.addKeyCallback(m_actionKey[CameraAction::CENTER],
-                                             KeyState::START_PRESS, [this, &transform]() {
-                                               m_pitch = 0.f;
-                                               transform.setRotation(m_pitch, m_yaw, 0.f);
-                                             });
+    for (auto key : m_actionKeys[CameraAction::MOVE_FORWARD])
+      m_callbacks.push_back(
+          m_input.addKeyCallback(key, KeyState::PRESSED, [this, &transform, &camera](float dt) {
+            transform.position += transform.getFront() * moveSpeed * getOrthoScale(camera).z * dt;
+          }));
+
+    for (auto key : m_actionKeys[CameraAction::MOVE_BACKWARD])
+      m_callbacks.push_back(
+          m_input.addKeyCallback(key, KeyState::PRESSED, [this, &transform, &camera](float dt) {
+            transform.position += transform.getFront() * -moveSpeed * getOrthoScale(camera).z * dt;
+          }));
+
+    for (auto key : m_actionKeys[CameraAction::MOVE_LEFT])
+      m_callbacks.push_back(
+          m_input.addKeyCallback(key, KeyState::PRESSED, [this, &transform, &camera](float dt) {
+            transform.position += transform.getRight() * -moveSpeed * getOrthoScale(camera).x * dt;
+          }));
+
+    for (auto key : m_actionKeys[CameraAction::MOVE_RIGHT])
+      m_callbacks.push_back(
+          m_input.addKeyCallback(key, KeyState::PRESSED, [this, &transform, &camera](float dt) {
+            transform.position += transform.getRight() * moveSpeed * getOrthoScale(camera).x * dt;
+          }));
+
+    for (auto key : m_actionKeys[CameraAction::MOVE_DOWN])
+      m_callbacks.push_back(
+          m_input.addKeyCallback(key, KeyState::PRESSED, [this, &transform, &camera](float dt) {
+            transform.position += Transform::UP * -moveSpeed * getOrthoScale(camera).y * dt;
+          }));
+
+    for (auto key : m_actionKeys[CameraAction::MOVE_UP])
+      m_callbacks.push_back(
+          m_input.addKeyCallback(key, KeyState::PRESSED, [this, &transform, &camera](float dt) {
+            transform.position += Transform::UP * moveSpeed * getOrthoScale(camera).y * dt;
+          }));
+
+    for (auto key : m_actionKeys[CameraAction::TURN_LEFT])
+      m_callbacks.push_back(
+          m_input.addKeyCallback(key, KeyState::PRESSED, [this, &transform](float dt) {
+            addYaw(-turnSpeed * dt);
+            transform.setRotation(m_pitch, m_yaw, 0.f);
+          }));
+
+    for (auto key : m_actionKeys[CameraAction::TURN_RIGHT])
+      m_callbacks.push_back(
+          m_input.addKeyCallback(key, KeyState::PRESSED, [this, &transform](float dt) {
+            addYaw(turnSpeed * dt);
+            transform.setRotation(m_pitch, m_yaw, 0.f);
+          }));
+
+    for (auto key : m_actionKeys[CameraAction::TURN_DOWN])
+      m_callbacks.push_back(
+          m_input.addKeyCallback(key, KeyState::PRESSED, [this, &transform](float dt) {
+            addPitch(-turnSpeed * dt);
+            transform.setRotation(m_pitch, m_yaw, 0.f);
+          }));
+
+    for (auto key : m_actionKeys[CameraAction::TURN_UP])
+      m_callbacks.push_back(
+          m_input.addKeyCallback(key, KeyState::PRESSED, [this, &transform](float dt) {
+            addPitch(turnSpeed * dt);
+            transform.setRotation(m_pitch, m_yaw, 0.f);
+          }));
+
+    for (auto key : m_actionKeys[CameraAction::ZOOM_IN])
+      m_callbacks.push_back(m_input.addKeyCallback(
+          key, KeyState::PRESSED, [this, &camera](float dt) { addZoom(camera, -zoomSpeed * dt); }));
+
+    for (auto key : m_actionKeys[CameraAction::ZOOM_OUT])
+      m_callbacks.push_back(m_input.addKeyCallback(
+          key, KeyState::PRESSED, [this, &camera](float dt) { addZoom(camera, zoomSpeed * dt); }));
+
+    for (auto key : m_actionKeys[CameraAction::CENTER])
+      m_callbacks.push_back(m_input.addKeyCallback(key, KeyState::PRESSED, [this, &transform]() {
+        m_pitch = 0.f;
+        transform.setRotation(m_pitch, m_yaw, 0.f);
+      }));
+
+    if (enableMouseMove)
+      m_callbacks.push_back(
+          m_input.addMouseMoveCallback([this, &transform](float dt, double deltaX, double deltaY) {
+            addPitch(-static_cast<float>(deltaY) * turnSpeed * mouseTurnSensitivity * dt);
+            addYaw(static_cast<float>(deltaX) * turnSpeed * mouseTurnSensitivity * dt);
+            transform.setRotation(m_pitch, m_yaw, 0.f);
+          }));
+
+    if (enableMouseScroll)
+      m_callbacks.push_back(
+          m_input.addMouseScrollCallback([this, &camera](float dt, double xOffset, double yOffset) {
+            addZoom(camera, static_cast<float>(yOffset) * zoomSpeed * mouseZoomSensitivity * dt);
+          }));
   }
 
   void CameraController::dispose() {
@@ -96,8 +120,8 @@ namespace TritiumEngine::Utilities
 
   void CameraController::addPitch(float pitch) {
     m_pitch += pitch;
-    m_pitch = std::min(m_pitch, MAX_PITCH);
-    m_pitch = std::max(m_pitch, MIN_PITCH);
+    m_pitch = std::min(m_pitch, maxPitch);
+    m_pitch = std::max(m_pitch, minPitch);
   }
 
   void CameraController::addYaw(float yaw) {
@@ -109,8 +133,22 @@ namespace TritiumEngine::Utilities
   }
 
   void CameraController::addZoom(Camera &camera, float zoom) {
-    camera.fov += zoom;
-    camera.fov = std::min(camera.fov, MAX_FOV);
-    camera.fov = std::max(camera.fov, MIN_FOV);
+    if (camera.projection == Camera::Projection::ORTHOGRAPHIC) {
+      camera.transform.scale += zoom;
+      camera.transform.scale.x = std::min(camera.transform.scale.x, maxOrthographicZoom);
+      camera.transform.scale.y = std::min(camera.transform.scale.y, maxOrthographicZoom);
+      camera.transform.scale.x = std::max(camera.transform.scale.x, minOrthographicZoom);
+      camera.transform.scale.y = std::max(camera.transform.scale.y, minOrthographicZoom);
+    } else {
+      camera.fov += zoom;
+      camera.fov = std::min(camera.fov, maxFov);
+      camera.fov = std::max(camera.fov, minFov);
+    }
+  }
+
+  glm::vec3 CameraController::getOrthoScale(const Camera &camera) const {
+    bool useOrthoScale =
+        camera.projection == Projection::ORTHOGRAPHIC && scaleOrthographicMoveSpeedWithZoom;
+    return useOrthoScale ? camera.transform.scale : glm::vec3{1.f};
   }
 } // namespace TritiumEngine::Utilities

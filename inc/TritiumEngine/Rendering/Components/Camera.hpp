@@ -12,17 +12,24 @@ namespace TritiumEngine::Rendering
   struct Camera {
     enum class Projection { ORTHOGRAPHIC, PERSPECTIVE };
 
-    Camera(Projection projection, float frameWidth, float frameHeight, float nearPlane = 0.1f,
-           float farPlane = 100.f, const Transform &transform = {}, float fov = glm::radians(60.f))
-        : projection(projection), width(frameWidth), height(frameHeight), nearPlane(nearPlane),
-          farPlane(farPlane), transform(transform), fov(fov) {}
+    Camera(Projection projection, float frameWidth, float frameHeight,
+           const Transform &transform = {}, float nearPlane = 0.1f, float farPlane = 100.f,
+           float fov = glm::radians(60.f))
+        : projection(projection), width(frameWidth), height(frameHeight), transform(transform),
+          nearPlane(nearPlane), farPlane(farPlane), fov(fov) {}
 
     float getAspectRatio() const { return width / height; }
 
     glm::mat4 calcProjectionMatrix() const {
-      return projection == Projection::ORTHOGRAPHIC
-                 ? glm::ortho(-width * 0.5f, width * 0.5f, -height * 0.5f, height * 0.5f)
-                 : glm::perspective(fov, getAspectRatio(), nearPlane, farPlane);
+      if (projection == Projection::ORTHOGRAPHIC) {
+        float left   = -width * transform.scale.x * 0.5f + transform.position.x;
+        float right  = width * transform.scale.x * 0.5f + transform.position.x;
+        float bottom = -height * transform.scale.y * 0.5f + transform.position.y;
+        float top    = height * transform.scale.y * 0.5f + transform.position.y;
+        return glm::ortho(left, right, bottom, top, nearPlane, farPlane);
+      } else {
+        return glm::perspective(fov, getAspectRatio(), nearPlane, farPlane);
+      }
     }
 
     glm::mat4 calcProjectionViewMatrix() const {
@@ -32,9 +39,9 @@ namespace TritiumEngine::Rendering
     Projection projection;
     float width;
     float height;
+    Transform transform;
     float nearPlane;
     float farPlane;
-    Transform transform;
     float fov;
   };
 } // namespace TritiumEngine::Rendering

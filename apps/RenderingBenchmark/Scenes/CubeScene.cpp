@@ -25,10 +25,11 @@ using Projection = Camera::Projection;
 
 namespace
 {
-  constexpr static BlendOptions TEXT_BLEND   = {true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
-  constexpr static glm::vec3 CAMERA_POSITION = {0.f, 0.f, 180.f};
-  constexpr static float CUBE_SIZE           = 100.f;
-  constexpr static int N_PARTICLES           = 2500000;
+  constexpr static BlendOptions TEXT_BLEND        = {true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
+  constexpr static glm::vec3 MAIN_CAMERA_POSITION = {0.f, 0.f, 180.f};
+  constexpr static glm::vec3 UI_CAMERA_POSITION   = {0.f, 0.f, 1.f};
+  constexpr static float CUBE_SIZE                = 100.f;
+  constexpr static int N_PARTICLES                = 2500000;
 } // namespace
 
 namespace RenderingBenchmark::Scenes
@@ -36,12 +37,12 @@ namespace RenderingBenchmark::Scenes
   CubeScene::CubeScene(const std::string &name, Application &app)
       : Scene(name, app), m_cameraController(m_app.inputManager), m_callbacks(), m_gradient() {
     // Setup color gradient
-    m_gradient.addColorPoint({COLOR_RED, 0.f});
-    m_gradient.addColorPoint({COLOR_YELLOW, 0.2f});
-    m_gradient.addColorPoint({COLOR_GREEN, 0.4f});
-    m_gradient.addColorPoint({COLOR_CYAN, 0.6f});
-    m_gradient.addColorPoint({COLOR_BLUE, 0.8f});
-    m_gradient.addColorPoint({COLOR_MAGENTA, 1.f});
+    m_gradient.addColorPoint(COLOR_RED, 0.f);
+    m_gradient.addColorPoint(COLOR_YELLOW, 0.2f);
+    m_gradient.addColorPoint(COLOR_GREEN, 0.4f);
+    m_gradient.addColorPoint(COLOR_CYAN, 0.6f);
+    m_gradient.addColorPoint(COLOR_BLUE, 0.8f);
+    m_gradient.addColorPoint(COLOR_MAGENTA, 1.f);
 
     // Setup camera controller mappings
     m_cameraController.mapKey(Key::W, CameraAction::MOVE_FORWARD);
@@ -76,15 +77,15 @@ namespace RenderingBenchmark::Scenes
 
     auto sceneCamera = registry.create();
     auto &sceneCameraComponent =
-        m_app.registry.emplace<Camera>(sceneCamera, Projection::PERSPECTIVE, aspect, 1.f, 0.1f,
-                                       500.0f, Transform{CAMERA_POSITION});
+        m_app.registry.emplace<Camera>(sceneCamera, Projection::PERSPECTIVE, aspect, 1.f,
+                                       Transform{MAIN_CAMERA_POSITION}, 0.1f, 500.0f);
     m_app.registry.emplace<MainCameraTag>(sceneCamera);
     m_cameraController.init(sceneCameraComponent);
 
     // Setup UI overlay camera
     auto uiCamera = m_app.registry.create();
     registry.emplace<Camera>(uiCamera, Projection::ORTHOGRAPHIC, VERTICAL_SCREEN_UNITS * aspect,
-                             VERTICAL_SCREEN_UNITS);
+                             VERTICAL_SCREEN_UNITS, Transform{UI_CAMERA_POSITION});
     registry.emplace<UiCameraTag>(uiCamera);
 
     // Setup UI

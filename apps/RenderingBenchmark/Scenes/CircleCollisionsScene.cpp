@@ -16,7 +16,8 @@ using namespace RenderingBenchmark::Settings;
 
 namespace
 {
-  constexpr static BlendOptions TEXT_BLEND = {true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
+  constexpr static BlendOptions TEXT_BLEND      = {true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
+  constexpr static glm::vec3 UI_CAMERA_POSITION = {0.f, 0.f, 1.f};
 } // namespace
 
 namespace RenderingBenchmark::Scenes
@@ -37,7 +38,7 @@ namespace RenderingBenchmark::Scenes
     auto camera  = registry.create();
     float aspect = window.getFrameAspect();
     registry.emplace<Camera>(camera, Projection::ORTHOGRAPHIC, VERTICAL_SCREEN_UNITS * aspect,
-                             VERTICAL_SCREEN_UNITS);
+                             VERTICAL_SCREEN_UNITS, Transform{UI_CAMERA_POSITION});
     registry.emplace<MainCameraTag>(camera);
 
     // Setup UI

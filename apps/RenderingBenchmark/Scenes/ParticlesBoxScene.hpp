@@ -3,6 +3,7 @@
 #include <TritiumEngine/Core/Scene.hpp>
 #include <TritiumEngine/Input/InputManager.hpp>
 #include <TritiumEngine/Rendering/TextRendering/Components/Text.hpp>
+#include <TritiumEngine/Utilities/CameraController.hpp>
 
 #include <entt/entity/entity.hpp>
 #include <glm/glm.hpp>
@@ -46,7 +47,9 @@ namespace RenderingBenchmark::Scenes
 
     RenderType m_renderType;
     int m_nParticles;
-    CallbackId m_callbacks[11];
     entt::entity m_titleText = entt::null;
+
+    CameraController m_cameraController;
+    CallbackId m_callbacks[11];
   };
 } // namespace RenderingBenchmark::Scenes

@@ -11,6 +11,7 @@
 #include <TritiumEngine/Rendering/Systems/InstancedRenderSystem.hpp>
 #include <TritiumEngine/Rendering/Systems/StandardRenderSystem.hpp>
 #include <TritiumEngine/Rendering/TextRendering/Systems/TextRenderSystem.hpp>
+#include <TritiumEngine/Utilities/CameraController.hpp>
 #include <TritiumEngine/Utilities/Random.hpp>
 #include <TritiumEngine/Utilities/Scripts/FpsStatsUI.hpp>
 
@@ -38,24 +39,44 @@ namespace
 namespace RenderingBenchmark::Scenes
 {
   ParticlesBoxScene::ParticlesBoxScene(const std::string &name, Application &app)
-      : Scene(name, app), m_renderType(RenderType::Default), m_nParticles(1000), m_callbacks() {}
+      : Scene(name, app), m_renderType(RenderType::Default), m_nParticles(1000),
+        m_cameraController(app.inputManager), m_callbacks() {
+    // Setup camera controller
+    m_cameraController.mapKey(Key::LEFT, CameraAction::MOVE_LEFT);
+    m_cameraController.mapKey(Key::RIGHT, CameraAction::MOVE_RIGHT);
+    m_cameraController.mapKey(Key::DOWN, CameraAction::MOVE_DOWN);
+    m_cameraController.mapKey(Key::UP, CameraAction::MOVE_UP);
+    m_cameraController.mapKey(Key::Z, CameraAction::ZOOM_IN);
+    m_cameraController.mapKey(Key::X, CameraAction::ZOOM_OUT);
+
+    m_cameraController.moveSpeed = 40.f;
+  }
 
   void ParticlesBoxScene::init() {
     // Setup systems
     addSystem<StandardRenderSystem<MainCameraTag::value>>(ENTITY_BLEND);
     addSystem<InstancedRenderSystem<MainCameraTag::value>>(ENTITY_BLEND);
-    addSystem<TextRenderSystem<MainCameraTag::value>>(TEXT_BLEND);
+    addSystem<TextRenderSystem<UiCameraTag::value>>(TEXT_BLEND);
     addSystem<BoxContainerSystem>(CONTAINER_SIZE);
 
-    // Setup camera
     auto &registry = m_app.registry;
     auto &input    = m_app.inputManager;
 
-    auto camera  = registry.create();
-    float aspect = m_app.window.getFrameAspect();
-    registry.emplace<Camera>(camera, Projection::ORTHOGRAPHIC, VERTICAL_SCREEN_UNITS * aspect,
-                             VERTICAL_SCREEN_UNITS);
-    registry.emplace<MainCameraTag>(camera);
+    // Setup cameras
+    float aspect      = m_app.window.getFrameAspect();
+    float camWidth    = VERTICAL_SCREEN_UNITS * m_app.window.getFrameAspect();
+    float camHeight   = VERTICAL_SCREEN_UNITS;
+    const auto camPos = glm::vec3{0.f, 0.f, 1.f};
+
+    auto mainCamera = registry.create();
+    auto &mainCameraComponent =
+        registry.emplace<Camera>(mainCamera, Projection::ORTHOGRAPHIC, camWidth, camHeight, camPos);
+    registry.emplace<MainCameraTag>(mainCamera);
+    m_cameraController.init(mainCameraComponent, false, false);
+
+    auto uiCamera = registry.create();
+    registry.emplace<Camera>(uiCamera, Projection::ORTHOGRAPHIC, camWidth, camHeight, camPos);
+    registry.emplace<UiCameraTag>(uiCamera);
 
     // Setup UI
     m_titleText = addText("", {0.f, 0.82f}, 0.6f, Text::Alignment::BOTTOM_CENTER);
@@ -113,7 +134,10 @@ namespace RenderingBenchmark::Scenes
     setupParticles();
   }
 
-  void ParticlesBoxScene::dispose() { m_app.inputManager.removeCallbacks(m_callbacks); }
+  void ParticlesBoxScene::dispose() {
+    m_cameraController.dispose();
+    m_app.inputManager.removeCallbacks(m_callbacks);
+  }
 
   void ParticlesBoxScene::setupContainer() {
     float halfSize = (CONTAINER_SIZE + 1.f) * 0.5f;
