@@ -41,10 +41,10 @@ namespace TritiumEngine::Rendering
 
               // Calculate position and size for the given character
               float scaleFactor = text.scaleFactor;
-              float xPos  = startPos.x + ch.bearing.x * scaleFactor;
-              float yPos  = startPos.y - (ch.size.y - ch.bearing.y) * scaleFactor;
-              float w     = ch.size.x * scaleFactor;
-              float h     = ch.size.y * scaleFactor;
+              float xPos        = startPos.x + ch.bearing.x * scaleFactor;
+              float yPos        = startPos.y - (ch.size.y - ch.bearing.y) * scaleFactor;
+              float w           = ch.size.x * scaleFactor;
+              float h           = ch.size.y * scaleFactor;
 
               // Add vertex data and texture coordinates
               float vertices[4][4] = {
@@ -68,25 +68,26 @@ namespace TritiumEngine::Rendering
 
   private:
     glm::vec2 getStartPosition(const Text &text) const {
-      glm::vec2 startPos = glm::vec2();
+      auto startPos = glm::vec2{};
+
       switch (text.align) {
       case Text::Alignment::TOP_LEFT:
-        startPos = {0.f, -text.getPixelHeight()};
+        startPos = {0.f, -text.getMaxFontPixelHeight()};
         break;
       case Text::Alignment::TOP_CENTER:
-        startPos = {-text.getPixelWidth() * 0.5f, -text.getPixelHeight()};
+        startPos = {-text.getPixelWidth() * 0.5f, -text.getMaxFontPixelHeight()};
         break;
       case Text::Alignment::TOP_RIGHT:
-        startPos = {-text.getPixelWidth(), -text.getPixelHeight()};
+        startPos = {-text.getPixelWidth(), -text.getMaxFontPixelHeight()};
         break;
       case Text::Alignment::CENTER_LEFT:
-        startPos = {0.f, -text.getPixelHeight() * 0.5f};
+        startPos = {0.f, -text.getMaxFontPixelHeight() * 0.5f};
         break;
       case Text::Alignment::CENTER:
-        startPos = {-text.getPixelWidth() * 0.5f, -text.getPixelHeight() * 0.5f};
+        startPos = {-text.getPixelWidth() * 0.5f, -text.getMaxFontPixelHeight() * 0.5f};
         break;
       case Text::Alignment::CENTER_RIGHT:
-        startPos = {-text.getPixelWidth(), -text.getPixelHeight() * 0.5f};
+        startPos = {-text.getPixelWidth(), -text.getMaxFontPixelHeight() * 0.5f};
         break;
       case Text::Alignment::BOTTOM_LEFT:
         startPos = {0.f, 0.f};

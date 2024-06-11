@@ -15,5 +15,6 @@ namespace TritiumEngine::Rendering
     };
 
     Character characters[CHAR_ARRAY_SIZE];
+    unsigned int maxHeight;
   };
 } // namespace TritiumEngine::Rendering

@@ -27,8 +27,8 @@ namespace TritiumEngine::Rendering
     glDeleteBuffers(1, &m_vbo);
   }
 
+  /** @brief Obtains the total pixel width of the text string */
   float Text::getPixelWidth() const {
-    // Obtains the total pixel width of the text string
     float width = 0.f;
     for (const char &c : text)
       width += m_font->characters[c].advance >> 6;
@@ -36,12 +36,15 @@ namespace TritiumEngine::Rendering
     return width * scaleFactor;
   }
 
+  /** @brief Obtains the max pixel height from all characters in the text string */
   float Text::getPixelHeight() const {
-    // Obtains the greatest pixel height from all characters in the text string
     int maxHeight = 0;
     for (const char &c : text)
       maxHeight = std::max(m_font->characters[c].bearing.y, maxHeight);
 
     return maxHeight * scaleFactor;
   }
+
+  /** @brief Obtains max pixel height of the font this text uses */
+  float Text::getMaxFontPixelHeight() const { return m_font->maxHeight * scaleFactor; }
 } // namespace TritiumEngine::Rendering

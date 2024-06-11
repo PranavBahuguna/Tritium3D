@@ -27,6 +27,7 @@ namespace TritiumEngine::Rendering
 
     float getPixelWidth() const;
     float getPixelHeight() const;
+    float getMaxFontPixelHeight() const;
     Font *getFont() const { return m_font.get(); }
     unsigned int getVao() const { return m_vao; }
     unsigned int getVbo() const { return m_vbo; }

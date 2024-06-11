@@ -3,6 +3,8 @@
 
 #include <GL/glew.h>
 
+#include <algorithm>
+
 using namespace TritiumEngine::Utilities;
 
 namespace TritiumEngine::Rendering
@@ -76,6 +78,9 @@ namespace TritiumEngine::Rendering
                              {bitmap.width, bitmap.rows},
                              {face->glyph->bitmap_left, face->glyph->bitmap_top},
                              face->glyph->advance.x};
+
+      // Update max font height
+      font->maxHeight = std::max(font->maxHeight, bitmap.rows);
     }
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
