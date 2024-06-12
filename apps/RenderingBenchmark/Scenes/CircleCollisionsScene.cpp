@@ -16,7 +16,6 @@ using namespace RenderingBenchmark::Settings;
 
 namespace
 {
-  constexpr static BlendOptions TEXT_BLEND      = {true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
   constexpr static glm::vec3 UI_CAMERA_POSITION = {0.f, 0.f, 1.f};
 } // namespace
 
@@ -26,9 +25,15 @@ namespace RenderingBenchmark::Scenes
       : Scene(name, app), m_fpsDisplayCallback() {}
 
   void CircleCollisionsScene::init() {
+    // Setup render settings
+    RenderSettings textRenderSettings;
+    textRenderSettings.enableBlend  = true;
+    textRenderSettings.blendSFactor = GL_SRC_ALPHA;
+    textRenderSettings.blendDFactor = GL_ONE_MINUS_SRC_ALPHA;
+
     // Setup systems
     addSystem<InstancedRenderSystem<MainCameraTag::value>>();
-    addSystem<TextRenderSystem<MainCameraTag::value>>(TEXT_BLEND);
+    addSystem<TextRenderSystem<MainCameraTag::value>>(textRenderSettings);
 
     // Setup camera
     auto &registry = m_app.registry;

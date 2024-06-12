@@ -25,7 +25,6 @@ using Projection = Camera::Projection;
 
 namespace
 {
-  constexpr static BlendOptions TEXT_BLEND        = {true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
   constexpr static glm::vec3 MAIN_CAMERA_POSITION = {0.f, 0.f, 180.f};
   constexpr static glm::vec3 UI_CAMERA_POSITION   = {0.f, 0.f, 1.f};
   constexpr static float CUBE_SIZE                = 100.f;
@@ -61,12 +60,18 @@ namespace RenderingBenchmark::Scenes
   }
 
   void CubeScene::init() {
-    // Set OpenGL options
-    glEnable(GL_DEPTH_TEST);
+    // Setup render settings
+    RenderSettings cubeRenderSettings;
+    cubeRenderSettings.enableDepthTest = true;
+
+    RenderSettings textRenderSettings;
+    textRenderSettings.enableBlend  = true;
+    textRenderSettings.blendSFactor = GL_SRC_ALPHA;
+    textRenderSettings.blendDFactor = GL_ONE_MINUS_SRC_ALPHA;
 
     // Setup systems
-    addSystem<CubeRenderSystem<MainCameraTag::value>>();
-    addSystem<TextRenderSystem<UiCameraTag::value>>(TEXT_BLEND);
+    addSystem<CubeRenderSystem<MainCameraTag::value>>(cubeRenderSettings);
+    addSystem<TextRenderSystem<UiCameraTag::value>>(textRenderSettings);
 
     // Setup scene camera
     auto &registry = m_app.registry;

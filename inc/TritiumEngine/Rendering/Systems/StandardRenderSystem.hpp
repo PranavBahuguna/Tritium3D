@@ -12,11 +12,12 @@ namespace TritiumEngine::Rendering
 {
   template <uint32_t CameraTag> class StandardRenderSystem : public RenderSystem<CameraTag> {
   public:
-    StandardRenderSystem(BlendOptions blendOptions = {}) : RenderSystem<CameraTag>(blendOptions) {}
+    StandardRenderSystem(RenderSettings renderSettings = {})
+        : RenderSystem<CameraTag>(renderSettings) {}
 
     void draw(const Camera &camera) const override {
-      auto &shaderManager      = RenderSystem<CameraTag>::m_app->shaderManager;
-      auto &registry           = RenderSystem<CameraTag>::m_app->registry;
+      auto &shaderManager = RenderSystem<CameraTag>::m_app->shaderManager;
+      auto &registry      = RenderSystem<CameraTag>::m_app->registry;
 
       registry.view<Renderable, Transform, Shader, Color>().each(
           [&](auto entity, Renderable &renderable, Transform &transform, Shader &shader,

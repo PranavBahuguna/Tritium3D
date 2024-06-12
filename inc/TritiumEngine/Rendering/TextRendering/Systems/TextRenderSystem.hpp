@@ -13,7 +13,7 @@ namespace TritiumEngine::Rendering
 {
   template <uint32_t CameraTag> class TextRenderSystem : public RenderSystem<CameraTag> {
   public:
-    TextRenderSystem(BlendOptions blendOptions = {}) : RenderSystem<CameraTag>(blendOptions) {}
+    TextRenderSystem(RenderSettings renderSettings = {}) : RenderSystem<CameraTag>(renderSettings) {}
 
     void draw(const Camera &camera) const override {
       auto &shaderManager = RenderSystem<CameraTag>::m_app->shaderManager;

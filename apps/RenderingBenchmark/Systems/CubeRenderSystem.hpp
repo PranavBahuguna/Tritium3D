@@ -9,7 +9,7 @@ namespace RenderingBenchmark::Systems
 {
   template <uint32_t CameraTag> class CubeRenderSystem : public RenderSystem<CameraTag> {
   public:
-    CubeRenderSystem() : RenderSystem<CameraTag>({}) {}
+    CubeRenderSystem(RenderSettings renderSettings) : RenderSystem<CameraTag>(renderSettings) {}
 
     void draw(const Camera &camera) const override {
       auto &registry      = RenderSystem<CameraTag>::m_app->registry;

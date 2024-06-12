@@ -144,7 +144,6 @@ namespace TritiumEngine::Rendering
   void Window::beginDraw() const {
     m_frameBuffer->bind();
     m_frameBuffer->clear(m_clearColor);
-    glEnable(GL_DEPTH_TEST);
   }
 
   /** @brief Draws all rendered content to a framebuffer */

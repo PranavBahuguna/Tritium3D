@@ -32,8 +32,6 @@ namespace
   constexpr static glm::quat SHAPE_ROTATION  = {1.0f, 0.f, 0.f, 0.f};
   constexpr static glm::vec3 SHAPE_SCALE     = {10.f, 10.f, 1.f};
   constexpr static float DISPLACEMENT_RADIUS = 100.f;
-  constexpr static BlendOptions ENTITY_BLEND = {true, GL_SRC_COLOR, GL_DST_COLOR};
-  constexpr static BlendOptions TEXT_BLEND   = {true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
 } // namespace
 
 namespace RenderingBenchmark::Scenes
@@ -49,33 +47,44 @@ namespace RenderingBenchmark::Scenes
     m_cameraController.mapKey(Key::Z, CameraAction::ZOOM_IN);
     m_cameraController.mapKey(Key::X, CameraAction::ZOOM_OUT);
 
-    m_cameraController.moveSpeed = 40.f;
+    m_cameraController.moveSpeed = 50.f;
   }
 
   void ParticlesBoxScene::init() {
+    // Setup render settings
+    RenderSettings entityRenderSettings;
+    entityRenderSettings.enableBlend  = true;
+    entityRenderSettings.blendSFactor = GL_SRC_COLOR;
+    entityRenderSettings.blendDFactor = GL_DST_COLOR;
+
+    RenderSettings textRenderSettings;
+    textRenderSettings.enableBlend  = true;
+    textRenderSettings.blendSFactor = GL_SRC_ALPHA;
+    textRenderSettings.blendDFactor = GL_ONE_MINUS_SRC_ALPHA;
+
     // Setup systems
-    addSystem<StandardRenderSystem<MainCameraTag::value>>(ENTITY_BLEND);
-    addSystem<InstancedRenderSystem<MainCameraTag::value>>(ENTITY_BLEND);
-    addSystem<TextRenderSystem<UiCameraTag::value>>(TEXT_BLEND);
+    addSystem<StandardRenderSystem<MainCameraTag::value>>(entityRenderSettings);
+    addSystem<InstancedRenderSystem<MainCameraTag::value>>(entityRenderSettings);
+    addSystem<TextRenderSystem<UiCameraTag::value>>(textRenderSettings);
     addSystem<BoxContainerSystem>(CONTAINER_SIZE);
 
     auto &registry = m_app.registry;
     auto &input    = m_app.inputManager;
 
     // Setup cameras
-    float aspect      = m_app.window.getFrameAspect();
-    float camWidth    = VERTICAL_SCREEN_UNITS * m_app.window.getFrameAspect();
-    float camHeight   = VERTICAL_SCREEN_UNITS;
-    const auto camPos = glm::vec3{0.f, 0.f, 1.f};
+    float aspect    = m_app.window.getFrameAspect();
+    float camWidth  = VERTICAL_SCREEN_UNITS * m_app.window.getFrameAspect();
+    float camHeight = VERTICAL_SCREEN_UNITS;
 
-    auto mainCamera = registry.create();
-    auto &mainCameraComponent =
-        registry.emplace<Camera>(mainCamera, Projection::ORTHOGRAPHIC, camWidth, camHeight, camPos);
+    auto mainCamera           = registry.create();
+    auto &mainCameraComponent = registry.emplace<Camera>(
+        mainCamera, Projection::ORTHOGRAPHIC, camWidth, camHeight, glm::vec3{0.f, 0.f, 10.f});
     registry.emplace<MainCameraTag>(mainCamera);
     m_cameraController.init(mainCameraComponent, false, false);
 
     auto uiCamera = registry.create();
-    registry.emplace<Camera>(uiCamera, Projection::ORTHOGRAPHIC, camWidth, camHeight, camPos);
+    registry.emplace<Camera>(uiCamera, Projection::ORTHOGRAPHIC, camWidth, camHeight,
+                             glm::vec3{0.f, 0.f, 20.f});
     registry.emplace<UiCameraTag>(uiCamera);
 
     // Setup UI
@@ -187,7 +196,7 @@ namespace RenderingBenchmark::Scenes
 
     auto entity = registry.create();
     registry.emplace<Text>(entity, text, "Hack-Regular", scaleFactor, alignment);
-    registry.emplace<Transform>(entity, glm::vec3{position.x, position.y, 0.f});
+    registry.emplace<Transform>(entity, glm::vec3{position.x, position.y, 0.1f});
     registry.emplace<Shader>(entity, shaderManager.get("text"));
     registry.emplace<Color>(entity, COLOR_GREEN);
     return entity;
