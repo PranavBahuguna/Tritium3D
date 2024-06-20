@@ -22,10 +22,10 @@ namespace TritiumEngine::Rendering
 
     glm::mat4 calcProjectionMatrix() const {
       if (projection == Projection::ORTHOGRAPHIC) {
-        float left   = -width * transform.scale.x * 0.5f + transform.position.x;
-        float right  = width * transform.scale.x * 0.5f + transform.position.x;
-        float bottom = -height * transform.scale.y * 0.5f + transform.position.y;
-        float top    = height * transform.scale.y * 0.5f + transform.position.y;
+        float left   = transform.position.x - width * transform.scale.x * 0.5f;
+        float right  = transform.position.x + width * transform.scale.x * 0.5f;
+        float bottom = transform.position.y - height * transform.scale.y * 0.5f;
+        float top    = transform.position.y + height * transform.scale.y * 0.5f;
         return glm::ortho(left, right, bottom, top, nearPlane, farPlane);
       } else {
         return glm::perspective(fov, getAspectRatio(), nearPlane, farPlane);

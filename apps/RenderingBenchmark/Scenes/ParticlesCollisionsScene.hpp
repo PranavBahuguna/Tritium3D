@@ -2,6 +2,7 @@
 
 #include <TritiumEngine/Core/Scene.hpp>
 #include <TritiumEngine/Input/InputManager.hpp>
+#include <TritiumEngine/Utilities/CameraController.hpp>
 
 using namespace TritiumEngine::Core;
 using namespace TritiumEngine::Input;
@@ -15,14 +16,15 @@ namespace RenderingBenchmark::Scenes
 {
   using Application = TritiumEngine::Core::Application;
 
-  class CircleCollisionsScene : public Scene {
+  class ParticleCollisionsScene : public Scene {
   public:
-    CircleCollisionsScene(const std::string &name, Application &app);
+    ParticleCollisionsScene(const std::string &name, Application &app);
 
   protected:
     void init() override;
     void dispose() override;
 
+    CameraController m_cameraController;
     CallbackId m_fpsDisplayCallback;
   };
 } // namespace RenderingBenchmark::Scenes

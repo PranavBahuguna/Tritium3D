@@ -28,7 +28,7 @@ static void setup(Application *app) {
   // Add scenes
   sceneManager.addScene<ParticlesBoxScene>();
   sceneManager.addScene<CubeScene>();
-  sceneManager.addScene<CircleCollisionsScene>();
+  sceneManager.addScene<ParticleCollisionsScene>();
 }
 
 int main() {

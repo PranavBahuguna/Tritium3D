@@ -12,7 +12,7 @@
 #include <TritiumEngine/Rendering/Systems/StandardRenderSystem.hpp>
 #include <TritiumEngine/Rendering/TextRendering/Systems/TextRenderSystem.hpp>
 #include <TritiumEngine/Utilities/CameraController.hpp>
-#include <TritiumEngine/Utilities/Random.hpp>
+#include <TritiumEngine/Utilities/Random/Position.hpp>
 #include <TritiumEngine/Utilities/Scripts/FpsStatsUI.hpp>
 
 using namespace RenderingBenchmark::Components;
@@ -46,7 +46,6 @@ namespace RenderingBenchmark::Scenes
     m_cameraController.mapKey(Key::UP, CameraAction::MOVE_UP);
     m_cameraController.mapKey(Key::Z, CameraAction::ZOOM_IN);
     m_cameraController.mapKey(Key::X, CameraAction::ZOOM_OUT);
-
     m_cameraController.moveSpeed = 50.f;
   }
 
@@ -72,19 +71,19 @@ namespace RenderingBenchmark::Scenes
     auto &input    = m_app.inputManager;
 
     // Setup cameras
-    float aspect    = m_app.window.getFrameAspect();
-    float camWidth  = VERTICAL_SCREEN_UNITS * m_app.window.getFrameAspect();
-    float camHeight = VERTICAL_SCREEN_UNITS;
+    float aspect      = m_app.window.getFrameAspect();
+    float camWidth    = VERTICAL_SCREEN_UNITS * aspect;
+    float camHeight   = VERTICAL_SCREEN_UNITS;
+    const auto camPos = glm::vec3{0.f, 0.f, 1.f};
 
-    auto mainCamera           = registry.create();
-    auto &mainCameraComponent = registry.emplace<Camera>(
-        mainCamera, Projection::ORTHOGRAPHIC, camWidth, camHeight, glm::vec3{0.f, 0.f, 10.f});
+    auto mainCamera = registry.create();
+    auto &mainCameraComponent =
+        registry.emplace<Camera>(mainCamera, Projection::ORTHOGRAPHIC, camWidth, camHeight, camPos);
     registry.emplace<MainCameraTag>(mainCamera);
     m_cameraController.init(mainCameraComponent, false, false);
 
     auto uiCamera = registry.create();
-    registry.emplace<Camera>(uiCamera, Projection::ORTHOGRAPHIC, camWidth, camHeight,
-                             glm::vec3{0.f, 0.f, 20.f});
+    registry.emplace<Camera>(uiCamera, Projection::ORTHOGRAPHIC, camWidth, camHeight, camPos);
     registry.emplace<UiCameraTag>(uiCamera);
 
     // Setup UI
@@ -219,7 +218,7 @@ namespace RenderingBenchmark::Scenes
 
     for (int i = 0; i < m_nParticles; ++i) {
       auto entity = registry.create();
-      registry.emplace<Transform>(entity, RandomUtils::RadialPosition(DISPLACEMENT_RADIUS, true),
+      registry.emplace<Transform>(entity, Random::RadialPosition(DISPLACEMENT_RADIUS, true),
                                   SHAPE_ROTATION, SHAPE_SCALE);
       registry.emplace<Renderable>(entity, GL_TRIANGLES, Primitives::createQuad());
       registry.emplace<Shader>(entity, shaderManager.get("default"));
@@ -243,8 +242,8 @@ namespace RenderingBenchmark::Scenes
       auto instancedEntity = registry.create();
       registry.emplace<InstanceTag>(instancedEntity, renderable.getInstanceId());
       registry.emplace<Transform>(instancedEntity,
-                                  RandomUtils::RadialPosition(DISPLACEMENT_RADIUS, true),
-                                  SHAPE_ROTATION, SHAPE_SCALE);
+                                  Random::RadialPosition(DISPLACEMENT_RADIUS, true), SHAPE_ROTATION,
+                                  SHAPE_SCALE);
       registry.emplace<Color>(instancedEntity, COLOR_RED);
       registry.emplace<Rigidbody>(instancedEntity, SHAPE_VELOCITY);
     }
@@ -265,8 +264,8 @@ namespace RenderingBenchmark::Scenes
       auto instancedEntity = registry.create();
       registry.emplace<InstanceTag>(instancedEntity, renderable.getInstanceId());
       registry.emplace<Transform>(instancedEntity,
-                                  RandomUtils::RadialPosition(DISPLACEMENT_RADIUS, true),
-                                  SHAPE_ROTATION, SHAPE_SCALE);
+                                  Random::RadialPosition(DISPLACEMENT_RADIUS, true), SHAPE_ROTATION,
+                                  SHAPE_SCALE);
       registry.emplace<Color>(instancedEntity, COLOR_RED);
       registry.emplace<Rigidbody>(instancedEntity, SHAPE_VELOCITY);
     }

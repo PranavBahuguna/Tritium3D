@@ -9,7 +9,7 @@
 #include <TritiumEngine/Core/Components/NativeScript.hpp>
 #include <TritiumEngine/Rendering/Primitives.hpp>
 #include <TritiumEngine/Rendering/TextRendering/Systems/TextRenderSystem.hpp>
-#include <TritiumEngine/Utilities/Random.hpp>
+#include <TritiumEngine/Utilities/Random/Position.hpp>
 #include <TritiumEngine/Utilities/Scripts/CameraStatsUI.hpp>
 #include <TritiumEngine/Utilities/Scripts/FpsStatsUI.hpp>
 
@@ -133,7 +133,7 @@ namespace RenderingBenchmark::Scenes
 
     // Set instance data
     for (int i = 0; i < N_PARTICLES; ++i) {
-      const auto &pos = RandomUtils::CubePosition(CUBE_SIZE);
+      const auto &pos = Random::CubePosition(CUBE_SIZE);
       float dist      = glm::length(pos);
       float maxDist   = glm::length(glm::vec3(CUBE_SIZE * 0.5f));
       Color color     = m_gradient.getColor(dist / maxDist);

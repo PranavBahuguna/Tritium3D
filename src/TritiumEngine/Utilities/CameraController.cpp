@@ -114,6 +114,7 @@ namespace TritiumEngine::Utilities
 
   void CameraController::dispose() {
     m_input.removeCallbacks(m_callbacks);
+    m_callbacks.clear();
     m_pitch = 0.f;
     m_yaw   = 0.f;
   }
