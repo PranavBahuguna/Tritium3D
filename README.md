@@ -15,6 +15,9 @@ git clone https://github.com/PranavBahuguna/TritiumEngine
 
 You can then use CMake with Visual Studio to generate and build the project files, as well as the RenderingBenchmark app.
 
+Note: The RenderingBenchmark app creates a symlink to its `Resources` folder. The CMake script creates a symlink to this folder
+but will require admin permissions to do so. The easiest way to accomplish this is to run Visual Studio with admin permissions.
+
 # RenderingBenchmark
 
 This is an example application that makes use of TritiumEngine. It registers the performance of drawing many particles bouncing

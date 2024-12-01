@@ -1,6 +1,6 @@
-#include "Scenes/CircleCollisionsScene.hpp"
 #include "Scenes/CubeScene.hpp"
 #include "Scenes/ParticlesBoxScene.hpp"
+#include "Scenes/ParticlesCollisionsScene.hpp"
 
 #include <TritiumEngine/Core/Application.hpp>
 #include <TritiumEngine/Core/ResourceManager.hpp>
