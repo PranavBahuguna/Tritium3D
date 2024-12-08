@@ -35,15 +35,16 @@ namespace TritiumEngine::Rendering
 
   struct WindowSettings {
     std::string name;
-    bool fullscreen      = false;
-    WindowHints hints    = WindowHints::DEFAULT;
-    int width            = 1280;
-    int height           = 720;
-    int aspectX          = 16;
-    int aspectY          = 9;
-    bool fixWindowAspect = false;
-    Color clearColor     = 0xFF252525; // dark grey
-    Color borderColor    = COLOR_BLACK;
+    bool fullscreen               = false;
+    WindowHints hints             = WindowHints::DEFAULT;
+    int width                     = 1280;
+    int height                    = 720;
+    int aspectX                   = 16;
+    int aspectY                   = 10;
+    bool calcAspectFromDimensions = false;
+    bool fixWindowAspect          = false;
+    Color clearColor              = 0xFF252525; // dark grey
+    Color borderColor             = COLOR_BLACK;
   };
 
   class Window {
@@ -67,7 +68,7 @@ namespace TritiumEngine::Rendering
     float getAspect() const { return (float)m_width / m_height; }
     int getFrameWidth() const { return m_frameWidth; }
     int getFrameHeight() const { return m_frameHeight; }
-    float getFrameAspect() const { return (float)m_frameAspectX / m_frameAspectY; }
+    float getFrameAspect() const { return m_frameAspectX / m_frameAspectY; }
     GLFWwindow *getHandle() const { return m_windowHandle; }
 
   private:
@@ -86,8 +87,8 @@ namespace TritiumEngine::Rendering
     int m_height;
     int m_frameWidth;
     int m_frameHeight;
-    int m_frameAspectX;
-    int m_frameAspectY;
+    float m_frameAspectX;
+    float m_frameAspectY;
     Color m_clearColor;
     Color m_borderColor;
 

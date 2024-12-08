@@ -34,9 +34,10 @@ static void setup(Application *app) {
 int main() {
   WindowSettings windowSettings{"main"};
 #ifndef _DEBUG
-  Logger::Settings::levelMask = LogType::NODEBUG;
-  windowSettings.hints        = WindowHints::FULLSCREEN | WindowHints::AUTO_MINIMIZE;
-  windowSettings.fullscreen   = true;
+  Logger::Settings::levelMask             = LogType::NODEBUG;
+  windowSettings.hints                    = WindowHints::FULLSCREEN | WindowHints::AUTO_MINIMIZE;
+  windowSettings.fullscreen               = true;
+  windowSettings.calcAspectFromDimensions = true;
 #endif // _DEBUG
 
   try {

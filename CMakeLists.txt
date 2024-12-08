@@ -69,6 +69,12 @@ add_library(TritiumEngine ${TRITIUM_SRC_FILES} ${TRITIUM_INC_FILES})
 
 target_include_directories(TritiumEngine PUBLIC ${TRITIUM_INC_DIR})
 
+# Generate pdb for release mode
+target_compile_options(TritiumEngine PRIVATE "$<$<CONFIG:Release>:/Zi>")
+target_link_options(TritiumEngine PRIVATE "$<$<CONFIG:Release>:/DEBUG>")
+target_link_options(TritiumEngine PRIVATE "$<$<CONFIG:Release>:/OPT:REF>")
+target_link_options(TritiumEngine PRIVATE "$<$<CONFIG:Release>:/OPT:ICF>")
+
 target_link_libraries(TritiumEngine
     PUBLIC thirdparty_headers_lib
     PRIVATE glm glfw libglew_static EnTT freetype)

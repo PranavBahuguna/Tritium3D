@@ -15,8 +15,7 @@ namespace TritiumEngine::Rendering
       : m_name(settings.name), m_fullscreen(settings.fullscreen), m_width(settings.width),
         m_height(settings.height), m_clearColor(settings.clearColor),
         m_borderColor(settings.borderColor), m_frameWidth(settings.width),
-        m_frameHeight(settings.height), m_frameAspectX(settings.aspectX),
-        m_frameAspectY(settings.aspectY), m_shaderManager(shaderManager) {
+        m_frameHeight(settings.height), m_shaderManager(shaderManager) {
     // Init GLFW library if not already done so
     if (s_nWindows == 0) {
       if (glfwInit() == GLFW_FALSE)
@@ -76,13 +75,24 @@ namespace TritiumEngine::Rendering
     glfwSetWindowUserPointer(m_windowHandle, this);
     glfwMakeContextCurrent(m_windowHandle);
 
+    // Setup frame aspect ratio
+    if (settings.calcAspectFromDimensions) {
+      m_frameAspectX = (float)m_width / m_height;
+      m_frameAspectY = 1.f;
+    } else {
+      m_frameAspectX = (float)settings.aspectX;
+      m_frameAspectY = (float)settings.aspectY;
+    }
+
     if (!m_fullscreen) {
       // Obtain actual window / frame dimensions
       glfwGetFramebufferSize(m_windowHandle, &m_width, &m_height);
       calcFrameDimensions();
 
-      if (settings.fixWindowAspect)
+      if (settings.fixWindowAspect) {
         glfwSetWindowAspectRatio(m_windowHandle, settings.aspectX, settings.aspectY);
+        glfwGetWindowSize(m_windowHandle, &m_width, &m_height);
+      }
 
       glfwSetFramebufferSizeCallback(m_windowHandle,
                                      [](GLFWwindow *windowHandle, int width, int height) {
@@ -186,11 +196,13 @@ namespace TritiumEngine::Rendering
     float frameAspect  = getFrameAspect();
 
     if (windowAspect > frameAspect) {
-      m_frameHeight = m_height - (m_height % m_frameAspectY);
-      m_frameWidth  = (m_frameHeight / m_frameAspectY) * m_frameAspectX;
+      // window wider than frame
+      m_frameHeight = m_height;
+      m_frameWidth  = (int)((m_frameHeight / m_frameAspectY) * m_frameAspectX);
     } else {
-      m_frameWidth  = m_width - (m_width % m_frameAspectX);
-      m_frameHeight = (m_frameWidth / m_frameAspectX) * m_frameAspectY;
+      // frame wider than window
+      m_frameWidth  = m_width;
+      m_frameHeight = (int)((m_frameWidth / m_frameAspectX) * m_frameAspectY);
     }
   }
 
